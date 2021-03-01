@@ -21,7 +21,10 @@
         "url": "https://anodot.com"
       }
     ],
-    "screenshots": [],
+    "screenshots": [{
+      "name": "Anodot Dashboard",
+      "path": "img/screenshot.png"
+    }],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
