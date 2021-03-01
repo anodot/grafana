@@ -7,10 +7,10 @@
   "info": {
     "description": "Datasource for anodot-panel plugin",
     "author": {
-      "name": "ua.ulin@gmail.com",
-      "url": "anodot.com"
+      "name": "Anodot",
+      "url": "https://anodot.com"
     },
-    "keywords": ["anodot", "topology"],
+    "keywords": ["anodot"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
@@ -26,7 +26,7 @@
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaVersion": "6.5.x",
-    "plugins": []
+    "grafanaDependency": "6.5.x",
+    "plugins": ["anodot-panel"]
   }
 }
