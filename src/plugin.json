@@ -1,0 +1,32 @@
+{
+  "type": "datasource",
+  "name": "Anodot",
+  "id": "anodot-datasource",
+  "metrics": true,
+  "logs": true,
+  "info": {
+    "description": "Datasource for anodot-panel plugin",
+    "author": {
+      "name": "ua.ulin@gmail.com",
+      "url": "anodot.com"
+    },
+    "keywords": ["anodot", "topology"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Anodot",
+        "url": "https://anodot.com"
+      }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaVersion": "6.5.x",
+    "plugins": []
+  }
+}

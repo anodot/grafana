@@ -1,0 +1,28 @@
+{
+  "name": "anodot-datasource",
+  "version": "1.0.0",
+  "description": "Anodot Grafana Datasource for anodot-panel plugin",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch"
+  },
+  "author": "ua@ulin@gmail.com",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@grafana/data": "7.0.1",
+    "@grafana/toolkit": "7.0.1",
+    "@grafana/ui": "7.0.1",
+    "@testing-library/jest-dom": "5.4.0",
+    "@testing-library/react": "^10.0.2",
+    "@types/lodash": "latest"
+  },
+  "engines": {
+    "node": ">=12 <13"
+  },
+  "dependencies": {
+    "@grafana/runtime": "^7.2.1",
+    "date-fns": "^2.16.1"
+  }
+}
