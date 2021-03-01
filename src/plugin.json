@@ -26,7 +26,14 @@
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaDependency": "6.5.x",
-    "plugins": ["anodot-panel"]
+    "grafanaDependency": "7.0.x",
+    "plugins": [
+      {
+        "id": "anodot-panel",
+        "name": "anodot-panel",
+        "type": "panel",
+        "version": "1.0.0"
+      }
+    ]
   }
 }
