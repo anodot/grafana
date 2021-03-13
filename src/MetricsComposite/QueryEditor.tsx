@@ -14,7 +14,7 @@ export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
 };
 
 const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
-  const { onChange, onRunQuery, datasource, metricsList } = props;
+  const { onChange, onFormChange, datasource, metricsList } = props;
   const query = defaults(props.query, defaultMetricsCompositeQuery);
   const [propertiesOptions, setPropertiesOptions] = useState([]);
   const [availableOptions, setAvailableOptions] = useState([]);
@@ -41,15 +41,6 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
     }
   }, [propertiesOptions, query.dimensions]);
 
-  const onFormChange = useCallback(
-    (key, value, forceRunQuery = false) => {
-      const newQuery = { ...query, [key]: value?.value ?? value };
-      onChange(newQuery);
-      onRunQuery();
-    },
-    [query]
-  );
-
   return (
     <>
       <div className="gf-form-inline">
@@ -61,7 +52,7 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
             tooltip={'Select a metric.'}
             value={query.metricName}
             options={metricsList}
-            onChange={value => onFormChange('metricName', value)}
+            onChange={value => onFormChange('metricName', value, true)}
           />
         </div>
         <div className="gf-form">
@@ -70,14 +61,14 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
             label={'Include baseline'}
             tooltip={'Include baseline'}
             value={query.baseLine}
-            onChange={e => onFormChange('baseLine', e?.currentTarget?.checked)}
+            onChange={e => onFormChange('baseLine', e?.currentTarget?.checked, true)}
           />
           <FormSwitch
             label={'Multiline Mode'}
             labelWidth={9}
             tooltip={'Shows all metrics on the single chart together'}
             value={query.showMultiline}
-            onChange={e => onFormChange('showMultiline', e?.currentTarget?.checked)}
+            onChange={e => onFormChange('showMultiline', e?.currentTarget?.checked, true)}
           />
         </div>
       </div>
@@ -85,7 +76,7 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
         <KeyValueControl
           key={query.metricName}
           dimensionsQuery={query.dimensions}
-          onChangeQuery={value => onFormChange('dimensions', value)}
+          onChangeQuery={value => onFormChange('dimensions', value, true)}
           availableDimensionsNames={availableOptions}
           getValues={getValues}
         />

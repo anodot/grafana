@@ -6,10 +6,11 @@ import { AlertsQuery, ScenarioProps } from '../types';
 export const defaultAlertsQuery: Partial<AlertsQuery> = {};
 
 const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
-  const { query, onChange, onRunQuery, datasource } = props;
+  const { query, onRunQuery, datasource, onFormChange } = props;
   const [subscribersOptions, setSubscribers] = useState([]);
 
   useEffect(() => {
+    /* Get options for Users and Channels selectors */
     onRunQuery();
     Promise.all([datasource.getUsers(), datasource.getChannels()]).then(results => {
       const subscribersDict = {};
@@ -23,12 +24,6 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
     });
   }, []);
 
-  const onFormChange = (key, value, runQuery = false) => {
-    const newQuery = { ...query, [key]: value.value ?? value };
-    onChange(newQuery);
-    onRunQuery();
-  };
-
   return (
     <>
       <div className="gf-form-inline">
@@ -39,7 +34,7 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             label={'Recipient (Users / Channels)'}
             value={query.recipient}
             options={subscribersOptions}
-            onChange={value => onFormChange('recipient', value)}
+            onChange={value => onFormChange('recipient', value, true)}
           />
         </div>
       </div>
@@ -55,7 +50,8 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             onChange={value =>
               onFormChange(
                 'types',
-                value.map(d => d.value)
+                value.map(d => d.value),
+                true
               )
             }
           />
@@ -71,7 +67,8 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             onChange={value =>
               onFormChange(
                 'severities',
-                value.map(d => d.value)
+                value.map(d => d.value),
+                true
               )
             }
           />

@@ -2,7 +2,7 @@ import defaults from 'lodash/defaults';
 import React, { useState, useCallback, useEffect } from 'react';
 import { Alert } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
-import { EditorQuery } from './types';
+import { EditorQuery, OnChangeType } from './types';
 import FormSelect from './components/FormField/FormSelect';
 import { scenarios } from './utils/constants';
 import AlertsQueryEditor from './Alerts/QueryEditor';
@@ -47,15 +47,17 @@ export const QueryEditor = (props: Props) => {
   }, [query.scenario]);
 
   const onFormChange = useCallback(
-    (key, value) => {
+    (key, value, forceRunQuery = false) => {
       const newQuery = { ...query, [key]: value.value ?? value };
       props.onChange(newQuery);
+      forceRunQuery && props.onRunQuery();
     },
     [query]
   );
 
   const editorsProps = {
     ...props,
+    onFormChange,
     metricsList,
   };
 

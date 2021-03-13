@@ -144,13 +144,8 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
     }
   }
 
-  onFormChange = (key, value) => {
-    const newQuery = { ...this.props.query, [key]: value?.value ?? value };
-    this.props.onChange(newQuery);
-  };
-
   render() {
-    const { query, metricsList } = this.props;
+    const { query, metricsList, onFormChange } = this.props;
     const { availableOptions } = this.state;
     return (
       <>
@@ -162,7 +157,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             tooltip={'Select measures.'}
             value={query.metrics}
             options={metricsList}
-            onChange={value => this.onFormChange('metrics', value)}
+            onChange={value => onFormChange('metrics', value)}
           />
         </div>
         <div className="gf-form-inline">
@@ -174,7 +169,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
               tooltip={'Select a Source.'}
               value={query.source}
               options={availableOptions.concat(query.source ? [addLabel(query.source)] : [])}
-              onChange={value => this.onFormChange('source', value)}
+              onChange={value => onFormChange('source', value)}
             />
           </div>
           <div className="gf-form gf-form--grow">
@@ -185,7 +180,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
               tooltip={'Select a Destination.'}
               value={query.destination}
               options={availableOptions.concat(query.destination ? [addLabel(query.destination)] : [])}
-              onChange={value => this.onFormChange('destination', value)}
+              onChange={value => onFormChange('destination', value)}
             />
           </div>
         </div>
@@ -225,7 +220,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             label={'Anomaly Duration'}
             value={query.duration}
             tooltip={'Anomaly Duration'}
-            onChange={value => this.onFormChange('duration', value)}
+            onChange={value => onFormChange('duration', value)}
           />
           <FormSlider
             className="query-segment-operator"
@@ -234,7 +229,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             label={'Anomaly Score'}
             value={query.score}
             tooltip={'Anomaly Score'}
-            onChange={value => this.onFormChange('score', value)}
+            onChange={value => onFormChange('score', value)}
           />
         </div>
         <div className={'gf-form'}>
@@ -247,7 +242,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             tooltip={'Anomalies Delta Type'}
             value={query.deltaType}
             options={deltaTypesOptions}
-            onChange={value => this.onFormChange('deltaType', value)}
+            onChange={value => onFormChange('deltaType', value)}
           />
           <FormInput
             className="query-segment-operator"
@@ -260,7 +255,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             value={query.deltaValue}
             options={deltaTypesOptions}
             type={'number'}
-            onChange={e => this.onFormChange('deltaValue', e?.currentTarget?.value)}
+            onChange={e => onFormChange('deltaValue', e?.currentTarget?.value)}
           />
         </div>
         <div className={'gf-form'}>
@@ -274,7 +269,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             tooltip={'Select Context'}
             value={query.timeScales}
             options={timeScaleOptions}
-            onChange={value => this.onFormChange('timeScales', value)}
+            onChange={value => onFormChange('timeScales', value)}
           />
           <FormSwitch
             disabled={!query.metrics?.length}
@@ -283,7 +278,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             label={'Open Anomalies only'}
             tooltip={'Open Anomalies only'}
             value={query.openedOnly}
-            onChange={e => this.onFormChange('openedOnly', e?.currentTarget?.checked)}
+            onChange={e => onFormChange('openedOnly', e?.currentTarget?.checked)}
           />
           <FormSwitch
             disabled={!query.metrics?.length}
@@ -292,7 +287,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             label={'Show Events'}
             tooltip={'Open Anomalies only'}
             value={query.showEvents}
-            onChange={e => this.onFormChange('showEvents', e?.currentTarget?.checked)}
+            onChange={e => onFormChange('showEvents', e?.currentTarget?.checked)}
           />
         </div>
         <div className={'gf-form'}>
@@ -304,7 +299,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             tooltip={'Anomalies Sort Order'}
             value={query.sortBy}
             options={sortAnomalyOptions}
-            onChange={value => this.onFormChange('sortBy', value)}
+            onChange={value => onFormChange('sortBy', value)}
           />
           <FormSelect
             disabled={!query.metrics?.length}
@@ -315,7 +310,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             tooltip={'Anomaly Direction'}
             value={query.direction}
             options={directionsOptions}
-            onChange={value => this.onFormChange('direction', value)}
+            onChange={value => onFormChange('direction', value)}
           />
         </div>
       </>
