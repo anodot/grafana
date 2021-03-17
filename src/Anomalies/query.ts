@@ -19,8 +19,11 @@ export async function anomalyQuery(query, timeInterval, urlBase, callId) {
     let anomaliesCharts;
 
     if (requestCharts) {
-      const params = { baseline: includeBaseline };
-      const flattenResults = [].concat(...results).slice(0, 10); //TODO: V.2.0 Add paging
+      const params = { baseline: includeBaseline, timeInterval };
+      const flattenResults = []
+        .concat(...results)
+        .filter(a => a.startDate && a.endDate) // some anomalies have not these dates
+        .slice(0, 10); //TODO: V.2.0 Add paging
       const anomalyChartsPromises = flattenResults.map(anomaly => getAnomalyChart(anomaly, params, urlBase));
       anomaliesCharts = await Promise.all(anomalyChartsPromises);
     }
@@ -35,6 +38,7 @@ export async function anomalyQuery(query, timeInterval, urlBase, callId) {
       anomalies: anomalyDatasets,
       anomaliesCharts,
       callId,
+      timeInterval,
       query,
     };
 

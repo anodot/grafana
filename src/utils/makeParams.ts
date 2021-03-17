@@ -73,25 +73,24 @@ export const makeAnomaliesParams = (
   return getQueryParamsUrl(params, '/anomalies');
 };
 
-export function makeAnomalyTimeSeriesParams(anomaly, url, { baseline = false, datapoints = true }) {
+export function makeAnomalyTimeSeriesParams(anomaly, url, { baseline = false, datapoints = true, timeInterval }) {
   const { resolution, startDate, endDate, id, metrics = [] } = anomaly;
-  const metricId = metrics[0]?.id;
+  const metricId = metrics[0]?.id; // TODO: clarify it
   const anomalyDuration = endDate - startDate;
-  const now = Math.floor(Date.now() / 1000);
-  const sinceAnomaly = now - endDate;
+  const endOfRequestedPeriod = timeInterval?.endDate || Math.floor(Date.now() / 1000);
+  const sinceAnomaly = endOfRequestedPeriod - endDate;
   const anodotStartDate = startDate - Math.max(anomalyDuration * 11, sinceAnomaly * 3); // TODO: Define exactly
-
   const params = {
     anomalyId: id,
     startDate: anodotStartDate,
-    endDate: now,
+    endDate: endOfRequestedPeriod,
     resolution,
     metricId,
     startBucketMode: false,
     baseline,
     datapoints,
   };
-  return getQueryParamsUrl(params, url + encodeURI(metricId));
+  return getQueryParamsUrl(params, url + encodeURIComponent(metricId));
 }
 
 export function makeMetricTimeSeriesParams(

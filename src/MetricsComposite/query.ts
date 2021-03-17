@@ -35,6 +35,7 @@ export function metricsCompositeQuery(query, timeInterval, urlBase) {
       showMultiline,
       metricsComposite: metrics.map(m => ({ ...m, meta: metricsParams })),
       meta: metricsParams,
+      timeInterval,
       query,
     };
 

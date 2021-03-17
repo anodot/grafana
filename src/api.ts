@@ -65,7 +65,11 @@ export async function getAnomalyChart(anomaly, params, urlBase) {
   const url = `/anomalies/${anomaly.id}/metric/`;
   return await getBackendSrv()
     .datasourceRequest(getOptions(urlBase, makeAnomalyTimeSeriesParams(anomaly, url, params)))
-    .then(({ data }) => data);
+    .then(({ data }) => data)
+    .catch(error => {
+      console.log('Request Error - Anomaly Chart: ', anomaly, tParams, error);
+      return {};
+    });
 }
 
 export async function getAlerts(query, timeInterval, urlBase) {
