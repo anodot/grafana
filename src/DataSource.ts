@@ -111,7 +111,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       properties: ['what'],
       expression: '',
       filter: [],
-      size: 10000,
+      size: 500,
     };
     try {
       return await getBackendSrv()
@@ -139,7 +139,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
           isExact: true,
         },
       ],
-      size: 10000,
+      size: 1000,
     };
     return await getBackendSrv()
       .datasourceRequest(this.getOptions(url, payload))

@@ -6,11 +6,14 @@ import { MetricsQuery, ScenarioProps } from '../types';
 import difference from 'lodash/difference';
 import FormSwitch from '../components/FormField/FormSwitch';
 import KeyValueControl from '../components/KeyValueControl';
+import FunctionsControl from '../components/FunctionsControl';
+import { functionsMeta } from './searchFunctionsMeta';
 
 export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
   baseLine: true,
-  showMultiline: false,
-  dimensions: [{ key: null, value: null }],
+  showMultiline: true,
+  dimensions: [],
+  functions: {},
 };
 
 const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
@@ -73,13 +76,26 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
         </div>
       </div>
       {query.metricName && (
-        <KeyValueControl
-          key={query.metricName}
-          dimensionsQuery={query.dimensions}
-          onChangeQuery={value => onFormChange('dimensions', value, true)}
-          availableDimensionsNames={availableOptions}
-          getValues={getValues}
-        />
+        <div style={{ marginBottom: 4 }}>
+          <FunctionsControl
+            functionsConfigs={functionsMeta}
+            key={`function-${query.metricName}`}
+            selectedFunctions={query.functions}
+            onChangeFunctions={newFunctions => onFormChange('functions', newFunctions, !('new' in newFunctions))}
+            groupByPropertiesList={propertiesOptions}
+          />
+        </div>
+      )}
+      {query.metricName && (
+        <div style={{ marginBottom: 4 }}>
+          <KeyValueControl
+            key={query.metricName}
+            dimensionsQuery={query.dimensions}
+            onChangeQuery={value => onFormChange('dimensions', value, true)}
+            availableDimensionsNames={availableOptions}
+            getValues={getValues}
+          />
+        </div>
       )}
     </>
   );

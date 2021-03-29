@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react';
 import FormSelect from './FormField/FormSelect';
-import { IconButton } from '@grafana/ui';
+import { Button, IconButton } from '@grafana/ui';
 import { css, cx } from 'emotion';
 
 const iconWrapperClass = `gf-form ${cx(
@@ -11,7 +11,7 @@ const iconWrapperClass = `gf-form ${cx(
   `
 )}`;
 
-const KVRow = ({ dimensionName = {}, dimensionValue = {}, index, length, onAdd, onDelete }) => (
+const KVRow = ({ dimensionName = {}, dimensionValue = {}, onDelete }) => (
   <div className="gf-form-inline">
     <div className="gf-form gf-form--grow">
       <FormSelect
@@ -37,22 +37,9 @@ const KVRow = ({ dimensionName = {}, dimensionValue = {}, index, length, onAdd, 
         isLoading={dimensionValue.isLoading}
       />
     </div>
-    {length > 1 && (
-      <div className={iconWrapperClass}>
-        <IconButton onClick={onDelete} name={'trash-alt'} size={'xl'} surface={'panel'} />
-      </div>
-    )}
-    {index === length - 1 && (
-      <div className={iconWrapperClass}>
-        <IconButton
-          disabled={!dimensionValue.value}
-          onClick={onAdd}
-          name={'plus-circle'}
-          size={'xl'}
-          surface={'panel'}
-        />
-      </div>
-    )}
+    <div className={iconWrapperClass}>
+      <IconButton onClick={onDelete} name={'trash-alt'} size={'xl'} surface={'panel'} />
+    </div>
   </div>
 );
 
@@ -104,6 +91,8 @@ const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensi
     onChangeQuery([...dimensionsQuery, { key: null, value: null }]);
   }, [dimensionsQuery]);
 
+  const isLastEmpty = dimensionsQuery.length && !dimensionsQuery[dimensionsQuery.length - 1]?.value;
+
   return (
     <>
       {dimensionsQuery.map((dimension, i) => (
@@ -122,12 +111,12 @@ const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensi
             onChange: value => onChange(null, value, i),
             isLoading: valuesMap[dimension.key] === 'isLoading',
           }}
-          index={i}
-          length={dimensionsQuery.length}
-          onAdd={onAdd}
           onDelete={() => onDelete(i)}
         />
       ))}
+      <Button disabled={!availableDimensionsNames.length || isLastEmpty} onClick={onAdd}>
+        + Dimension
+      </Button>
     </>
   );
 };

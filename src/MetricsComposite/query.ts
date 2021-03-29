@@ -3,11 +3,12 @@ import { scenarios } from '../utils/constants';
 import { getMetricsComposite } from '../api';
 
 export function metricsCompositeQuery(query, timeInterval, urlBase) {
-  const { metricName, dimensions = [], baseLine, showMultiline } = query;
+  const { metricName, dimensions = [], baseLine, showMultiline, functions } = query;
   const metricsParams = {
     metricName,
     dimensions: dimensions.filter(d => d.value),
     includeBaseline: baseLine,
+    functions,
   };
 
   return getMetricsComposite(metricsParams, { timeInterval }, urlBase).then(({ metrics }) => {
@@ -20,7 +21,7 @@ export function metricsCompositeQuery(query, timeInterval, urlBase) {
       ],
     });
 
-    metrics.forEach(({ dataPoints }, i) => {
+    metrics?.forEach(({ dataPoints }, i) => {
       dataPoints.forEach(([time, value]) => {
         frame.add({
           time: time * 1000,
@@ -33,7 +34,7 @@ export function metricsCompositeQuery(query, timeInterval, urlBase) {
     frame.serieName = scenarios.metricsComposite;
     frame.anodotPayload = {
       showMultiline,
-      metricsComposite: metrics.map(m => ({ ...m, meta: metricsParams })),
+      metricsComposite: metrics?.map(m => ({ ...m, meta: metricsParams })),
       meta: metricsParams,
       timeInterval,
       query,

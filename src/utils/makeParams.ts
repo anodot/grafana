@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { getDateRange, getQ, getQueryParamsUrl } from './helpers';
+import isObject from 'lodash/isObject';
 
 export const makeMetricsPayload = (metricName, filters = []) => ({
   name: {
@@ -75,7 +76,7 @@ export const makeAnomaliesParams = (
 
 export function makeAnomalyTimeSeriesParams(anomaly, url, { baseline = false, datapoints = true, timeInterval }) {
   const { resolution, startDate, endDate, id, metrics = [] } = anomaly;
-  const metricId = metrics[0]?.id; // TODO: clarify it
+  const metricId = metrics[0]?.id;
   const anomalyDuration = endDate - startDate;
   const endOfRequestedPeriod = timeInterval?.endDate || Math.floor(Date.now() / 1000);
   const sinceAnomaly = endOfRequestedPeriod - endDate;
@@ -94,7 +95,7 @@ export function makeAnomalyTimeSeriesParams(anomaly, url, { baseline = false, da
 }
 
 export function makeMetricTimeSeriesParams(
-  { metricName, dimensions = [], includeBaseline = false },
+  { metricName, dimensions = [], includeBaseline = false, functions },
   { timeInterval },
   url
 ) {
@@ -124,6 +125,38 @@ export function makeMetricTimeSeriesParams(
     });
   }
 
+  const metricChild = {
+    children: [],
+    id: 'af44-b2a649812b33', // TODO: how to generate the id?
+    searchObject: { expression },
+    type: 'metric',
+    uiIndex: 0,
+  };
+
+  let root = metricChild;
+
+  if (Object.keys(functions).length) {
+    root = Object.keys(functions)
+      .sort((aName, bName) => functions[bName].index - functions[aName].index)
+      .reduce(
+        (result, currFuncName) =>
+          currFuncName !== 'new' && functions[currFuncName]?.functionName
+            ? {
+                children: [result],
+                function: functions[currFuncName].functionName,
+                id: '882f-d2a8f8cadf29',
+                parameters: Object.keys(functions[currFuncName].parameters).map(name => {
+                  const param = functions[currFuncName].parameters[name];
+                  return { name, value: isObject(param) ? param.value : param };
+                }),
+                type: 'function',
+                uiIndex: 0,
+              }
+            : result,
+        metricChild
+      );
+  }
+
   const payload = {
     composite: {
       name: {
@@ -144,15 +177,7 @@ export function makeMetricTimeSeriesParams(
         type: 'function',
       },
       expressionTree: {
-        root: {
-          searchObject: {
-            expression,
-          },
-          children: [],
-          type: 'metric',
-          id: 'eca1-20ff8e3d1c13',
-          uiIndex: 0,
-        },
+        root,
       },
       scalarTransforms: [
         {
@@ -182,5 +207,5 @@ export const makePropValPayload = (metricName, propertyName) => ({
       isExact: true,
     },
   ],
-  size: 1000,
+  size: 500,
 });

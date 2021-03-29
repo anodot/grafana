@@ -37,7 +37,7 @@ export async function getMetricsData(metricName, filters = [], urlBase, timeInte
     toDate: timeInterval?.endDate,
     maxDataPoints: 500,
     index: 0,
-    size: 1000,
+    size: 500,
   };
   const url = '/metrics/composite/names';
   const payload = makeMetricsPayload(metricName, filters);
@@ -63,9 +63,10 @@ export async function loadAnomalyData(url, urlBase, metricName) {
 
 export async function getAnomalyChart(anomaly, params, urlBase) {
   const url = `/anomalies/${anomaly.id}/metric/`;
+  const { metricsCount } = anomaly;
   return await getBackendSrv()
     .datasourceRequest(getOptions(urlBase, makeAnomalyTimeSeriesParams(anomaly, url, params)))
-    .then(({ data }) => data)
+    .then(({ data }) => ({ ...data, metricsCount }))
     .catch(error => {
       console.log('Request Error - Anomaly Chart: ', anomaly, tParams, error);
       return {};
@@ -90,7 +91,7 @@ export async function getAlerts(query, timeInterval, urlBase) {
     severities: severities.length ? severities : null,
     types,
     startTime: timeInterval?.startDate,
-    size: 100,
+    size: 200,
     subscribers: subscribers.length ? subscribers.join(',') : null,
     channels: channels.length ? channels.join(',') : null,
     order: 'desc',
