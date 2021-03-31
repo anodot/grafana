@@ -1,3 +1,4 @@
+//@ts-nocheck
 import defaults from 'lodash/defaults';
 import React, { useState, useCallback, useEffect } from 'react';
 import { Alert } from '@grafana/ui';

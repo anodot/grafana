@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { MutableDataFrame } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getQ, getQueryParamsUrl } from '../utils/helpers';

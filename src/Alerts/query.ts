@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FieldType, MutableDataFrame } from '@grafana/data';
 import format from 'date-fns/format';
 import { checkIsToday, formatDuration } from '../utils/helpers';

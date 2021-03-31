@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FieldType, MutableDataFrame } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getMetricsComposite } from '../api';
