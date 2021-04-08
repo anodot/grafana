@@ -21,6 +21,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     this.urlApi = url + urlApiPostfix;
     this.urlBase = url;
     this.refreshToken = token;
+    this.id = instanceSettings.id;
 
     getLocationSrv().update({
       query: {
@@ -34,9 +35,10 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
   async testDatasource() {
     /* It runs on 'Test Datasource', and gets the Auth token from Anodot side */
     const defaultErrorMessage = 'Cannot connect to API';
+
     try {
       const response = await getBackendSrv().datasourceRequest({
-        url: `/api/datasources/${id}/resources/access-token`,
+        url: `/api/datasources/${this.id}/resources/access-token`,
       });
 
       if (response.status === 200) {
