@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect } from 'react';
 import { Field, Icon, Input, Tooltip, useTheme } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { MyDataSourceOptions } from './types';
+import { MyDataSourceOptions, MySecureJsonData } from './types';
 import { urlBase, urlGrafanaHelp } from './utils/constants';
 
 interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
@@ -10,7 +10,9 @@ export const ConfigEditor: React.FC<Props> = props => {
   const { colors } = useTheme();
   const protStr = 'https://';
   const { options } = props;
-  const { jsonData } = options;
+  const { jsonData, secureJsonFields } = options;
+
+  const secureJsonData = (options.secureJsonData || {}) as MySecureJsonData;
 
   useEffect(() => {
     props.onOptionsChange({
@@ -24,13 +26,11 @@ export const ConfigEditor: React.FC<Props> = props => {
 
   const onTokenChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = props;
-    const jsonData = {
-      ...options.jsonData,
-      token: event.target.value,
-    };
     onOptionsChange({
       ...options,
-      jsonData,
+      secureJsonData: {
+        token: event.target.value,
+      },
     });
   };
 
@@ -74,7 +74,8 @@ export const ConfigEditor: React.FC<Props> = props => {
           type="password"
           css={''}
           width={30}
-          value={jsonData.token}
+          placeholder={secureJsonFields?.token ? 'configured' : ''}
+          value={secureJsonData.token ?? ''}
           suffix={
             <Tooltip
               content={
