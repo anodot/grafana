@@ -35,24 +35,12 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     /* It runs on 'Test Datasource', and gets the Auth token from Anodot side */
     const defaultErrorMessage = 'Cannot connect to API';
     try {
-      const response = await fetch(this.urlApi + '/access-token', {
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
-        // referrer: '',
-        //referrerPolicy: 'no-referrer',
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: JSON.stringify({
-          refreshToken: this.refreshToken,
-        }), // body data type must match "Content-Type" header
+      const response = await getBackendSrv().datasourceRequest({
+        url: `/api/datasources/${id}/resources/access-token`,
       });
 
       if (response.status === 200) {
-        const token = await response.json();
+        const token = await response.data;
         localStorage.setItem(localStorageKey, token);
         return {
           status: 'success',

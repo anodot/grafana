@@ -61,7 +61,6 @@ export interface ScenarioProps<TsQuery extends EditorQuery> extends QueryEditorP
  * These are options configured for each DataSource instance
  */
 export interface MyDataSourceOptions extends DataSourceJsonData {
-  token?: string;
   url?: string;
   callId?: number;
   timeInterval?: number[];
@@ -73,6 +72,7 @@ export interface MyDataSourceOptions extends DataSourceJsonData {
 export interface MySecureJsonData {
   password?: string;
   apiToken?: string;
+  token?: string;
 }
 
 export interface TimeFilter {

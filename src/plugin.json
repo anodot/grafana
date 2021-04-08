@@ -4,6 +4,8 @@
   "id": "anodot-datasource",
   "metrics": true,
   "logs": true,
+  "backend": true,
+  "executable": "gpx_anodot-datasource",
   "info": {
     "description": "Datasource for anodot-panel plugin",
     "author": {
@@ -21,10 +23,12 @@
         "url": "https://anodot.com"
       }
     ],
-    "screenshots": [{
-      "name": "Anodot Dashboard",
-      "path": "img/screenshot.png"
-    }],
+    "screenshots": [
+      {
+        "name": "Anodot Dashboard",
+        "path": "img/screenshot.png"
+      }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
