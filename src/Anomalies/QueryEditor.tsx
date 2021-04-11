@@ -18,7 +18,7 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   includeBaseline: true,
   sortBy: 'score',
   openedOnly: false,
-  metrics: []
+  metrics: [],
 };
 
 const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {

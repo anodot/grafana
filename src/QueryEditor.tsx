@@ -19,7 +19,7 @@ const scenarioOptions = {
 };
 
 const defaultQuery: Partial<EditorQuery> = {
-  scenario: scenarios.alerts
+  scenario: scenarios.alerts,
 };
 
 export const QueryEditor = (props: QEditorProps) => {
