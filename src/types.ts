@@ -8,6 +8,8 @@ export interface EditorQuery extends DataQuery {
   metricsList: object[];
 }
 
+export type QEditorProps = QueryEditorProps<DataSource, EditorQuery>;
+
 export interface TopologyQuery extends EditorQuery {
   deltaValue: number;
   duration: number[];

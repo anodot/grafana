@@ -1,7 +1,7 @@
-// @ts-nocheck
-import { urlBase, timeFormat, splitSign } from './constants';
+//@ts-nocheck
+import { splitSign } from './constants';
 import { isEqual } from 'lodash';
-import TimeFilter from '../types.ts';
+import { TimeFilter } from '../types';
 import { TimeRange } from '@grafana/data/types/time';
 // export const getSourcesDestinationsLists = (datasets = []) => {
 //     // takes first record and extracts sources and destinations for Select options
@@ -27,16 +27,16 @@ import { TimeRange } from '@grafana/data/types/time';
 
 // (destination_service_name)<----------------> (source_workload || source_canonical_service)
 
-const getNodeId: string = (directions, directionKey, context = []) => {
+const getNodeId = (directions: object, directionKey: string, context: string[] = []): string => {
   /* node  is a unique combination of direction and context */
   const res = {
     name: directions[directionKey],
   };
-  context.forEach(key => {
-    if (!directions[key]) {
-      return null;
-    } /* we don't need nodes with any null values */
-    res[key] = directions[key] || 'null';
+  context.forEach((key: string) => {
+    /* we don't need nodes with any null values */
+    if (directions[key]) {
+      res[key] = directions[key] || 'null';
+    }
   });
   return JSON.stringify(res);
 };

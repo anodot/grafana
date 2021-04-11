@@ -2,8 +2,7 @@
 import defaults from 'lodash/defaults';
 import React, { useState, useCallback, useEffect } from 'react';
 import { Alert } from '@grafana/ui';
-import { QueryEditorProps } from '@grafana/data';
-import { EditorQuery, OnChangeType } from './types';
+import { EditorQuery, QEditorProps } from './types';
 import FormSelect from './components/FormField/FormSelect';
 import { scenarios } from './utils/constants';
 import AlertsQueryEditor from './Alerts/QueryEditor';
@@ -11,7 +10,6 @@ import AnomaliesQueryEditor from './Anomalies/QueryEditor';
 import TopologyQueryEditor from './Topology/QueryEditor';
 import MetricsComposite from './MetricsComposite/QueryEditor';
 import { arrayToOptions } from './utils/helpers';
-import { DataSource } from './DataSource';
 
 const scenarioOptions = {
   [scenarios.alerts]: { label: 'Alerts', value: scenarios.alerts },
@@ -21,12 +19,10 @@ const scenarioOptions = {
 };
 
 const defaultQuery: Partial<EditorQuery> = {
-  scenario: scenarios.alerts,
+  scenario: scenarios.alerts
 };
 
-type Props = QueryEditorProps<DataSource, EditorQuery>;
-
-export const QueryEditor = (props: Props) => {
+export const QueryEditor = (props: QEditorProps) => {
   const [metricsList, setMetricsList] = useState([]);
   const [errorAlert, setErrorAlert] = useState('');
   const query = defaults(props.query, defaultQuery);

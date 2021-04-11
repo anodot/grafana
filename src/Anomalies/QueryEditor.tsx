@@ -18,6 +18,7 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   includeBaseline: true,
   sortBy: 'score',
   openedOnly: false,
+  metrics: []
 };
 
 const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
@@ -39,7 +40,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className={'gf-form'}>
         <FormSlider
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           inputWidth={0}
           label={'Anomaly Duration'}
           value={query.duration}
@@ -47,7 +48,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           onChange={value => onFormChange('duration', value, true)}
         />
         <FormSlider
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           inputWidth={0}
           label={'Anomaly Score'}
           value={query.score}
@@ -57,7 +58,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className={'gf-form'}>
         <FormSelect
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           isClearable
           inputWidth={0}
           label={'Anomalies Delta Type'}
@@ -67,18 +68,18 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           onChange={value => onFormChange('deltaType', value, true)}
         />
         <FormInput
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           inputWidth={0}
           label={'Anomalies Delta Value'}
           tooltip={'Anomalies Delta Value'}
           value={query.deltaValue}
           type={'number'}
-          onChange={e => onFormChange('deltaValue', e?.currentTarget?.value, true)}
+          onChange={e => onFormChange('deltaValue', e.currentTarget.value, true)}
         />
       </div>
       <div className={'gf-form'}>
         <FormSelect
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           isClearable
           isMulti
           inputWidth={0}
@@ -91,7 +92,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className={'gf-form'}>
         <FormSelect
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           inputWidth={0}
           label={'Anomalies Sort Order'}
           tooltip={'Anomalies Sort Order'}
@@ -100,7 +101,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           onChange={value => onFormChange('sortBy', value, true)}
         />
         <FormSelect
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           isMulti
           inputWidth={0}
           label={'Anomaly Direction'}
@@ -112,27 +113,27 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className="gf-form gf-form--grow">
         <FormSwitch
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           label={'Open Anomalies only'}
           tooltip={'Open Anomalies only'}
           value={query.openedOnly}
-          onChange={e => onFormChange('openedOnly', e?.currentTarget?.checked, true)}
+          onChange={e => onFormChange('openedOnly', e.currentTarget.checked, true)}
         />
         <FormSwitch
           labelWidth={0}
-          disabled={!query.metrics?.length}
+          disabled={!query.metrics.length}
           label={'Request Charts Data'}
           tooltip={'Show Anomalies Charts or Anomalies List'}
           value={query.requestCharts}
-          onChange={e => onFormChange('requestCharts', e?.currentTarget?.checked, true)}
+          onChange={e => onFormChange('requestCharts', e.currentTarget.checked, true)}
         />
         <FormSwitch
           labelWidth={0}
-          disabled={!query.metrics?.length || !query.requestCharts}
+          disabled={!query.metrics.length || !query.requestCharts}
           label={'Include Baseline'}
           tooltip={'Include Baseline'}
           value={query.includeBaseline}
-          onChange={e => onFormChange('includeBaseline', e?.currentTarget?.checked, true)}
+          onChange={e => onFormChange('includeBaseline', e.currentTarget.checked, true)}
         />
       </div>
     </>
