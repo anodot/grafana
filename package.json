@@ -8,7 +8,7 @@
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
-  "author": "ua@ulin@gmail.com",
+  "author": "ua.ulin@gmail.com",
   "license": "Apache-2.0",
   "devDependencies": {
     "@grafana/data": "7.0.1",
