@@ -58,6 +58,16 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
 
   componentDidMount() {
     this.setState({ isPristine: false });
+    const { metrics } = this.props.query;
+    if (metrics?.length) {
+      /** Request available propertyNames by selected metrics */
+      const promises = metrics.map(({ value }) => this.props.datasource?.getPropertiesDict(value));
+      Promise.all(promises).then(results => {
+        const properties = uniq([].concat(...results.map(d => d.properties))).sort();
+        // const propertiesOptions = properties.map(value => ({ label: value, value }));
+        this.setState({ properties });
+      });
+    }
   }
 
   componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<TopologyQueryState>, snapshot?: any) {

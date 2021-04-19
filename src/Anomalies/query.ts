@@ -73,9 +73,9 @@ export function makeAnomaliesPromises(query, defaultPromises, timeInterval, urlB
         ...timeInterval,
         index: 0,
         size: 10, //TODO: V.2.0 Add paging
-        score: score[0] / 100,
+        score: (score[0] ?? score) / 100,
         durationUnit: smallestTimescale.meta[1],
-        durationValue: duration[0],
+        durationValue: duration[0] ?? duration,
         resolution: timeScales.map(t => t.meta[2]),
         anomalyType: 'all',
         bookmark: '',
