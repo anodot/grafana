@@ -101,7 +101,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       properties: ['what'],
       expression: '',
       filter: [],
-      size: 500,
+      size: 1000000,
     };
     try {
       return await getBackendSrv()

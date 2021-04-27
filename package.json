@@ -1,12 +1,13 @@
 {
   "name": "anodot-datasource",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Anodot Grafana Datasource for anodot-panel plugin",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
-    "watch": "grafana-toolkit plugin:dev --watch"
+    "watch": "grafana-toolkit plugin:dev --watch",
+    "release": "bash release.sh"
   },
   "author": "ua.ulin@gmail.com",
   "license": "Apache-2.0",
