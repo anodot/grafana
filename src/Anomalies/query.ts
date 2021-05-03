@@ -14,7 +14,7 @@ export async function anomalyQuery(query, timeInterval, urlBase, callId) {
   return Promise.all(anomalyDataPromises).then(async results => {
     const anomalyDatasets = metrics.map(({ value }, i) => ({
       metricName: value,
-      dataSet: results[i]?.map(a => ({ ...a, metricName: value })),
+      dataSet: results[i]?.map(a => ({ ...a, metricName: value })) || [],
     }));
 
     let anomaliesCharts;

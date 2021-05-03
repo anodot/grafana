@@ -18,6 +18,7 @@ import { addLabel } from '../utils/helpers';
 import FormSwitch from '../components/FormField/FormSwitch';
 import FormInput from '../components/FormField/FormInput';
 import { SelectableValue } from '@grafana/data';
+import MetricSearchField from '../components/MetricSearchField';
 
 export const defaultTopologyQuery: Partial<TopologyQuery> = {
   deltaValue: 5,
@@ -156,25 +157,23 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
   }
 
   render() {
-    const { query, metricsList, onFormChange } = this.props;
+    const { query, datasource, onFormChange } = this.props;
     const { availableOptions } = this.state;
+
     return (
       <>
         <div className="gf-form gf-form--grow">
-          <FormSelect
+          <MetricSearchField
             isMulti
-            inputWidth={0}
-            label={'Measures'}
-            tooltip={'Select measures.'}
+            getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
             value={query.metrics}
-            options={metricsList}
-            onChange={value => onFormChange('metrics', value)}
+            onChange={value => onFormChange('metrics', value, true)}
           />
         </div>
         <div className="gf-form-inline">
           <div className="gf-form gf-form--grow">
             <FormSelect
-              disabled={!query.metrics.length}
+              disabled={!query.metrics?.length}
               inputWidth={0}
               label={'Source'}
               tooltip={'Select a Source.'}
@@ -185,7 +184,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
           </div>
           <div className="gf-form gf-form--grow">
             <FormSelect
-              disabled={!query.metrics.length}
+              disabled={!query.metrics?.length}
               inputWidth={0}
               label={'Destination'}
               tooltip={'Select a Destination.'}

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import FormSelect from './FormField/FormSelect';
 import { Button, IconButton } from '@grafana/ui';
 import { css, cx } from 'emotion';
+import { addLabel } from '../utils/helpers';
 
 const iconWrapperClass = `gf-form ${cx(
   css`
@@ -19,7 +20,7 @@ const KVRow = ({ dimensionName = {}, dimensionValue = {}, onDelete }) => (
         label={dimensionName.label}
         tooltip={dimensionName.tooltip}
         inputWidth={0}
-        value={dimensionName.value}
+        value={addLabel(dimensionName.value)}
         options={dimensionName.options}
         onChange={dimensionName.onChange}
       />
@@ -31,7 +32,7 @@ const KVRow = ({ dimensionName = {}, dimensionValue = {}, onDelete }) => (
         tooltip={dimensionValue.tooltip}
         labelWidth={1}
         inputWidth={0}
-        value={dimensionValue.value}
+        value={addLabel(dimensionValue.value)}
         options={dimensionValue.options}
         onChange={dimensionValue.onChange}
         isLoading={dimensionValue.isLoading}
@@ -45,8 +46,9 @@ const KVRow = ({ dimensionName = {}, dimensionValue = {}, onDelete }) => (
 
 const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensionsNames, getValues }) => {
   const [valuesMap, setValuesMap] = useState({});
+
   useEffect(() => {
-    /* Requests values options for every new unknown key */
+    /** Requests values options for every new unknown key */
     const keys = dimensionsQuery.map(d => d.key);
     keys.forEach(k => {
       if (!valuesMap[k]) {
@@ -70,7 +72,8 @@ const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensi
       const newQuery = [...dimensionsQuery];
       const newDimension = {
         key: key?.label || newQuery[i]?.key,
-        value: value?.label || newQuery[i]?.value,
+        /** if key is changing - reset the value to '', else set value */
+        value: value?.label || '',
       };
       newQuery[i] = newDimension;
       onChangeQuery(newQuery);

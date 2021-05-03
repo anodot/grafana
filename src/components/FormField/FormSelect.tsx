@@ -25,6 +25,7 @@ interface Props {
   isMulti?: boolean;
   isClearable?: boolean;
   onChange(event?: any): any;
+  onInputChange?(str: string): any;
 }
 
 /**

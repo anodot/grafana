@@ -5,7 +5,6 @@ export type OnChangeType = (key: string, value: any, runQuery?: boolean) => void
 
 export interface EditorQuery extends DataQuery {
   scenario: string;
-  metricsList: object[];
 }
 
 export type QEditorProps = QueryEditorProps<DataSource, EditorQuery>;
@@ -49,7 +48,7 @@ export interface AnomalyQuery extends EditorQuery {
   requestCharts: boolean;
   includeBaseline: boolean;
   sortBy: string;
-  metrics: object[];
+  metrics: SelectableValue[];
   openedOnly: boolean;
 }
 

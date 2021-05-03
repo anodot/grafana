@@ -3,6 +3,7 @@ import FormSelect from '../components/FormField/FormSelect';
 import FormSlider from '../components/FormField/FormSlider';
 import FormInput from '../components/FormField/FormInput';
 import FormSwitch from '../components/FormField/FormSwitch';
+import MetricSearchField from '../components/MetricSearchField';
 import defaults from 'lodash/defaults';
 import { AnomalyQuery, ScenarioProps } from '../types';
 import { deltaTypesOptions, directionsOptions, sortAnomalyOptions, timeScaleOptions } from '../utils/constants';
@@ -22,19 +23,16 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
 };
 
 const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
-  const { metricsList, onFormChange } = props;
+  const { datasource, onFormChange } = props;
   const query = defaults(props.query, defaultAnomaliesQuery);
 
   return (
     <>
       <div className="gf-form gf-form--grow">
-        <FormSelect
+        <MetricSearchField
           isMulti
-          inputWidth={0}
-          label={'Measures'}
-          tooltip={'Select measures.'}
+          getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
           value={query.metrics}
-          options={metricsList}
           onChange={value => onFormChange('metrics', value, true)}
         />
       </div>

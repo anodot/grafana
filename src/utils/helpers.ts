@@ -452,10 +452,10 @@ export function readTime(time: TimeRange, startName = 'startDate', endName = 'en
   };
 }
 
-export const arrayToOptions = (arr = [], key) =>
+export const arrayToOptions = (arr: any[] = [], key?) =>
   arr.map(item => {
     const value = key ? item[key] : item;
     return { label: value, value };
   });
 
-export const addLabel = value => ({ label: value, value });
+export const addLabel = value => (value?.label ? value : { label: value, value });

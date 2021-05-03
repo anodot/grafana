@@ -9,7 +9,6 @@ import AlertsQueryEditor from './Alerts/QueryEditor';
 import AnomaliesQueryEditor from './Anomalies/QueryEditor';
 import TopologyQueryEditor from './Topology/QueryEditor';
 import MetricsComposite from './MetricsComposite/QueryEditor';
-import { arrayToOptions } from './utils/helpers';
 
 const scenarioOptions = {
   [scenarios.alerts]: { label: 'Alerts', value: scenarios.alerts },
@@ -23,39 +22,24 @@ const defaultQuery: Partial<EditorQuery> = {
 };
 
 export const QueryEditor = (props: QEditorProps) => {
-  const [metricsList, setMetricsList] = useState([]);
-  const [errorAlert, setErrorAlert] = useState('');
   const query = defaults(props.query, defaultQuery);
-
-  useEffect(() => {
-    /* Request Metrics Options onMount*/
-    props.datasource.getMetricsOptions().then(metrics => {
-      if (metrics?.error) {
-        setErrorAlert(metrics.error.message);
-      } else {
-        setMetricsList(arrayToOptions(metrics, 'value'));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    /* try to run the query immediately after scenario was changed */
-    props.onRunQuery();
-  }, [query.scenario]);
 
   const onFormChange = useCallback(
     (key, value, forceRunQuery = false) => {
-      const newQuery = { ...query, [key]: value.value ?? value };
+      const newQuery = { ...query, [key]: value?.value ?? value ?? '' };
       props.onChange(newQuery);
       forceRunQuery && props.onRunQuery();
     },
     [query]
   );
 
+  const onScenarioChange = useCallback(scenario => {
+    props.onChange({ scenario: scenario.value });
+  }, []);
+
   const editorsProps = {
     ...props,
     onFormChange,
-    metricsList,
   };
 
   let editor;
@@ -87,10 +71,9 @@ export const QueryEditor = (props: QEditorProps) => {
           tooltip={'Select scenario'}
           value={query.scenario}
           options={Object.values(scenarioOptions)}
-          onChange={value => onFormChange('scenario', value)}
+          onChange={onScenarioChange}
         />
       </div>
-      {errorAlert && <Alert title={errorAlert} severity={'error'} />}
       {editor}
     </div>
   );

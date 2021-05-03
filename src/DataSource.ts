@@ -95,13 +95,13 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
         };
   }
 
-  async getMetricsOptions() {
+  async getMetricsOptions(expression = '') {
     const url = `/search/metrics/props`;
     const payload = {
       properties: ['what'],
-      expression: '',
+      expression,
       filter: [],
-      size: 1000000,
+      size: 50,
     };
     try {
       return await getBackendSrv()
@@ -112,23 +112,27 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
         error: {
           message: error?.data?.message,
           status: error?.status,
+          error,
         },
       };
     }
   }
 
-  async getPropertiesDict(metric) {
+  async getPropertiesDict(metric?: string, expression: string = '') {
     const url = `/search/metrics/propandval`;
+    const filter = !metric
+      ? []
+      : [
+          {
+            type: 'property',
+            key: 'what',
+            value: metric,
+            isExact: true,
+          },
+        ];
     const payload = {
-      expression: '',
-      filter: [
-        {
-          type: 'property',
-          key: 'what',
-          value: metric,
-          isExact: true,
-        },
-      ],
+      expression,
+      filter,
       size: 1000,
     };
     return await getBackendSrv()
