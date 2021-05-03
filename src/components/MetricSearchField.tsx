@@ -7,7 +7,7 @@ import { SelectableValue } from '@grafana/data';
 interface SearchProps {
   value: string | SelectableValue[];
   onChange: (v: any) => void;
-  getMetricsOptions: (str: string) => Promise<{ value: string }[]>;
+  getMetricsOptions: (str: string) => Promise<Array<{ value: string }>>;
   isMulti?: boolean;
   isClearable?: boolean;
 }

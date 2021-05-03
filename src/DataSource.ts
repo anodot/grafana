@@ -118,7 +118,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     }
   }
 
-  async getPropertiesDict(metric?: string, expression: string = '') {
+  async getPropertiesDict(metric, expression = '') {
     const url = `/search/metrics/propandval`;
     const filter = !metric
       ? []
