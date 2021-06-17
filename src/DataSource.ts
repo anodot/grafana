@@ -32,9 +32,25 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     });
   }
 
+  async makeRequest(url, payload, params, thenCallback) {
+    const defaultClb = ({ data }) => data;
+    let storedToken = localStorage.getItem(localStorageKey);
+    if (!storedToken) {
+      const tokenResponse = await this.testDatasource();
+      const { isError, message } = tokenResponse;
+      if (isError) {
+        throw new Error(message);
+      }
+    }
+
+    return await getBackendSrv()
+      .datasourceRequest(this.getOptions(url, payload, params))
+      .then(thenCallback || defaultClb);
+  }
+
   async testDatasource() {
     /* It runs on 'Test Datasource', and gets the Auth token from Anodot side */
-    const defaultErrorMessage = 'Cannot connect to API';
+    const defaultErrorMessage = 'Cannot connect to API. Please check your credentials in datasource config';
 
     try {
       const response = await getBackendSrv().datasourceRequest({
@@ -50,6 +66,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
         };
       } else {
         return {
+          isError: true,
           status: 'error',
           message: response.statusText ? response.statusText : defaultErrorMessage,
         };
@@ -149,16 +166,12 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
 
   async getUsers() {
     const url = '/users';
-    return await getBackendSrv()
-      .datasourceRequest(this.getOptions(url))
-      .then(({ data }) => data);
+    return await this.makeRequest(url);
   }
 
   async getChannels() {
     const url = '/channels';
-    return await getBackendSrv()
-      .datasourceRequest(this.getOptions(url))
-      .then(({ data }) => data);
+    return this.makeRequest(url);
   }
 
   async getMetricsValues(metricName) {
@@ -179,6 +192,15 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
   async query(options: DataQueryRequest<EditorQuery>): Promise<DataQueryResponse> {
     this.callId = Math.floor(Math.random() * 1000000);
     this.timeInterval = readTime(options.range!);
+
+    let storedToken = localStorage.getItem(localStorageKey);
+    if (!storedToken) {
+      const tokenResponse = await this.testDatasource();
+      const { isError, message } = tokenResponse;
+      if (isError) {
+        throw new Error(message);
+      }
+    }
 
     const promises = options.targets.map(query => {
       query.timeInterval = this.timeInterval;

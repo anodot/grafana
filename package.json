@@ -1,6 +1,6 @@
 {
   "name": "anodot-datasource",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Anodot Grafana Datasource for anodot-panel plugin",
   "scripts": {
     "build": "grafana-toolkit plugin:build",

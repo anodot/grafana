@@ -26,10 +26,12 @@ export const ConfigEditor: React.FC<Props> = props => {
 
   const onTokenChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = props;
+    /* Trim " quotes around the string if it was copied wrong from the Anodot website */
+    const token = event.target.value; // event.target.value?.replace('"', '');
     onOptionsChange({
       ...options,
       secureJsonData: {
-        token: event.target.value,
+        token: token?.replace(/"/g, ''),
       },
     });
   };
