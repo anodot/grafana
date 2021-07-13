@@ -3,12 +3,13 @@ import { DataQueryRequest, DataQueryResponse, DataSourceApi, DataSourceInstanceS
 import { getBackendSrv, getLocationSrv } from '@grafana/runtime';
 import { MyDataSourceOptions, EditorQuery } from './types';
 import { getQueryParamsUrl, readTime } from './utils/helpers';
-import { scenarios, urlApiPostfix } from './utils/constants';
+import { scenarios } from './utils/constants';
 import { makePropValPayload } from './utils/makeParams';
 import { metricsCompositeQuery } from './MetricsComposite/query';
 import { alertsQuery } from './Alerts/query';
 import { anomalyQuery } from './Anomalies/query';
 import { topologyQuery } from './Topology/query';
+import { segmentInitialize, getAnalyticsData } from './segmentInititalize';
 
 const localStorageKey = 'andt-token';
 
@@ -17,24 +18,18 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
-    const { token, url } = instanceSettings?.jsonData;
-    this.urlApi = url + urlApiPostfix;
+    const { url, apiPostfix } = instanceSettings?.jsonData;
+    this.urlApi = url + apiPostfix;
     this.urlBase = url;
-    this.refreshToken = token;
     this.id = instanceSettings.id;
-
-    getLocationSrv().update({
-      query: {
-        'var-service': 'billing',
-      },
-      partial: true,
-      replace: true,
-    });
+    this.analyticsData = getAnalyticsData(instanceSettings);
+    this.localStorageKey = `${instanceSettings.id}-${localStorageKey}`;
+    segmentInitialize();
   }
 
   async makeRequest(url, payload, params, thenCallback) {
     const defaultClb = ({ data }) => data;
-    let storedToken = localStorage.getItem(localStorageKey);
+    let storedToken = localStorage.getItem(this.localStorageKey);
     if (!storedToken) {
       const tokenResponse = await this.testDatasource();
       const { isError, message } = tokenResponse;
@@ -52,6 +47,8 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     /* It runs on 'Test Datasource', and gets the Auth token from Anodot side */
     const defaultErrorMessage = 'Cannot connect to API. Please check your credentials in datasource config';
 
+    analytics.track('grafana', { category: 'anodot-datasource signIn', ...this.analyticsData });
+
     try {
       const response = await getBackendSrv().datasourceRequest({
         url: `/api/datasources/${this.id}/resources/access-token`,
@@ -59,7 +56,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
 
       if (response.status === 200) {
         const token = await response.data;
-        localStorage.setItem(localStorageKey, token);
+        localStorage.setItem(this.localStorageKey, token);
         return {
           status: 'success',
           message: "You've  successfully authorized Anodot datasource",
@@ -96,7 +93,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     const fullUrl = this.urlApi + (!params ? url : getQueryParamsUrl(params, url));
     const headers = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem(localStorageKey)}`,
+      Authorization: `Bearer ${localStorage.getItem(this.localStorageKey)}`,
     };
     return payload
       ? {
@@ -193,7 +190,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     this.callId = Math.floor(Math.random() * 1000000);
     this.timeInterval = readTime(options.range!);
 
-    let storedToken = localStorage.getItem(localStorageKey);
+    let storedToken = localStorage.getItem(this.localStorageKey);
     if (!storedToken) {
       const tokenResponse = await this.testDatasource();
       const { isError, message } = tokenResponse;
@@ -206,31 +203,26 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       query.timeInterval = this.timeInterval;
       switch (query.scenario) {
         case scenarios.alerts: {
-          return alertsQuery(query, this.timeInterval, this.urlBase);
+          return alertsQuery(query, this);
         }
         case scenarios.metricsComposite: {
-          return metricsCompositeQuery(query, this.timeInterval, this.urlBase);
+          return metricsCompositeQuery(query, this);
         }
 
         case scenarios.topology: {
           const setFrameToDataSource = frame => (this.lastTopologyFrame = frame);
-          return topologyQuery(
-            query,
-            this.timeInterval,
-            this.urlBase,
-            this.callId,
-            this.lastTopologyFrame,
-            setFrameToDataSource
-          );
+          return topologyQuery(query, setFrameToDataSource, this);
         }
         case scenarios.anomalies: {
-          return anomalyQuery(query, this.timeInterval, this.urlBase, this.callId);
+          return anomalyQuery(query, this);
         }
         default:
           return new Promise(() => null);
       }
     });
 
-    return Promise.all(promises).then(data => ({ data }));
+    return Promise.all(promises).then(data => {
+      return { data: [].concat(...data) };
+    });
   }
 }

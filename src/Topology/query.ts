@@ -4,7 +4,8 @@ import { makeAnomaliesPromises } from '../Anomalies/query';
 import { MutableDataFrame } from '@grafana/data';
 import { getEvents, getMetricsData } from '../api';
 
-export function topologyQuery(query, timeInterval, urlBase, callId, lastTopologyFrame, setFrameToDataSource) {
+export function topologyQuery(query, setFrameToDataSource, datasource) {
+  const { timeInterval, urlBase, callId, lastTopologyFrame } = datasource;
   const { metrics, requestsStrategy, showEvents } = query;
   if (!metrics?.length) {
     return new Promise(() => null);
@@ -23,13 +24,13 @@ export function topologyQuery(query, timeInterval, urlBase, callId, lastTopology
   let eventsDataPromise = [];
 
   if (requestAll) {
-    metricDataPromises = metrics.map(({ value }) => getMetricsData(value, [], urlBase, timeInterval));
+    metricDataPromises = metrics.map(({ value }) => getMetricsData(value, [], datasource));
   }
   if (requestAll || requestAnomaliesOnly) {
-    anomalyDataPromises = makeAnomaliesPromises(query, anomalyDataPromises, timeInterval, urlBase);
+    anomalyDataPromises = makeAnomaliesPromises(query, anomalyDataPromises, datasource);
   }
   if (showEvents && (requestAll || requestEventsOnly)) {
-    eventsDataPromise = [getEvents(urlBase, timeInterval)];
+    eventsDataPromise = [getEvents(datasource)];
   }
 
   return Promise.all((metricDataPromises || []).concat(anomalyDataPromises, eventsDataPromise)).then(results => {

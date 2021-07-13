@@ -3,7 +3,8 @@ import { FieldType, MutableDataFrame } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getMetricsComposite } from '../api';
 
-export function metricsCompositeQuery(query, timeInterval, urlBase) {
+export function metricsCompositeQuery(query, datasource) {
+  const { timeInterval, urlBase } = datasource;
   const { metricName, dimensions = [], baseLine, showMultiline, functions } = query;
   const metricsParams = {
     metricName,
@@ -12,28 +13,38 @@ export function metricsCompositeQuery(query, timeInterval, urlBase) {
     functions,
   };
 
-  return getMetricsComposite(metricsParams, { timeInterval }, urlBase).then(({ metrics }) => {
-    const frame = new MutableDataFrame({
+  return getMetricsComposite(metricsParams, { timeInterval }, datasource).then(({ metrics }) => {
+    const frameSource = {
       refId: query.refId,
       fields: [
         { name: 'time', type: FieldType.time },
         { name: 'value', type: FieldType.number },
         { name: 'name', type: FieldType.string },
       ],
-    });
+    };
+    const frames = [];
 
-    metrics?.forEach(({ dataPoints }, i) => {
+    const singleFrame = new MutableDataFrame(frameSource);
+
+    metrics?.forEach(({ dataPoints, name }, i) => {
+      const frame = new MutableDataFrame(frameSource);
       dataPoints.forEach(([time, value]) => {
         frame.add({
           time: time * 1000,
           value,
-          name: 'chart-' + i,
+          name,
+        });
+        singleFrame.add({
+          time: time * 1000,
+          value,
+          name,
         });
       });
+      frames.push(frame);
     });
 
-    frame.serieName = scenarios.metricsComposite;
-    frame.anodotPayload = {
+    singleFrame.serieName = scenarios.metricsComposite;
+    singleFrame.anodotPayload = {
       showMultiline,
       metricsComposite: metrics?.map(m => ({ ...m, meta: metricsParams })),
       meta: metricsParams,
@@ -41,6 +52,6 @@ export function metricsCompositeQuery(query, timeInterval, urlBase) {
       query,
     };
 
-    return frame;
+    return singleFrame; //frames; TODO: return multiple series works well with native Graph but requires changes on anodot-panel side
   });
 }

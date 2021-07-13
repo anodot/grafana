@@ -5,8 +5,9 @@ import { checkIsToday, formatDuration } from '../utils/helpers';
 import { scenarios } from '../utils/constants';
 import { getAlerts } from '../api';
 
-export function alertsQuery(query, timeInterval, urlBase) {
-  return getAlerts(query, timeInterval, urlBase).then(({ alertGroups }) => {
+export function alertsQuery(query, datasource) {
+  const { urlBase } = datasource;
+  return getAlerts(query, datasource).then(({ alertGroups }) => {
     const flattenAlerts = [].concat(...alertGroups.map(group => group?.alerts));
     const frame = new MutableDataFrame({
       /* TODO: It can be used in native Table panel only, but still needs to be

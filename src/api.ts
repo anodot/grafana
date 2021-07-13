@@ -2,11 +2,9 @@
 import { getBackendSrv } from '@grafana/runtime';
 import { getQueryParamsUrl } from './utils/helpers';
 import { makeAnomalyTimeSeriesParams, makeMetricsPayload, makeMetricTimeSeriesParams } from './utils/makeParams';
-import { urlApiPostfix } from './utils/constants';
 
-const localStorageKey = 'andt-token';
-
-export async function getEvents(urlBase, timeInterval) {
+export async function getEvents(ds) {
+  const { timeInterval } = ds;
   const params = {
     fromDate: timeInterval?.startDate,
     toDate: timeInterval?.endDate,
@@ -24,14 +22,15 @@ export async function getEvents(urlBase, timeInterval) {
   const url = getQueryParamsUrl(params, '/user-events/execute');
 
   return await getBackendSrv()
-    .datasourceRequest(getOptions(urlBase, url, payload))
+    .datasourceRequest(getOptions(ds, url, payload))
     .then(({ data }) => {
       const result = data.events?.map(e => ({ ...e, startDate: e.date, isEvent: true }));
       result.type = 'events';
       return result;
     });
 }
-export async function getMetricsData(metricName, filters = [], urlBase, timeInterval) {
+export async function getMetricsData(metricName, filters = [], ds) {
+  const { timeInterval } = ds;
   const params = {
     fromDate: timeInterval?.startDate,
     toDate: timeInterval?.endDate,
@@ -42,7 +41,7 @@ export async function getMetricsData(metricName, filters = [], urlBase, timeInte
   const url = '/metrics/composite/names';
   const payload = makeMetricsPayload(metricName, filters);
   return await getBackendSrv()
-    .datasourceRequest(getOptions(urlBase, url, payload, params))
+    .datasourceRequest(getOptions(ds, url, payload, params))
     .then(({ data }) => {
       const result = data?.metrics || [];
       result.type = 'metrics';
@@ -50,9 +49,9 @@ export async function getMetricsData(metricName, filters = [], urlBase, timeInte
       return result;
     });
 }
-export async function loadAnomalyData(url, urlBase, metricName) {
+export async function loadAnomalyData(url, metricName, ds) {
   return await getBackendSrv()
-    .datasourceRequest(getOptions(urlBase, url))
+    .datasourceRequest(getOptions(ds, url))
     .then(({ data }) => {
       const result = data?.anomalies || [];
       result.type = 'anomalies';
@@ -61,11 +60,11 @@ export async function loadAnomalyData(url, urlBase, metricName) {
     });
 }
 
-export async function getAnomalyChart(anomaly, params, urlBase) {
+export async function getAnomalyChart(anomaly, params, ds) {
   const url = `/anomalies/${anomaly.id}/metric/`;
   const { metricsCount } = anomaly;
   return await getBackendSrv()
-    .datasourceRequest(getOptions(urlBase, makeAnomalyTimeSeriesParams(anomaly, url, params)))
+    .datasourceRequest(getOptions(ds, makeAnomalyTimeSeriesParams(anomaly, url, params)))
     .then(({ data }) => ({ ...data, metricsCount }))
     .catch(error => {
       console.log('Request Error - Anomaly Chart: ', anomaly, tParams, error);
@@ -73,7 +72,8 @@ export async function getAnomalyChart(anomaly, params, urlBase) {
     });
 }
 
-export async function getAlerts(query, timeInterval, urlBase) {
+export async function getAlerts(query, ds) {
+  const { timeInterval } = ds;
   const { severities = [], types, recipient = [] } = query;
   let subscribers = [];
   let channels = [];
@@ -100,20 +100,21 @@ export async function getAlerts(query, timeInterval, urlBase) {
   let url = '/alerts/triggered';
 
   return await getBackendSrv()
-    .datasourceRequest(getOptions(urlBase, url, null, params))
+    .datasourceRequest(getOptions(ds, url, null, params))
     .then(({ data }) => data);
 }
 
-export async function getMetricsComposite(metricParams, timeParams, urlBase: string) {
+export async function getMetricsComposite(metricParams, timeParams, ds) {
   const url = '/metrics/composite/execute';
   const [urlWithParams, payload] = makeMetricTimeSeriesParams(metricParams, timeParams, url);
   return await getBackendSrv()
-    .datasourceRequest(getOptions(urlBase, urlWithParams, payload))
+    .datasourceRequest(getOptions(ds, urlWithParams, payload))
     .then(({ data }) => data);
 }
 
-function getOptions(urlBase: string, url: string, payload?: object | null, params?: object) {
-  const fullUrl = urlBase + urlApiPostfix + (!params ? url : getQueryParamsUrl(params, url));
+function getOptions(datasource, url: string, payload?: object | null, params?: object) {
+  const { localStorageKey, urlApi } = datasource;
+  const fullUrl = urlApi + (!params ? url : getQueryParamsUrl(params, url));
   const headers = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${localStorage.getItem(localStorageKey)}`,

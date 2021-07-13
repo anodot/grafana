@@ -65,6 +65,7 @@ export interface MyDataSourceOptions extends DataSourceJsonData {
   url?: string;
   callId?: number;
   timeInterval?: number[];
+  apiPostfix?: string;
 }
 
 /**

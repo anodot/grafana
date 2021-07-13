@@ -4,12 +4,13 @@ import { scenarios } from '../utils/constants';
 import { getQ, getQueryParamsUrl } from '../utils/helpers';
 import { loadAnomalyData, getAnomalyChart } from '../api';
 
-export async function anomalyQuery(query, timeInterval, urlBase, callId) {
+export async function anomalyQuery(query, datasource) {
+  const { timeInterval, callId } = datasource;
   const { metrics, requestCharts, includeBaseline } = query;
   if (!metrics?.length) {
     return new Promise(() => null);
   }
-  const anomalyDataPromises = makeAnomaliesPromises(query, [], timeInterval, urlBase);
+  const anomalyDataPromises = makeAnomaliesPromises(query, [], datasource);
 
   return Promise.all(anomalyDataPromises).then(async results => {
     const anomalyDatasets = metrics.map(({ value }, i) => ({
@@ -22,7 +23,7 @@ export async function anomalyQuery(query, timeInterval, urlBase, callId) {
     if (requestCharts) {
       const params = { baseline: includeBaseline, timeInterval };
       const flattenResults = [].concat(...results);
-      const anomalyChartsPromises = flattenResults.map(anomaly => getAnomalyChart(anomaly, params, urlBase));
+      const anomalyChartsPromises = flattenResults.map(anomaly => getAnomalyChart(anomaly, params, datasource));
       anomaliesCharts = await Promise.all(anomalyChartsPromises);
     }
     const frame = new MutableDataFrame({
@@ -44,7 +45,7 @@ export async function anomalyQuery(query, timeInterval, urlBase, callId) {
   });
 }
 
-export function makeAnomaliesPromises(query, defaultPromises, timeInterval, urlBase) {
+export function makeAnomaliesPromises(query, defaultPromises, ds) {
   const {
     metrics,
     score = [0],
@@ -57,6 +58,8 @@ export function makeAnomaliesPromises(query, defaultPromises, timeInterval, urlB
     filters = [],
     timeScales,
   } = query;
+
+  const { timeInterval } = ds;
 
   if (
     metrics?.length &&
@@ -89,7 +92,7 @@ export function makeAnomaliesPromises(query, defaultPromises, timeInterval, urlB
         state: openedOnly ? 'open' : 'both',
         valueDirection: direction[1] ? 'both' : direction[0]?.value,
       };
-      return loadAnomalyData(getQueryParamsUrl(anomalyParams, '/anomalies'), urlBase, value);
+      return loadAnomalyData(getQueryParamsUrl(anomalyParams, '/anomalies'), value, ds);
     });
   } else {
     return defaultPromises;

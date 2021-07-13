@@ -34,6 +34,11 @@ export const QueryEditor = (props: QEditorProps) => {
   );
 
   const onScenarioChange = useCallback(scenario => {
+    analytics.track('grafana', {
+      category: 'Switched scenario',
+      scenario: scenario.value,
+      ...props.datasource.analyticsData,
+    });
     props.onChange({ scenario: scenario.value });
   }, []);
 

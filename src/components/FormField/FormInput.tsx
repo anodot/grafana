@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 
-import { InlineFormLabel, Input, PopoverContent } from '@grafana/ui';
+import { Field, InlineFormLabel, Input, PopoverContent } from '@grafana/ui';
 import FormWrapper from './FormWrapper';
 
 interface State {}
@@ -18,6 +18,9 @@ interface Props {
   tooltip?: PopoverContent;
   className?: string;
   type?: string;
+  required?: boolean;
+  error?: string;
+  invalid?: boolean;
 
   onChange(event?: any): any;
 }
@@ -39,6 +42,9 @@ export default class FormInput extends React.Component<Props, State> {
       labelWidth = 14,
       inputWidth = 30,
       className = '',
+      required,
+      invalid,
+      error,
       ...remainingProps
     } = this.props;
 
@@ -51,7 +57,9 @@ export default class FormInput extends React.Component<Props, State> {
         >
           {label}
         </InlineFormLabel>
-        <Input css={''} width={inputWidth} disabled={disabled} {...remainingProps} />
+        <Field required={required} invalid={invalid} error={error}>
+          <Input css={''} width={inputWidth} disabled={disabled} {...remainingProps} />
+        </Field>
       </FormWrapper>
     );
   }
