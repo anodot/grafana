@@ -4,13 +4,15 @@ import { scenarios } from '../utils/constants';
 import { getMetricsComposite } from '../api';
 
 export function metricsCompositeQuery(query, datasource) {
-  const { timeInterval, urlBase } = datasource;
-  const { metricName, dimensions = [], baseLine, showMultiline, functions } = query;
+  const { timeInterval } = datasource;
+  const { metricName, dimensions = [], baseLine, showMultiline, functions, sortBy, size } = query;
   const metricsParams = {
     metricName,
     dimensions: dimensions.filter(d => d.value),
     includeBaseline: baseLine,
     functions,
+    sortBy,
+    size,
   };
 
   return getMetricsComposite(metricsParams, { timeInterval }, datasource).then(({ metrics }) => {

@@ -95,7 +95,7 @@ export function makeAnomalyTimeSeriesParams(anomaly, url, { baseline = false, da
 }
 
 export function makeMetricTimeSeriesParams(
-  { metricName, dimensions = [], includeBaseline = false, functions },
+  { metricName, dimensions = [], includeBaseline = false, functions, sortBy, size },
   { timeInterval },
   url
 ) {
@@ -106,7 +106,7 @@ export function makeMetricTimeSeriesParams(
     index: 0,
     maxDataPoints: 500,
     resolution: '',
-    size: 10,
+    size: size,
     startBucketMode: true,
   };
 
@@ -165,11 +165,11 @@ export function makeMetricTimeSeriesParams(
       },
       displayOnly: true,
       filter: {
-        function: 'alphanumeric',
+        function: sortBy,
         parameters: [
           {
             name: 'Top N',
-            value: 10,
+            value: size,
           },
         ],
         children: [],

@@ -57,9 +57,7 @@ export default class FormInput extends React.Component<Props, State> {
         >
           {label}
         </InlineFormLabel>
-        <Field required={required} invalid={invalid} error={error}>
-          <Input css={''} width={inputWidth} disabled={disabled} {...remainingProps} />
-        </Field>
+        <Input css={''} width={inputWidth} disabled={disabled} {...remainingProps} />
       </FormWrapper>
     );
   }

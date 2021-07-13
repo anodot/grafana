@@ -78,3 +78,14 @@ export const requestStrategies = {
   eventsOnly: 'requestEventsOnly',
   noRequests: 'noRequests',
 };
+
+export const metricsSortingOptions = [
+  { label: 'Alphanumeric', value: 'alphanumeric' },
+  { label: 'Highest Average', value: 'highestAverage' },
+  { label: 'Highest Current', value: 'highestCurrent' },
+  { label: 'Highest Max', value: 'highestMax' },
+  { label: 'Lowest Average', value: 'lowestAverage' },
+  { label: 'Lowest Current', value: 'lowestCurrent' },
+  { label: 'Lowest Min', value: 'lowestMin' },
+  { label: 'Most Deviant', value: 'mostDeviant' },
+];
