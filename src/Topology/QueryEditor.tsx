@@ -109,9 +109,11 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
       let choseOptions = []; // options were already chose and are not available anymore
       source && choseOptions.push(source.value || source);
       destination && choseOptions.push(destination.value || destination);
-      const availableOptions = difference(this.state.properties, choseOptions).map(value => ({ label: value, value }));
+      const availableOptions = difference(this.state.properties, choseOptions).map(value => ({
+        label: value,
+        value,
+      }));
       this.setState({ availableOptions });
-      onChange({ ...query, availableOptions });
     }
 
     const anomaliesParams = { score, duration, deltaValue, direction, deltaType, timeScales, openedOnly, sortBy };

@@ -52,9 +52,9 @@ export const segmentInitialize = function() {
         n.parentNode.insertBefore(t, n);
         analytics._loadOptions = e;
       };
-      analytics._writeKey = 'vNH4nCHmtcH4rtTRp6nCKaC6yDxWMOyH';
+      analytics._writeKey = 'HSNzO1RSmJ1ycqpZP4b11hf5kFyOE5dK';
       analytics.SNIPPET_VERSION = '4.13.2';
-      analytics.load('vNH4nCHmtcH4rtTRp6nCKaC6yDxWMOyH');
+      analytics.load('HSNzO1RSmJ1ycqpZP4b11hf5kFyOE5dK');
       analytics.page();
     }
   }
@@ -66,6 +66,7 @@ export const getAnalyticsData = instanceSettings => {
   const usedUrl = instanceSettings.jsonData.url;
   return {
     ref: 'grafana',
+    source: 'anodot-panel',
     grafanaVersion: buildInfo.version,
     theme: theme.type,
     datasourceVersion: dsVersion,
