@@ -29,6 +29,7 @@ export interface AlertsQuery extends EditorQuery {
   severities: object[];
   types: object[];
   recipient: object;
+  showOpen: boolean;
 }
 
 export interface MetricsQuery extends EditorQuery {

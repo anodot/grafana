@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react';
 import FormSelect from '../components/FormField/FormSelect';
 import { alertTypesOptions, severityOptions } from '../utils/constants';
 import { AlertsQuery, ScenarioProps } from '../types';
+import FormSwitch from '../components/FormField/FormSwitch';
+import defaults from 'lodash/defaults';
 
-export const defaultAlertsQuery: Partial<AlertsQuery> = {};
+export const defaultAlertsQuery: Partial<AlertsQuery> = {
+  showOpen: false,
+};
 
 const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
-  const { query, onRunQuery, datasource, onFormChange } = props;
+  const { onRunQuery, datasource, onFormChange } = props;
   const [subscribersOptions, setSubscribers] = useState([]);
+  const query = defaults(props.query, defaultAlertsQuery);
 
   useEffect(() => {
     /* Get options for Users and Channels selectors */
@@ -35,6 +40,15 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             value={query.recipient}
             options={subscribersOptions}
             onChange={value => onFormChange('recipient', value, true)}
+          />
+        </div>
+        <div className="gf-form">
+          <FormSwitch
+            labelWidth={6}
+            label={'Open only'}
+            tooltip={'Show open alerts only'}
+            value={query.showOpen}
+            onChange={e => onFormChange('showOpen', e.currentTarget.checked, true)}
           />
         </div>
       </div>
