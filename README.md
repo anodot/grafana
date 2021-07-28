@@ -7,9 +7,20 @@ Grafana supports a wide range of data sources, including Prometheus, MySQL, and 
 You can get the Anodot Data Source Plugin in two ways:
 1. Clone this github repository, build the plugin and deploy it to your grafana deployment.
 2. Unzip zip archive from this repository to your grafana-plugins folder.
-3. Get it from the [Grafana plugins library](https://grafana.com/grafana/plugins/anodot)
+3. Get it from the [Grafana plugins library](https://grafana.com/grafana/plugins/anodot-datasource)
 
-Once you have the plugin installed, please go through [setting up the Anodot Data Source](setting-up-the-data-source). 
+## Installing/Updating with grafana-cli
+```
+grafana-cli plugins install anodot-datasource
+```
+and
+```
+grafana-cli plugins update anodot-datasource
+```
+See details on [Here](https://grafana.com/docs/grafana/latest/administration/cli/#plugins-commands)
+
+
+Once you have the plugin installed, please go through [setting up the Anodot Data Source](https://github.com/anodot/grafana-datasource#setting-up-the-anodot-data-source). 
 ## Building the plugin on your own
 1. Install dependencies
 ```BASH
