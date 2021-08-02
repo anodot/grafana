@@ -22,5 +22,5 @@ yarn-debug.log*
 ./yarn-error.log*
 
 .idea
-md5Checksum.txt
+md5DSChecksum.txt
 release.sh

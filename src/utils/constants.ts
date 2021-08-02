@@ -72,6 +72,12 @@ export const alertTypesOptions = [
   { label: 'No Data', value: 'noData' },
 ];
 
+export const alertAcknowledgeOptions = [
+  { label: 'All', value: '' },
+  { label: 'Acknowledged', value: 'ACK' },
+  { label: 'Not Acknowledged', value: 'NOACK' },
+];
+
 export const requestStrategies = {
   all: 'requestAll',
   anomaliesOnly: 'requestAnomaliesOnly',

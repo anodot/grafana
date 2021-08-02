@@ -30,6 +30,7 @@ export interface AlertsQuery extends EditorQuery {
   types: object[];
   recipient: object;
   showOpen: boolean;
+  acknowledge: '' | 'ACK' | 'NOACK';
 }
 
 export interface MetricsQuery extends EditorQuery {

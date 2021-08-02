@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import FormSelect from '../components/FormField/FormSelect';
-import { alertTypesOptions, severityOptions } from '../utils/constants';
+import { alertAcknowledgeOptions, alertTypesOptions, severityOptions } from '../utils/constants';
 import { AlertsQuery, ScenarioProps } from '../types';
 import FormSwitch from '../components/FormField/FormSwitch';
 import defaults from 'lodash/defaults';
 
 export const defaultAlertsQuery: Partial<AlertsQuery> = {
   showOpen: false,
+  acknowledge: '',
 };
 
 const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
@@ -40,6 +41,18 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             value={query.recipient}
             options={subscribersOptions}
             onChange={value => onFormChange('recipient', value, true)}
+          />
+        </div>
+      </div>
+      <div className="gf-form-inline">
+        <div className="gf-form gf-form--grow">
+          <FormSelect
+            isClearable
+            inputWidth={0}
+            label={'Acknowledge'}
+            value={query.acknowledge}
+            options={alertAcknowledgeOptions}
+            onChange={value => onFormChange('acknowledge', value, true)}
           />
         </div>
         <div className="gf-form">

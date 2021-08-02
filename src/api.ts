@@ -74,7 +74,7 @@ export async function getAnomalyChart(anomaly, params, ds) {
 
 export async function getAlerts(query, ds) {
   const { timeInterval } = ds;
-  const { severities = [], types, recipient = [], showOpen } = query;
+  const { severities = [], types, recipient = [], showOpen, acknowledge } = query;
   let subscribers = [];
   let channels = [];
 
@@ -97,8 +97,12 @@ export async function getAlerts(query, ds) {
     order: 'desc',
     sort: 'updatedTime',
   };
+
   if (showOpen) {
     params.status = 'OPEN';
+  }
+  if (acknowledge && (acknowledge === 'ACK' || acknowledge === 'NOACK')) {
+    params.ack = acknowledge;
   }
   let url = '/alerts/triggered';
 
