@@ -4,7 +4,7 @@ import { scenarios } from '../utils/constants';
 import { getMetricsComposite } from '../api';
 import { getTemplateSrv } from '@grafana/runtime';
 
-export function metricsCompositeQuery(query, datasource, dashboardVarMeasure) {
+export function metricsCompositeQuery(query, datasource) {
   const { timeInterval } = datasource;
   const { metricName, baseLine, showMultiline, functions, sortBy, size } = query;
   const dashboardVars = getTemplateSrv().getVariables();
@@ -15,7 +15,7 @@ export function metricsCompositeQuery(query, datasource, dashboardVarMeasure) {
     Array.prototype.push.apply(query.dimensions, dashboardDimensions);
   }
   const metricsParams = {
-    metricName: dashboardVarMeasure || metricName,
+    metricName: metricName,
     dimensions: query.dimensions.filter(d => d.value),
     includeBaseline: baseLine,
     functions,
