@@ -20,8 +20,7 @@ interface Props {
   type?: string;
   required?: boolean;
   error?: string;
-  invalid?: boolean;
-
+  name?: string;
   onChange(event?: any): any;
 }
 

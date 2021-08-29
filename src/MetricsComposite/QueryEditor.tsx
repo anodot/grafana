@@ -42,6 +42,8 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
     !isPristine && onChange({ ...query, dimensions: defaultMetricsCompositeQuery.dimensions });
     datasource.getPropertiesDict(query.metricName).then(({ properties }) => {
       setPropertiesOptions(properties);
+      /* save it in Query to be able to validate dashboardVarsDimensions in datasource */
+      onFormChange('dimensionsOptions', properties, false);
     });
   }, [query.metricName]);
 

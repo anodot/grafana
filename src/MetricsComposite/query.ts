@@ -2,13 +2,21 @@
 import { FieldType, MutableDataFrame } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getMetricsComposite } from '../api';
+import { getTemplateSrv } from '@grafana/runtime';
 
-export function metricsCompositeQuery(query, datasource) {
+export function metricsCompositeQuery(query, datasource, dashboardVarMeasure) {
   const { timeInterval } = datasource;
-  const { metricName, dimensions = [], baseLine, showMultiline, functions, sortBy, size } = query;
+  const { metricName, baseLine, showMultiline, functions, sortBy, size } = query;
+  const dashboardVars = getTemplateSrv().getVariables();
+  const dashboardDimensions = dashboardVars
+    .filter(v => v.current.value && v.description?.includes('[anodot-dimension]'))
+    .map(v => ({ key: v.id, value: v.current.value }));
+  if (dashboardDimensions?.length) {
+    Array.prototype.push.apply(query.dimensions, dashboardDimensions);
+  }
   const metricsParams = {
-    metricName,
-    dimensions: dimensions.filter(d => d.value),
+    metricName: dashboardVarMeasure || metricName,
+    dimensions: query.dimensions.filter(d => d.value),
     includeBaseline: baseLine,
     functions,
     sortBy,
@@ -53,7 +61,6 @@ export function metricsCompositeQuery(query, datasource) {
       timeInterval,
       query,
     };
-
     return singleFrame; //frames; TODO: return multiple series works well with native Graph but requires changes on anodot-panel side
   });
 }
