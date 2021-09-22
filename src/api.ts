@@ -29,7 +29,7 @@ export async function getEvents(ds) {
       return result;
     });
 }
-export async function getMetricsData(metricName, filters = [], ds) {
+export async function getMetricsData(metricName, filters = [], ds, notOperator) {
   const { timeInterval } = ds;
   const params = {
     fromDate: timeInterval?.startDate,
@@ -39,7 +39,7 @@ export async function getMetricsData(metricName, filters = [], ds) {
     size: 500,
   };
   const url = '/metrics/composite/names';
-  const payload = makeMetricsPayload(metricName, filters);
+  const payload = makeMetricsPayload(metricName, filters, notOperator);
   return await getBackendSrv()
     .datasourceRequest(getOptions(ds, url, payload, params))
     .then(({ data }) => {

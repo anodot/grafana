@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useCallback, useEffect, useState } from 'react';
 import defaults from 'lodash/defaults';
 import { MetricsQuery, ScenarioProps } from '../types';
@@ -12,34 +11,36 @@ import { addLabel } from '../utils/helpers';
 import FormSelect from '../components/FormField/FormSelect';
 import FormInput from '../components/FormField/FormInput';
 import { metricsSortingOptions } from '../utils/constants';
+import { SelectableValue } from '@grafana/data';
 
 const maxSize = 20;
 
 export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
   baseLine: true,
   showMultiline: true,
-  dimensions: [],
-  functions: {},
+  dimensions: '[]',
+  functions: '{}',
   metricName: undefined,
   sortBy: 'alphanumeric',
   size: 10,
 };
 
-const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
-  const { onChange, onFormChange, datasource } = props;
+const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = props => {
+  const { onFormChange, datasource } = props;
   const query = defaults(props.query, defaultMetricsCompositeQuery);
   const [propertiesOptions, setPropertiesOptions] = useState([]);
-  const [availableOptions, setAvailableOptions] = useState([]);
+  const [availableOptions, setAvailableOptions] = useState([] as SelectableValue[]);
   const [isPristine, setIsPristine] = useState(true);
 
   useEffect(() => {
     setIsPristine(false);
+    props.onRunQuery();
   }, []);
 
   useEffect(() => {
     /** Request available propertyNames by selected metrics */
     /* Reset previous selections: */
-    !isPristine && onChange({ ...query, dimensions: defaultMetricsCompositeQuery.dimensions });
+    !isPristine && onFormChange('dimensions', defaultMetricsCompositeQuery.dimensions, false);
     datasource.getPropertiesDict(query.metricName).then(({ properties }) => {
       setPropertiesOptions(properties);
       /* save it in Query to be able to validate dashboardVarsDimensions in datasource */
@@ -50,7 +51,7 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
   useEffect(() => {
     /** Reduce already selected propertyNames from available properties */
     if (propertiesOptions) {
-      let choseOptions = query.dimensions.map(d => d.key); // options were already chose and are not available anymore
+      let choseOptions = JSON.parse(query.dimensions).map(d => d.key); // options were already chose and are not available anymore
       const availableOptions = difference(propertiesOptions, choseOptions).map(value => ({ label: value, value }));
       setAvailableOptions(availableOptions);
     }
@@ -58,14 +59,16 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
 
   const getValues = useCallback(name => datasource.getMetricsPropVal(query.metricName, name), [query.metricName]);
 
+  // TODO: Do ve have availableOptions for empty Measure?
   return (
     <>
       <div className="gf-form-inline">
         <div className="gf-form gf-form--grow">
           <MetricSearchField
+            placeholder={'Any Measure'}
             isClearable
             getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
-            value={addLabel(query.metricName)}
+            value={query.metricName && addLabel(query.metricName)}
             onChange={value => onFormChange('metricName', value, true)}
           />
         </div>
@@ -114,8 +117,10 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
           <FunctionsControl
             functionsConfigs={functionsMeta}
             key={`function-${query.metricName}`}
-            selectedFunctions={query.functions}
-            onChangeFunctions={newFunctions => onFormChange('functions', newFunctions, !('new' in newFunctions))}
+            selectedFunctions={JSON.parse(query.functions)}
+            onChangeFunctions={newFunctions =>
+              onFormChange('functions', JSON.stringify(newFunctions), !('new' in newFunctions))
+            }
             groupByPropertiesList={propertiesOptions}
           />
         </div>
@@ -123,10 +128,11 @@ const MetricsCompositeQueryEditor = (props: ScenarioProps<MetricsQuery>) => {
       <div style={{ marginBottom: 4 }}>
         <KeyValueControl
           key={query.metricName}
-          dimensionsQuery={query.dimensions}
-          onChangeQuery={value => onFormChange('dimensions', value, true)}
+          dimensionsQuery={JSON.parse(query.dimensions)}
+          onChangeDimensions={value => onFormChange('dimensions', JSON.stringify(value), true)}
           availableDimensionsNames={availableOptions}
           getValues={getValues}
+          withNotControl
         />
       </div>
     </>

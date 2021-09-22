@@ -77,7 +77,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
     const {
       source,
       destination,
-      metrics,
+      metrics = [],
       showEvents,
       score = [0],
       duration = [0],
@@ -227,7 +227,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
           <FormSlider
             min={1}
             className="query-segment-operator"
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             inputWidth={0}
             label={'Anomaly Duration'}
             value={query.duration}
@@ -236,7 +236,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
           />
           <FormSlider
             className="query-segment-operator"
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             inputWidth={0}
             label={'Anomaly Score'}
             value={query.score}
@@ -247,7 +247,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
         <div className={'gf-form'}>
           <FormSelect
             className="query-segment-operator"
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             isClearable
             inputWidth={0}
             label={'Anomalies Delta Type'}
@@ -258,7 +258,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
           />
           <FormInput
             className="query-segment-operator"
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             isClearable
             isMulti
             inputWidth={0}
@@ -273,7 +273,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
         <div className={'gf-form'}>
           <FormSelect
             className="query-segment-operator"
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             isClearable
             isMulti
             inputWidth={0}
@@ -284,7 +284,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             onChange={value => onFormChange('timeScales', value)}
           />
           <FormSwitch
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             className="query-segment-operator"
             labelWidth={11}
             label={'Open Anomalies only'}
@@ -293,7 +293,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             onChange={e => onFormChange('openedOnly', e?.currentTarget?.checked)}
           />
           <FormSwitch
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             className="query-segment-operator"
             labelWidth={11}
             label={'Show Events'}
@@ -304,7 +304,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
         </div>
         <div className={'gf-form'}>
           <FormSelect
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             className="query-segment-operator"
             inputWidth={0}
             label={'Anomalies Sort Order'}
@@ -314,7 +314,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             onChange={value => onFormChange('sortBy', value)}
           />
           <FormSelect
-            disabled={!query.metrics.length}
+            disabled={!query.metrics?.length}
             className="query-segment-operator"
             isMulti
             inputWidth={0}

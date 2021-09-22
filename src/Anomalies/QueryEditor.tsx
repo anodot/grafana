@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import FormSelect from '../components/FormField/FormSelect';
 import FormSlider from '../components/FormField/FormSlider';
 import FormInput from '../components/FormField/FormInput';
@@ -7,6 +7,8 @@ import MetricSearchField from '../components/MetricSearchField';
 import defaults from 'lodash/defaults';
 import { AnomalyQuery, ScenarioProps } from '../types';
 import { deltaTypesOptions, directionsOptions, sortAnomalyOptions, timeScaleOptions } from '../utils/constants';
+
+const maxSize = 20;
 
 const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   duration: [5],
@@ -20,11 +22,18 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   sortBy: 'score',
   openedOnly: false,
   metrics: [],
+  notOperator: false,
+  size: 10,
 };
 
 const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
   const { datasource, onFormChange } = props;
   const query = defaults(props.query, defaultAnomaliesQuery);
+  const isSpecificMetricSelected = query.metrics?.length > 0;
+
+  useEffect(() => {
+    props.onRunQuery();
+  }, []);
 
   return (
     <>
@@ -34,21 +43,26 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
           value={query.metrics}
           onChange={value => onFormChange('metrics', value, true)}
+          placeholder={'All measures'}
+          notOptions={{
+            notCheckboxDisabled: !isSpecificMetricSelected,
+            showNotCheckbox: true,
+            notCheckboxValue: isSpecificMetricSelected && query.notOperator,
+            onNotChange: e => onFormChange('notOperator', e.currentTarget.checked, true),
+          }}
         />
       </div>
       <div className={'gf-form'}>
         <FormSlider
-          disabled={!query.metrics.length}
           inputWidth={0}
-          label={'Anomaly Duration'}
+          label={'Duration'}
           value={query.duration}
           tooltip={'Anomaly Duration'}
           onChange={value => onFormChange('duration', value, true)}
         />
         <FormSlider
-          disabled={!query.metrics.length}
           inputWidth={0}
-          label={'Anomaly Score'}
+          label={'Score'}
           value={query.score}
           tooltip={'Anomaly Score'}
           onChange={value => onFormChange('score', value, true)}
@@ -56,19 +70,17 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className={'gf-form'}>
         <FormSelect
-          disabled={!query.metrics.length}
           isClearable
           inputWidth={0}
-          label={'Anomalies Delta Type'}
+          label={'Delta Type'}
           tooltip={'Anomalies Delta Type'}
           value={query.deltaType}
           options={deltaTypesOptions}
           onChange={value => onFormChange('deltaType', value, true)}
         />
         <FormInput
-          disabled={!query.metrics.length}
           inputWidth={0}
-          label={'Anomalies Delta Value'}
+          label={'Delta Value'}
           tooltip={'Anomalies Delta Value'}
           value={query.deltaValue}
           type={'number'}
@@ -77,12 +89,11 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className={'gf-form'}>
         <FormSelect
-          disabled={!query.metrics.length}
           isClearable
           isMulti
           inputWidth={0}
-          label={'Anomalies Time Scale'}
-          tooltip={'Select Context'}
+          label={'Time Scale'}
+          tooltip={'Anomaly Time Scale'}
           value={query.timeScales}
           options={timeScaleOptions}
           onChange={value => onFormChange('timeScales', value, true)}
@@ -90,36 +101,32 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className={'gf-form'}>
         <FormSelect
-          disabled={!query.metrics.length}
-          inputWidth={0}
-          label={'Anomalies Sort Order'}
-          tooltip={'Anomalies Sort Order'}
-          value={query.sortBy}
-          options={sortAnomalyOptions}
-          onChange={value => onFormChange('sortBy', value, true)}
-        />
-        <FormSelect
-          disabled={!query.metrics.length}
           isMulti
           inputWidth={0}
-          label={'Anomaly Direction'}
+          label={'Direction'}
           tooltip={'Anomaly Direction'}
           value={query.direction}
           options={directionsOptions}
           onChange={value => onFormChange('direction', value, true)}
         />
+        <FormSelect
+          inputWidth={0}
+          label={'Sort by'}
+          tooltip={'Anomalies Sort Order'}
+          value={query.sortBy}
+          options={sortAnomalyOptions}
+          onChange={value => onFormChange('sortBy', value, true)}
+        />
       </div>
       <div className="gf-form gf-form--grow">
         <FormSwitch
-          disabled={!query.metrics.length}
-          label={'Open Anomalies only'}
+          label={'Open only'}
           tooltip={'Open Anomalies only'}
           value={query.openedOnly}
           onChange={e => onFormChange('openedOnly', e.currentTarget.checked, true)}
         />
         <FormSwitch
           labelWidth={0}
-          disabled={!query.metrics.length}
           label={'Request Charts Data'}
           tooltip={'Show Anomalies Charts or Anomalies List'}
           value={query.requestCharts}
@@ -127,11 +134,22 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
         />
         <FormSwitch
           labelWidth={0}
-          disabled={!query.metrics.length || !query.requestCharts}
+          disabled={!query.requestCharts}
           label={'Include Baseline'}
           tooltip={'Include Baseline'}
           value={query.includeBaseline}
           onChange={e => onFormChange('includeBaseline', e.currentTarget.checked, true)}
+        />
+        <FormInput
+          labelWidth={4}
+          inputWidth={0}
+          label={'Size'}
+          tooltip={`Maximum amount of the requested charts (1 - ${maxSize})`}
+          min={1}
+          max={maxSize}
+          type={'number'}
+          value={query.size}
+          onChange={({ target: { value } }) => onFormChange('size', Math.max(1, Math.min(maxSize, value)), true)}
         />
       </div>
     </>

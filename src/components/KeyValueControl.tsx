@@ -1,9 +1,10 @@
-// @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react';
 import FormSelect from './FormField/FormSelect';
 import { Button, IconButton } from '@grafana/ui';
 import { css, cx } from 'emotion';
 import { addLabel } from '../utils/helpers';
+import { SelectableValue } from '@grafana/data';
+import { DimensionType } from '../types';
 
 const iconWrapperClass = `gf-form ${cx(
   css`
@@ -12,7 +13,23 @@ const iconWrapperClass = `gf-form ${cx(
   `
 )}`;
 
-const KVRow = ({ dimensionName = {}, dimensionValue = {}, onDelete }) => (
+interface KVRowPropsType {
+  dimensionName: any;
+  dimensionValue: any;
+  onDelete(a: any): void;
+  withNotControl: boolean;
+  onNotChange(a: any): void;
+  notValue: boolean;
+}
+
+const KVRow: React.FC<KVRowPropsType> = ({
+  dimensionName = {},
+  dimensionValue = {},
+  onDelete,
+  withNotControl,
+  onNotChange,
+  notValue,
+}) => (
   <div className="gf-form-inline">
     <div className="gf-form gf-form--grow">
       <FormSelect
@@ -36,6 +53,12 @@ const KVRow = ({ dimensionName = {}, dimensionValue = {}, onDelete }) => (
         options={dimensionValue.options}
         onChange={dimensionValue.onChange}
         isLoading={dimensionValue.isLoading}
+        notOptions={{
+          notCheckboxDisabled: false,
+          showNotCheckbox: withNotControl,
+          notCheckboxValue: notValue,
+          onNotChange,
+        }}
       />
     </div>
     <div className={iconWrapperClass}>
@@ -44,7 +67,21 @@ const KVRow = ({ dimensionName = {}, dimensionValue = {}, onDelete }) => (
   </div>
 );
 
-const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensionsNames, getValues }) => {
+interface KeyValuePropsType {
+  dimensionsQuery: DimensionType[];
+  onChangeDimensions(a: any): void;
+  availableDimensionsNames: SelectableValue[];
+  getValues(name: any): Promise<any>;
+  withNotControl: boolean;
+}
+
+const KeyValueControl: React.FC<KeyValuePropsType> = ({
+  dimensionsQuery = [],
+  onChangeDimensions,
+  availableDimensionsNames,
+  getValues,
+  withNotControl,
+}) => {
   const [valuesMap, setValuesMap] = useState({});
 
   useEffect(() => {
@@ -68,15 +105,20 @@ const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensi
   }, [dimensionsQuery, valuesMap]);
 
   const onChange = useCallback(
-    (key, value, i) => {
+    (propName, propValue, i) => {
+      // @ts-ignore
       const newQuery = [...dimensionsQuery];
       const newDimension = {
-        key: key?.label || newQuery[i]?.key,
+        key: newQuery[i]?.key,
         /** if key is changing - reset the value to '', else set value */
-        value: value?.label || '',
+        value: propName === 'key' ? '' : newQuery[i]?.value,
+        not: propName === 'key' ? false : newQuery[i]?.not,
       };
+
+      newDimension[propName] = propValue;
       newQuery[i] = newDimension;
-      onChangeQuery(newQuery);
+
+      onChangeDimensions(newQuery);
     },
     [dimensionsQuery]
   );
@@ -85,13 +127,13 @@ const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensi
     i => {
       const newQuery = [...dimensionsQuery];
       newQuery.splice(i, 1);
-      onChangeQuery(newQuery);
+      onChangeDimensions(newQuery);
     },
     [dimensionsQuery]
   );
 
   const onAdd = useCallback(() => {
-    onChangeQuery([...dimensionsQuery, { key: null, value: null }]);
+    onChangeDimensions([...dimensionsQuery, { key: null, value: null, not: false }]);
   }, [dimensionsQuery]);
 
   const isLastEmpty = dimensionsQuery.length && !dimensionsQuery[dimensionsQuery.length - 1]?.value;
@@ -101,23 +143,26 @@ const KeyValueControl = ({ dimensionsQuery = [], onChangeQuery, availableDimensi
       {dimensionsQuery.map((dimension, i) => (
         <KVRow
           key={dimension.key}
+          withNotControl={withNotControl}
           dimensionName={{
             label: `Dimension ${i + 1}`,
             options: availableDimensionsNames,
             value: dimension.key,
-            onChange: name => onChange(name, null, i),
+            onChange: d => onChange('key', d.value, i),
           }}
           dimensionValue={{
             label: `:`,
             options: dimension.key ? valuesMap[dimension.key] : [],
             value: dimension.value,
-            onChange: value => onChange(null, value, i),
+            onChange: d => onChange('value', d.value, i),
             isLoading: valuesMap[dimension.key] === 'isLoading',
           }}
           onDelete={() => onDelete(i)}
+          onNotChange={e => onChange('not', e.target.checked, i)}
+          notValue={Boolean(dimension.not)}
         />
       ))}
-      <Button disabled={!availableDimensionsNames.length || isLastEmpty} onClick={onAdd}>
+      <Button disabled={Boolean(availableDimensionsNames.length === 0 || isLastEmpty)} onClick={onAdd}>
         + Dimension
       </Button>
     </>

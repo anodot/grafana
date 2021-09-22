@@ -7,16 +7,21 @@ import { getTemplateSrv } from '@grafana/runtime';
 export function metricsCompositeQuery(query, datasource) {
   const { timeInterval } = datasource;
   const { metricName, baseLine, showMultiline, functions, sortBy, size } = query;
+  const dimensions = JSON.parse(query.dimensions);
   const dashboardVars = getTemplateSrv().getVariables();
   const dashboardDimensions = dashboardVars
     .filter(v => v.current.value && v.description?.includes('[anodot-dimension]'))
     .map(v => ({ key: v.id, value: v.current.value }));
   if (dashboardDimensions?.length) {
-    Array.prototype.push.apply(query.dimensions, dashboardDimensions);
+    /* push all elements at one time */
+    Array.prototype.push.apply(dimensions, dashboardDimensions);
   }
+
   const metricsParams = {
     metricName: metricName,
-    dimensions: query.dimensions.filter(d => d.value),
+    dimensions: (dimensions || [])
+      .filter(d => d.value)
+      .map(({ key, value, not }) => ({ key, value: (not ? '!' : '') + value })),
     includeBaseline: baseLine,
     functions,
     sortBy,

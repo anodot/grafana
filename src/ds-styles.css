@@ -1,0 +1,6 @@
+.notCheckbox {
+  margin-left: auto;
+}
+.notCheckbox > span {
+  top: 7px;
+}

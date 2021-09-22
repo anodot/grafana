@@ -6,10 +6,7 @@ import { loadAnomalyData, getAnomalyChart } from '../api';
 
 export async function anomalyQuery(query, datasource) {
   const { timeInterval, callId } = datasource;
-  const { metrics, requestCharts, includeBaseline } = query;
-  if (!metrics?.length) {
-    return new Promise(() => null);
-  }
+  const { metrics = [], requestCharts, includeBaseline } = query;
   const anomalyDataPromises = makeAnomaliesPromises(query, [], datasource);
 
   return Promise.all(anomalyDataPromises).then(async results => {
@@ -47,7 +44,7 @@ export async function anomalyQuery(query, datasource) {
 
 export function makeAnomaliesPromises(query, defaultPromises, ds) {
   const {
-    metrics,
+    metrics = [],
     score = [0],
     duration = [0],
     sortBy,
@@ -57,12 +54,18 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     deltaType,
     filters = [],
     timeScales,
+    notOperator,
+    size = 10,
   } = query;
 
   const { timeInterval } = ds;
 
+  if (!metrics?.length) {
+    /* "no metrics" case */
+    metrics.push({ value: undefined });
+  }
+
   if (
-    metrics?.length &&
     score !== undefined &&
     timeInterval !== undefined &&
     duration !== undefined &&
@@ -75,7 +78,7 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
       const anomalyParams = {
         ...timeInterval,
         index: 0,
-        size: 10, //TODO: V.2.0 Add paging
+        size,
         score: (score[0] ?? score) / 100,
         durationUnit: smallestTimescale.meta[1],
         durationValue: duration[0] ?? duration,
@@ -86,7 +89,7 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
         delta: deltaValue,
         deltaType: deltaType,
         order: 'desc',
-        q: getQ(value, filters, true),
+        q: getQ(value, filters, true, notOperator),
         sort: sortBy,
         startBucketMode: true,
         state: openedOnly ? 'open' : 'both',

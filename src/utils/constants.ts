@@ -1,5 +1,3 @@
-// export const urlBase = (process.env.REACT_APP_ANODOT_API_URL || 'https://feature-topology-map.ano-dev.com') + '/api/v1';
-// export const urlBase = 'https://master.ano-dev.com/api/v2';
 export const urlBase = 'https://app.anodot.com';
 export const urlApiPostfix = '/api/v2';
 export const urlGrafanaHelp = 'https://www.anodot.com/integration/grafana/';

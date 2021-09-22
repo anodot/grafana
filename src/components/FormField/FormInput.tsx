@@ -1,12 +1,12 @@
 // @ts-nocheck
-import React from 'react';
+import React, { HTMLProps } from 'react';
 
-import { Field, InlineFormLabel, Input, PopoverContent } from '@grafana/ui';
+import { InlineFormLabel, Input, PopoverContent } from '@grafana/ui';
 import FormWrapper from './FormWrapper';
 
 interface State {}
 
-interface Props {
+interface Props extends HTMLProps<HTMLInputElement> {
   label: string;
   value: string | number;
   invalid?: boolean;

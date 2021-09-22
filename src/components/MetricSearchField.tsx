@@ -1,7 +1,6 @@
-//@ts-nocheck
 import React, { useCallback, useEffect, useState } from 'react';
 import { arrayToOptions } from '../utils/helpers';
-import FormSelect from './FormField/FormSelect';
+import FormSelect, { NotOptionsType } from './FormField/FormSelect';
 import { SelectableValue } from '@grafana/data';
 
 interface SearchProps {
@@ -10,11 +9,20 @@ interface SearchProps {
   getMetricsOptions: (str: string) => Promise<Array<{ value: string }>>;
   isMulti?: boolean;
   isClearable?: boolean;
+  notOptions?: NotOptionsType;
+  placeholder?: string;
 }
-
-const MetricSearchField = ({ value, onChange, getMetricsOptions, isClearable, isMulti }: SearchProps) => {
-  const [metricsList, setMetricsList] = useState([]);
-  const options = metricsList.concat(typeof value === 'string' ? [value] : value);
+const MetricSearchField: React.FC<SearchProps> = ({
+  value,
+  onChange,
+  getMetricsOptions,
+  isClearable,
+  isMulti,
+  notOptions,
+  placeholder = '',
+}) => {
+  const [metricsList, setMetricsList] = useState([] as SelectableValue[]);
+  const options = metricsList; //.concat(typeof value === 'string' ? [value] : value);
 
   useEffect(() => {
     /** Request Metrics Options onMount*/
@@ -23,7 +31,7 @@ const MetricSearchField = ({ value, onChange, getMetricsOptions, isClearable, is
     });
   }, []);
 
-  const onSearch = useCallback((searchString, { action }) => {
+  const onSearch = useCallback((searchString: string, { action }) => {
     action === 'input-change' &&
       getMetricsOptions(searchString).then(metrics => {
         setMetricsList(arrayToOptions(metrics, 'value'));
@@ -33,7 +41,7 @@ const MetricSearchField = ({ value, onChange, getMetricsOptions, isClearable, is
   return (
     <FormSelect
       inputWidth={0}
-      label={'Measures'}
+      label={`Measure${isMulti ? 's' : ''}`}
       tooltip={'Select measures.'}
       value={value}
       options={options}
@@ -41,6 +49,9 @@ const MetricSearchField = ({ value, onChange, getMetricsOptions, isClearable, is
       onInputChange={onSearch}
       isClearable={isClearable}
       isMulti={isMulti}
+      notOptions={notOptions}
+      placeholder={placeholder}
+      noOptionsMessage={'No measures to select'}
     />
   );
 };

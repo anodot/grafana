@@ -1,14 +1,19 @@
-// @ts-nocheck
 import React from 'react';
-
-import { InlineFormLabel, Select, PopoverContent } from '@grafana/ui';
+import { InlineFormLabel, Select, PopoverContent, Checkbox } from '@grafana/ui';
 import FormWrapper from './FormWrapper';
 import { SelectableValue } from '@grafana/data';
 
-interface State {}
+export type NotOptionsType = Partial<{
+  onNotChange(e: any): any;
+  showNotCheckbox: boolean;
+  notCheckboxValue: boolean;
+  notCheckboxLabel: string;
+  notCheckboxDisabled: boolean;
+}>;
 
 interface Props {
   label: string;
+  name?: string;
   value: SelectableValue | string;
   options: any;
   queryKeyword?: boolean;
@@ -25,49 +30,60 @@ interface Props {
   isMulti?: boolean;
   isClearable?: boolean;
   onChange(event?: any): any;
-  onInputChange?(str: string): any;
+  onInputChange?(str: string, options?: any): any;
+  notOptions?: NotOptionsType;
 }
 
 /**
  * Default select field including label. Select element is grafana/ui <Select />.
  */
-export default class FormSelect extends React.Component<Props, State> {
-  constructor(props: any) {
-    super(props);
-  }
-
-  render() {
-    const {
-      label,
-      tooltip,
-      searchable = true,
-      disabled,
-      queryKeyword,
-      placeholder = '-',
-      labelWidth = 14,
-      inputWidth = 30,
-      className = '',
-      ...remainingProps
-    } = this.props;
-
-    return (
-      <FormWrapper disabled={disabled} stretch={!inputWidth}>
-        <InlineFormLabel
-          className={queryKeyword ? `query-keyword ${className}` : className}
-          width={labelWidth}
-          tooltip={tooltip}
-        >
-          {label}
+const FormSelect: React.FC<Props> = props => {
+  const {
+    label,
+    tooltip,
+    searchable = true,
+    disabled,
+    queryKeyword,
+    placeholder = '-',
+    labelWidth = 14,
+    inputWidth = 30,
+    className = '',
+    notOptions,
+    ...remainingProps
+  } = props;
+  const { showNotCheckbox, notCheckboxValue = false, notCheckboxLabel = 'NOT', onNotChange, notCheckboxDisabled } =
+    notOptions || {};
+  return (
+    <FormWrapper disabled={disabled} stretch={!inputWidth}>
+      <InlineFormLabel
+        className={queryKeyword ? `query-keyword ${className}` : className}
+        width={labelWidth}
+        tooltip={tooltip}
+      >
+        {label}
+      </InlineFormLabel>
+      <Select
+        prefix={notCheckboxValue ? '!' : null}
+        menuPlacement={'bottom'}
+        disabled={disabled}
+        width={inputWidth}
+        isSearchable={searchable}
+        placeholder={placeholder}
+        {...remainingProps}
+      />
+      {showNotCheckbox && (
+        <InlineFormLabel width={3.5}>
+          <Checkbox
+            className={'notCheckbox'}
+            value={notCheckboxValue}
+            label={notCheckboxLabel}
+            onChange={onNotChange}
+            disabled={notCheckboxDisabled}
+          />
         </InlineFormLabel>
-        <Select
-          menuPlacement={'bottom'}
-          disabled={disabled}
-          width={inputWidth}
-          isSearchable={searchable}
-          placeholder={placeholder}
-          {...remainingProps}
-        />
-      </FormWrapper>
-    );
-  }
-}
+      )}
+    </FormWrapper>
+  );
+};
+
+export default FormSelect;

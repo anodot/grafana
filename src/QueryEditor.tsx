@@ -1,7 +1,7 @@
 //@ts-nocheck
 import defaults from 'lodash/defaults';
-import React, { useState, useCallback, useEffect } from 'react';
-import { Alert } from '@grafana/ui';
+import React, { useCallback } from 'react';
+// import { Alert } from '@grafana/ui';
 import { EditorQuery, QEditorProps } from './types';
 import FormSelect from './components/FormField/FormSelect';
 import { scenarios } from './utils/constants';
@@ -9,6 +9,9 @@ import AlertsQueryEditor from './Alerts/QueryEditor';
 import AnomaliesQueryEditor from './Anomalies/QueryEditor';
 import TopologyQueryEditor from './Topology/QueryEditor';
 import MetricsComposite from './MetricsComposite/QueryEditor';
+import './ds-styles.css';
+
+const ENVIRONMENT = 'production';
 
 const scenarioOptions = {
   [scenarios.alerts]: { label: 'Alerts', value: scenarios.alerts },
@@ -34,11 +37,14 @@ export const QueryEditor = (props: QEditorProps) => {
   );
 
   const onScenarioChange = useCallback(scenario => {
-    analytics.track('grafana', {
-      category: 'Switched scenario',
-      scenario: scenario.value,
-      ...props.datasource.analyticsData,
-    });
+    if (ENVIRONMENT === 'production') {
+      analytics.track('grafana', {
+        category: 'Switched scenario',
+        scenario: scenario.value,
+        ...props.datasource.analyticsData,
+      });
+    }
+    /* reset query to empty object */
     props.onChange({ scenario: scenario.value });
   }, []);
 
@@ -77,6 +83,7 @@ export const QueryEditor = (props: QEditorProps) => {
           value={query.scenario}
           options={Object.values(scenarioOptions)}
           onChange={onScenarioChange}
+          isOptionDisabled={({ value }) => value === query.scenario}
         />
       </div>
       {editor}

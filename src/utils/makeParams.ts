@@ -2,7 +2,7 @@
 import { getDateRange, getQ, getQueryParamsUrl } from './helpers';
 import isObject from 'lodash/isObject';
 
-export const makeMetricsPayload = (metricName, filters = []) => ({
+export const makeMetricsPayload = (metricName, filters = [], notOperator) => ({
   name: {
     auto: true,
 
@@ -23,7 +23,7 @@ export const makeMetricsPayload = (metricName, filters = []) => ({
   },
   expressionTree: {
     root: {
-      searchObject: getQ(metricName, filters),
+      searchObject: getQ(metricName, filters, false, notOperator),
       children: [],
       type: 'metric',
       id: '5800-25645814655e',
@@ -113,7 +113,7 @@ export function makeMetricTimeSeriesParams(
   const expression = dimensions.map(d => ({
     ...d,
     type: 'property',
-    isExact: true,
+    isExact: !true,
   }));
 
   if (metricName) {
@@ -134,19 +134,19 @@ export function makeMetricTimeSeriesParams(
   };
 
   let root = metricChild;
-
-  if (Object.keys(functions).length) {
-    root = Object.keys(functions)
-      .sort((aName, bName) => functions[bName].index - functions[aName].index)
+  const functionsParsed = JSON.parse(functions);
+  if (Object.keys(functionsParsed).length) {
+    root = Object.keys(functionsParsed)
+      .sort((aName, bName) => functionsParsed[bName].index - functionsParsed[aName].index)
       .reduce(
         (result, currFuncName) =>
-          currFuncName !== 'new' && functions[currFuncName]?.functionName
+          currFuncName !== 'new' && functionsParsed[currFuncName]?.functionName
             ? {
                 children: [result],
-                function: functions[currFuncName].functionName,
+                function: functionsParsed[currFuncName].functionName,
                 id: '882f-d2a8f8cadf29',
-                parameters: Object.keys(functions[currFuncName].parameters).map(name => {
-                  const param = functions[currFuncName].parameters[name];
+                parameters: Object.keys(functionsParsed[currFuncName].parameters).map(name => {
+                  const param = functionsParsed[currFuncName].parameters[name];
                   return { name, value: isObject(param) ? param.value : param };
                 }),
                 type: 'function',

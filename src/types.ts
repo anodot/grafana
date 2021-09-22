@@ -23,6 +23,7 @@ export interface TopologyQuery extends EditorQuery {
   source: string;
   destination: string;
   metrics: SelectableValue[];
+  notOperator: boolean;
 }
 
 export interface AlertsQuery extends EditorQuery {
@@ -36,8 +37,11 @@ export interface AlertsQuery extends EditorQuery {
 export interface MetricsQuery extends EditorQuery {
   baseLine: boolean;
   showMultiline: boolean;
-  dimensions: object[];
+  dimensions: string;
   metricName: string;
+  functions: string;
+  sortBy: string;
+  size: number;
 }
 
 export interface AnomalyQuery extends EditorQuery {
@@ -52,6 +56,8 @@ export interface AnomalyQuery extends EditorQuery {
   sortBy: string;
   metrics: SelectableValue[];
   openedOnly: boolean;
+  notOperator: boolean;
+  size: number;
 }
 
 export interface ScenarioProps<TsQuery extends EditorQuery> extends QueryEditorProps<DataSource, EditorQuery> {
@@ -80,6 +86,12 @@ export interface MySecureJsonData {
 }
 
 export interface TimeFilter {
+  [x: string]: number;
   from: number;
   to: number;
+}
+export interface DimensionType {
+  key: string;
+  value: any;
+  not?: boolean;
 }

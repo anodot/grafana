@@ -1,6 +1,6 @@
 {
   "name": "anodot-datasource",
-  "version": "2.0.3",
+  "version": "3.0.0",
   "description": "Anodot Grafana Datasource for anodot-panel plugin",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -14,7 +14,7 @@
   "devDependencies": {
     "@grafana/data": "7.0.1",
     "@grafana/toolkit": "7.0.1",
-    "@grafana/ui": "7.0.1",
+    "@grafana/ui": "7.5.10",
     "@testing-library/jest-dom": "5.4.0",
     "@testing-library/react": "^10.0.2",
     "@types/lodash": "latest"
