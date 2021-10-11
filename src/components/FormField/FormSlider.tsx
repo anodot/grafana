@@ -3,10 +3,11 @@ import React from 'react';
 import { InlineFormLabel, Slider, PopoverContent } from '@grafana/ui';
 import FormWrapper from './FormWrapper';
 import { SelectableValue } from '@grafana/data';
+import { SliderProps } from '@grafana/ui/components/Slider/types';
 
 interface State {}
 
-interface Props {
+interface Props extends Partial<SliderProps> {
   label: string;
   value: SelectableValue;
   options?: any;
@@ -20,8 +21,10 @@ interface Props {
   placeholder?: string | '-';
   tooltip?: PopoverContent;
   className?: string;
-
-  onChange(event?: any): any;
+  /* Triggers after slider's move stops */
+  onAfterChange(event?: any): any;
+  /* Exhaustively riggers on every slider's move */
+  // onChange(event?: any): any;
 }
 
 /**

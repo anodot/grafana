@@ -91,7 +91,6 @@ export function getQ(metric, filters = [], stringify, notOperator = false) {
       isExact: !notOperator,
     });
   }
-  // @ts-ignore
   const q = {
     expression: [...expression, ...filters],
   };

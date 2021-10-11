@@ -11,7 +11,7 @@ import { deltaTypesOptions, directionsOptions, sortAnomalyOptions, timeScaleOpti
 const maxSize = 20;
 
 const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
-  duration: [5],
+  duration: [1],
   score: [5],
   deltaType: 'absolute',
   deltaValue: 5,
@@ -24,12 +24,16 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   metrics: [],
   notOperator: false,
   size: 10,
+  durationStep: 1,
+  durationUnit: 'minutes',
 };
 
 const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
   const { datasource, onFormChange } = props;
   const query = defaults(props.query, defaultAnomaliesQuery);
   const isSpecificMetricSelected = query.metrics?.length > 0;
+  const durationLabel = `Duration (${query.durationStep > 1 ? query.durationStep + ' ' : ''}${query.durationUnit ||
+    ''})`;
 
   useEffect(() => {
     props.onRunQuery();
@@ -54,18 +58,19 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       </div>
       <div className={'gf-form'}>
         <FormSlider
+          min={query.durationStep}
           inputWidth={0}
-          label={'Duration'}
+          label={durationLabel}
           value={query.duration}
           tooltip={'Anomaly Duration'}
-          onChange={value => onFormChange('duration', value, true)}
+          onAfterChange={value => onFormChange('duration', value, true)}
         />
         <FormSlider
           inputWidth={0}
           label={'Score'}
           value={query.score}
           tooltip={'Anomaly Score'}
-          onChange={value => onFormChange('score', value, true)}
+          onAfterChange={value => onFormChange('score', value, true)}
         />
       </div>
       <div className={'gf-form'}>
@@ -96,7 +101,17 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           tooltip={'Anomaly Time Scale'}
           value={query.timeScales}
           options={timeScaleOptions}
-          onChange={value => onFormChange('timeScales', value, true)}
+          onChange={value => {
+            const smallestTimescale = value.sort((a, b) => a.meta[3] - b.meta[3])[0];
+            const joinedChanges = {
+              timeScales: value,
+              // duration: [smallestTimescale.meta[0]],
+              durationStep: smallestTimescale?.meta[0] || defaultAnomaliesQuery.durationStep,
+              durationUnit: smallestTimescale?.meta[1] || defaultAnomaliesQuery.durationUnit,
+            };
+            onFormChange(joinedChanges, null, true);
+          }}
+          required
         />
       </div>
       <div className={'gf-form'}>
@@ -108,6 +123,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           value={query.direction}
           options={directionsOptions}
           onChange={value => onFormChange('direction', value, true)}
+          required
         />
         <FormSelect
           inputWidth={0}

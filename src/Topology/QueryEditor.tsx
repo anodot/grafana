@@ -10,9 +10,9 @@ import FormSlider from '../components/FormField/FormSlider';
 import {
   deltaTypesOptions,
   directionsOptions,
+  requestStrategies,
   sortAnomalyOptions,
   timeScaleOptions,
-  requestStrategies,
 } from '../utils/constants';
 import { addLabel } from '../utils/helpers';
 import FormSwitch from '../components/FormField/FormSwitch';
@@ -23,6 +23,8 @@ import MetricSearchField from '../components/MetricSearchField';
 export const defaultTopologyQuery: Partial<TopologyQuery> = {
   deltaValue: 5,
   duration: [1],
+  durationStep: 1,
+  durationUnit: 'minutes',
   score: [5],
   direction: directionsOptions,
   deltaType: 'absolute',
@@ -39,9 +41,12 @@ interface TopologyQueryState {
   properties: SelectableValue[];
   availableOptions: SelectableValue[];
 }
+
 interface Props extends EditorQuery {
   query: TopologyQuery;
+
   onRunQuery(): void;
+
   onChange(value: TopologyQuery): void;
 }
 
@@ -161,7 +166,9 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
   render() {
     const { query, datasource, onFormChange } = this.props;
     const { availableOptions } = this.state;
-
+    const durationLabel = `Anomaly Duration (${
+      query.durationStep > 1 ? query.durationStep + ' ' : ''
+    }${query.durationUnit || ''})`;
     return (
       <>
         <div className="gf-form gf-form--grow">
@@ -196,43 +203,17 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             />
           </div>
         </div>
-        {/*<div className="gf-form-inline">*/}
-        {/*  <div className="gf-form gf-form--grow">*/}
-        {/*    <FormSelect*/}
-        {/*      disabled={!query.metrics.length}*/}
-        {/*      isClearable*/}
-        {/*      isMulti*/}
-        {/*      inputWidth={0}*/}
-        {/*      label={'Context'}*/}
-        {/*      tooltip={'Select Context'}*/}
-        {/*      value={query.context}*/}
-        {/*      options={availableOptions.concat(query.context?.length ? query.context : [])}*/}
-        {/*      onChange={value => this.onFormChange('context', value)}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*  <div className="gf-form gf-form--grow">*/}
-        {/*    <FormSelect*/}
-        {/*      disabled={!query.metrics.length}*/}
-        {/*      isClearable*/}
-        {/*      inputWidth={0}*/}
-        {/*      label={'Cluster by'}*/}
-        {/*      tooltip={'Select parameter to clusterize subcharts'}*/}
-        {/*      value={query.clusterBy}*/}
-        {/*      options={availableOptions.concat(query.clusterBy ? [addLabel(query.clusterBy)] : [])}*/}
-        {/*      onChange={value => this.onFormChange('clusterBy', value)}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*</div>*/}
         <div className={'gf-form'}>
           <FormSlider
-            min={1}
+            min={query.durationStep}
             className="query-segment-operator"
             disabled={!query.metrics?.length}
+            step={query.durationStep}
             inputWidth={0}
-            label={'Anomaly Duration'}
+            label={durationLabel}
             value={query.duration}
             tooltip={'Anomaly Duration'}
-            onChange={value => onFormChange('duration', value)}
+            onAfterChange={value => onFormChange('duration', value)}
           />
           <FormSlider
             className="query-segment-operator"
@@ -241,7 +222,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             label={'Anomaly Score'}
             value={query.score}
             tooltip={'Anomaly Score'}
-            onChange={value => onFormChange('score', value)}
+            onAfterChange={value => onFormChange('score', value)}
           />
         </div>
         <div className={'gf-form'}>
@@ -281,7 +262,17 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             tooltip={'Select Context'}
             value={query.timeScales}
             options={timeScaleOptions}
-            onChange={value => onFormChange('timeScales', value)}
+            required
+            onChange={value => {
+              const smallestTimescale = value.sort((a, b) => a.meta[3] - b.meta[3])[0];
+              const joinedChanges = {
+                timeScales: value,
+                // duration: [smallestTimescale.meta[0]],
+                durationStep: smallestTimescale?.meta[0] || defaultTopologyQuery.durationStep,
+                durationUnit: smallestTimescale?.meta[1] || defaultTopologyQuery.durationUnit,
+              };
+              onFormChange(joinedChanges);
+            }}
           />
           <FormSwitch
             disabled={!query.metrics?.length}
@@ -323,6 +314,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             value={query.direction}
             options={directionsOptions}
             onChange={value => onFormChange('direction', value)}
+            required
           />
         </div>
       </>

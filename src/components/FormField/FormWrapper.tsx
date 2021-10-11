@@ -5,6 +5,7 @@ interface WrapperProps {
   disabled?: boolean;
   stretch?: boolean;
   children: any;
+  error?: boolean;
 }
 
 export default function FormWrapper(props: WrapperProps) {
@@ -13,6 +14,9 @@ export default function FormWrapper(props: WrapperProps) {
   if (props.disabled) {
     style.opacity = '0.4';
     style.pointerEvents = 'none';
+  }
+  if (props.error) {
+    style['box-shadow'] = '0px 0px 7px red';
   }
 
   if (props.stretch) {

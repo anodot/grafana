@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@grafana/runtime": "^7.2.1",
-    "date-fns": "^2.16.1"
+    "date-fns": "^2.16.1",
+    "tslib": "^2.3.1"
   }
 }

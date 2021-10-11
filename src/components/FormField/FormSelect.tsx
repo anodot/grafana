@@ -2,6 +2,7 @@ import React from 'react';
 import { InlineFormLabel, Select, PopoverContent, Checkbox } from '@grafana/ui';
 import FormWrapper from './FormWrapper';
 import { SelectableValue } from '@grafana/data';
+import { SelectCommonProps } from '@grafana/ui/components/Select/types';
 
 export type NotOptionsType = Partial<{
   onNotChange(e: any): any;
@@ -11,7 +12,7 @@ export type NotOptionsType = Partial<{
   notCheckboxDisabled: boolean;
 }>;
 
-interface Props {
+interface Props extends SelectCommonProps<any> {
   label: string;
   name?: string;
   value: SelectableValue | string;
@@ -32,6 +33,8 @@ interface Props {
   onChange(event?: any): any;
   onInputChange?(str: string, options?: any): any;
   notOptions?: NotOptionsType;
+  error?: boolean;
+  required?: boolean;
 }
 
 /**
@@ -49,12 +52,18 @@ const FormSelect: React.FC<Props> = props => {
     inputWidth = 30,
     className = '',
     notOptions,
+    error,
+    required,
     ...remainingProps
   } = props;
   const { showNotCheckbox, notCheckboxValue = false, notCheckboxLabel = 'NOT', onNotChange, notCheckboxDisabled } =
     notOptions || {};
   return (
-    <FormWrapper disabled={disabled} stretch={!inputWidth}>
+    <FormWrapper
+      error={error || (required && (props.isMulti ? !props.value?.length : !props.value))}
+      disabled={disabled}
+      stretch={!inputWidth}
+    >
       <InlineFormLabel
         className={queryKeyword ? `query-keyword ${className}` : className}
         width={labelWidth}

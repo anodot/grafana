@@ -34,9 +34,9 @@ export const timeIntervals = {
 };
 
 export const timeScaleOptions = [
-  // [ duration value, duration units, resolution, sorting order ]
+  /* meta: [ duration value, duration units, resolution, sorting order ] */
   { label: '1 Minute', value: '1 Minute', meta: [1, 'minutes', 'short', 0] },
-  // { label: '5 Minutes', value: '5 Minutes', meta: [5, 'minutes', 'medium', 1] },
+  { label: '5 Minutes', value: '5 Minutes', meta: [5, 'minutes', 'medium', 1] },
   { label: '1 Hour', value: '1 Hour', meta: [1, 'hours', 'long', 2] },
   { label: '1 Day', value: '1 Day', meta: [1, 'days', 'longlong', 3] },
   { label: '1 Week', value: '1 Week', meta: [7, 'days', 'weekly', 4] },

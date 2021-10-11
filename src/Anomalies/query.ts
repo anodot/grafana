@@ -56,6 +56,7 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     timeScales,
     notOperator,
     size = 10,
+    durationUnit,
   } = query;
 
   const { timeInterval } = ds;
@@ -73,15 +74,14 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     direction.length &&
     timeScales?.length
   ) {
-    const smallestTimescale = timeScales.sort((a, b) => a.meta[3] - b.meta[3])[0];
     return metrics.map(({ value }) => {
       const anomalyParams = {
         ...timeInterval,
         index: 0,
         size,
         score: (score[0] ?? score) / 100,
-        durationUnit: smallestTimescale.meta[1],
-        durationValue: duration[0] ?? duration,
+        durationUnit,
+        durationValue: duration?.[0] ?? duration,
         resolution: timeScales.map(t => t.meta[2]),
         anomalyType: 'all',
         bookmark: '',

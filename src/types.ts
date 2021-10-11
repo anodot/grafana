@@ -1,7 +1,7 @@
 import { DataQuery, DataSourceJsonData, QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from './DataSource';
 
-export type OnChangeType = (key: string, value: any, runQuery?: boolean) => void;
+export type OnChangeType = (key: string | object, value?: any, runQuery?: boolean) => void;
 
 export interface EditorQuery extends DataQuery {
   scenario: string;
@@ -47,6 +47,8 @@ export interface MetricsQuery extends EditorQuery {
 export interface AnomalyQuery extends EditorQuery {
   score: number[];
   duration: number[];
+  durationStep: number;
+  durationUnit: string;
   deltaValue: number;
   deltaType: string;
   direction: string[] | SelectableValue[];

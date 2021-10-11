@@ -29,7 +29,13 @@ export const QueryEditor = (props: QEditorProps) => {
 
   const onFormChange = useCallback(
     (key, value, forceRunQuery = false) => {
-      const newQuery = { ...query, [key]: value?.value ?? value ?? '' };
+      let newQuery;
+      if (typeof key === 'object') {
+        newQuery = { ...query, ...key };
+      }
+      if (typeof key === 'string') {
+        newQuery = { ...query, [key]: value?.value ?? value ?? '' };
+      }
       props.onChange(newQuery);
       forceRunQuery && props.onRunQuery();
     },
