@@ -177,6 +177,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
             value={query.metrics}
             onChange={value => onFormChange('metrics', value, true)}
+            required
           />
         </div>
         <div className="gf-form-inline">

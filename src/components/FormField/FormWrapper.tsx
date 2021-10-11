@@ -16,7 +16,7 @@ export default function FormWrapper(props: WrapperProps) {
     style.pointerEvents = 'none';
   }
   if (props.error) {
-    style['box-shadow'] = '0px 0px 7px red';
+    style['box-shadow'] = '0px 0px 5px red';
   }
 
   if (props.stretch) {

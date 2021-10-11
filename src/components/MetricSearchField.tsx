@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { arrayToOptions } from '../utils/helpers';
-import FormSelect, { NotOptionsType } from './FormField/FormSelect';
+import FormSelect, { NotOptionsType, FormSelectProps } from './FormField/FormSelect';
 import { SelectableValue } from '@grafana/data';
 
-interface SearchProps {
+interface SearchProps extends Partial<FormSelectProps> {
   value: string | SelectableValue[];
   onChange: (v: any) => void;
   getMetricsOptions: (str: string) => Promise<Array<{ value: string }>>;
@@ -20,6 +20,7 @@ const MetricSearchField: React.FC<SearchProps> = ({
   isMulti,
   notOptions,
   placeholder = '',
+  ...otherProps
 }) => {
   const [metricsList, setMetricsList] = useState([] as SelectableValue[]);
   const options = metricsList; //.concat(typeof value === 'string' ? [value] : value);
@@ -52,6 +53,7 @@ const MetricSearchField: React.FC<SearchProps> = ({
       notOptions={notOptions}
       placeholder={placeholder}
       noOptionsMessage={'No measures to select'}
+      {...otherProps}
     />
   );
 };

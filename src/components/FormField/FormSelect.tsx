@@ -12,7 +12,7 @@ export type NotOptionsType = Partial<{
   notCheckboxDisabled: boolean;
 }>;
 
-interface Props extends SelectCommonProps<any> {
+export interface FormSelectProps extends SelectCommonProps<any> {
   label: string;
   name?: string;
   value: SelectableValue | string;
@@ -40,7 +40,7 @@ interface Props extends SelectCommonProps<any> {
 /**
  * Default select field including label. Select element is grafana/ui <Select />.
  */
-const FormSelect: React.FC<Props> = props => {
+const FormSelect: React.FC<FormSelectProps> = props => {
   const {
     label,
     tooltip,
