@@ -182,6 +182,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
         <div className="gf-form-inline">
           <div className="gf-form gf-form--grow">
             <FormSelect
+              isClearable
               disabled={!query.metrics?.length}
               inputWidth={0}
               label={'Source'}
@@ -193,6 +194,7 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
           </div>
           <div className="gf-form gf-form--grow">
             <FormSelect
+              isClearable
               disabled={!query.metrics?.length}
               inputWidth={0}
               label={'Destination'}
