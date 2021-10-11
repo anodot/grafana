@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { DataQueryRequest, DataQueryResponse, DataSourceApi, DataSourceInstanceSettings } from '@grafana/data';
-import { getBackendSrv, getLocationSrv } from '@grafana/runtime';
+import { getBackendSrv } from '@grafana/runtime';
 import { MyDataSourceOptions, EditorQuery } from './types';
 import { getQueryParamsUrl, readTime } from './utils/helpers';
 import { scenarios } from './utils/constants';
@@ -9,7 +9,6 @@ import { metricsCompositeQuery } from './MetricsComposite/query';
 import { alertsQuery } from './Alerts/query';
 import { anomalyQuery } from './Anomalies/query';
 import { topologyQuery } from './Topology/query';
-import { segmentInitialize, getAnalyticsData } from './segmentInititalize';
 
 const localStorageKey = 'andt-token';
 
@@ -22,9 +21,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     this.urlApi = url + apiPostfix;
     this.urlBase = url;
     this.id = instanceSettings.id;
-    this.analyticsData = getAnalyticsData(instanceSettings);
     this.localStorageKey = `${instanceSettings.id}-${localStorageKey}`;
-    segmentInitialize();
   }
 
   async makeRequest(url, payload, params, thenCallback) {
@@ -46,8 +43,6 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
   async testDatasource() {
     /* It runs on 'Test Datasource', and gets the Auth token from Anodot side */
     const defaultErrorMessage = 'Cannot connect to API. Please check your credentials in datasource config';
-
-    analytics.track('grafana', { category: 'anodot-datasource signIn', ...this.analyticsData });
 
     try {
       const response = await getBackendSrv().datasourceRequest({

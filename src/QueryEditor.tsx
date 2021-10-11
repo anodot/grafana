@@ -11,8 +11,6 @@ import TopologyQueryEditor from './Topology/QueryEditor';
 import MetricsComposite from './MetricsComposite/QueryEditor';
 import './ds-styles.css';
 
-const ENVIRONMENT = 'production';
-
 const scenarioOptions = {
   [scenarios.alerts]: { label: 'Alerts', value: scenarios.alerts },
   [scenarios.anomalies]: { label: 'Anomalies', value: scenarios.anomalies },
@@ -43,13 +41,6 @@ export const QueryEditor = (props: QEditorProps) => {
   );
 
   const onScenarioChange = useCallback(scenario => {
-    if (ENVIRONMENT === 'production') {
-      analytics.track('grafana', {
-        category: 'Switched scenario',
-        scenario: scenario.value,
-        ...props.datasource.analyticsData,
-      });
-    }
     /* reset query to empty object */
     props.onChange({ scenario: scenario.value });
   }, []);
