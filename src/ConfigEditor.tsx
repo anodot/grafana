@@ -7,7 +7,7 @@ import FormSwitch from './components/FormField/FormSwitch';
 
 interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
 
-export const ConfigEditor: React.FC<Props> = props => {
+export const ConfigEditor: React.FC<Props> = (props) => {
   const [showFullUrl, setFullUrl] = useState(false);
   const { colors } = useTheme();
   const { options } = props;
@@ -74,13 +74,14 @@ export const ConfigEditor: React.FC<Props> = props => {
   return (
     <div className="gf-form-group">
       <div className={'gf-form'}>
-        <InlineFormLabel tooltip={<p>Set your Anodot domain to access API, E.g: "yourCompanyName.anodot.com"</p>}>
+        <InlineFormLabel
+          tooltip={<p>Set your Anodot domain to access API, E.g: &quot;yourCompanyName.anodot.com&quot;</p>}
+        >
           Anodot API URL *
         </InlineFormLabel>
         <Input
           placeholder={"E.g: 'https://app.anodot.com'"}
           type="text"
-          css={''}
           width={30}
           value={jsonData.url}
           onChange={onUrlChange}
@@ -91,8 +92,8 @@ export const ConfigEditor: React.FC<Props> = props => {
           value={showFullUrl}
           labelWidth={10}
           label={'Set API relative path'}
-          onChange={e => setFullUrl(e.target.checked)}
-          tooltip={<p>Relative API path E.g: "/api/v2"</p>}
+          onChange={(e) => setFullUrl(e.target.checked)}
+          tooltip={<p>Relative API path E.g: &quot;/api/v2&quot;</p>}
         />
         {showFullUrl && (
           <Input
@@ -109,7 +110,7 @@ export const ConfigEditor: React.FC<Props> = props => {
           tooltip={
             <p>
               You can get Anodot API tokens following from Anodot Admins or in settings console on{' '}
-              <a style={{ color: colors.linkExternal }} href={urlGrafanaHelp} target={'_blank'}>
+              <a style={{ color: colors.linkExternal }} href={urlGrafanaHelp} target={'_blank'} rel="noreferrer">
                 app.anodot.com
               </a>
             </p>
@@ -120,7 +121,6 @@ export const ConfigEditor: React.FC<Props> = props => {
         <Input
           required
           type="password"
-          css={''}
           width={30}
           placeholder={secureJsonFields?.token ? 'configured' : ''}
           value={secureJsonData.token ?? ''}
@@ -128,7 +128,7 @@ export const ConfigEditor: React.FC<Props> = props => {
         />
       </div>
       <p>
-        <a style={{ color: colors.linkExternal }} href={urlGrafanaHelp} target={'_blank'}>
+        <a style={{ color: colors.linkExternal }} href={urlGrafanaHelp} target={'_blank'} rel="noreferrer">
           Learn More
         </a>
       </p>

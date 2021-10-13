@@ -4,7 +4,7 @@ import { TimeFilter } from '../types';
 export const getPluoral = (n, base, suffix = 's') => base + (n === 1 ? '' : suffix);
 
 export const formatDate = (secs, format = 'MM/DD/YYYY') => {
-  const addZero = v => ('0' + v).slice(-2);
+  const addZero = (v) => ('0' + v).slice(-2);
   let d = new Date(secs * 1000);
   const hours = `${addZero(d.getHours())}:${addZero(d.getMinutes())}`;
   const date = format
@@ -14,7 +14,7 @@ export const formatDate = (secs, format = 'MM/DD/YYYY') => {
   return (checkIsToday(secs * 1000) ? 'Today ' : `${date} `) + hours;
 };
 
-export const checkIsToday = mSeconds => {
+export const checkIsToday = (mSeconds) => {
   return new Date().getTime() - mSeconds < 86400000 && new Date().getDate() === new Date(mSeconds).getDate();
 };
 
@@ -41,7 +41,7 @@ export function readTime(time: TimeRange, startName = 'startDate', endName = 'en
 }
 
 export const arrayToOptions = (arr: any[] = [], key?) => {
-  const options = arr?.map?.(item => {
+  const options = arr?.map?.((item) => {
     const value = key ? item[key] : item;
     return { label: value, value };
   });
@@ -52,13 +52,13 @@ export const arrayToOptions = (arr: any[] = [], key?) => {
   return options;
 };
 
-export const addLabel = value => (value?.label ? value : { label: value, value });
+export const addLabel = (value) => (value?.label ? value : { label: value, value });
 
 export function getDateRange(days, startFlag) {
   if (isNaN(days)) {
     if (days?.length) {
       // custom case when calendar gives us an array [from, to], not amount of days
-      const [fromDate, toDate] = days.map(d => new Date(d).getTime() / 1000);
+      const [fromDate, toDate] = days.map((d) => new Date(d).getTime() / 1000);
       return startFlag ? { startDate: fromDate, endDate: toDate } : { fromDate, toDate };
     }
     return {}; // no values

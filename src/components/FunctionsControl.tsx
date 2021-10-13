@@ -37,12 +37,12 @@ const FunctionsRow = ({
           onChange={functionName.onChange}
         />
       </div>
-      {parameters?.map(param => (
-        <div className="gf-form gf-form--grow">
+      {parameters?.map((param) => (
+        <div key={param.name} className="gf-form gf-form--grow">
           {param.name === 'Scale Factor' && (
             <Input
               type="number"
-              onChange={e => onParamsChange({ ...paramsValue, [param.name]: e.target.value })}
+              onChange={(e) => onParamsChange({ ...paramsValue, [param.name]: e.target.value })}
               value={paramsValue?.[param.name]}
               required
             />
@@ -53,8 +53,8 @@ const FunctionsRow = ({
               menuPlacement={'bottom'}
               value={paramsValue[param.name] && JSON.parse(paramsValue[param.name])?.properties}
               options={arrayToOptions(groupByPropertiesList)}
-              onChange={selectedOptions => {
-                const selected = selectedOptions.map(o => o.value);
+              onChange={(selectedOptions) => {
+                const selected = selectedOptions.map((o) => o.value);
                 onParamsChange({ ...paramsValue, [param.name]: JSON.stringify({ properties: selected }) });
               }}
             />
@@ -64,7 +64,7 @@ const FunctionsRow = ({
               menuPlacement={'bottom'}
               value={paramsValue[param.name]}
               options={arrayToOptions(param.optionalValues)}
-              onChange={value => {
+              onChange={(value) => {
                 onParamsChange({ ...paramsValue, [param.name]: value });
               }}
             />
@@ -84,8 +84,8 @@ const FunctionsControl = ({ functionsConfigs, selectedFunctions = {}, onChangeFu
   const availableFunctions = useMemo(() => {
     const selectedKeys = Object.keys(selectedFunctions);
     return functionsConfigs
-      .filter(f => !selectedKeys.includes(f.name) && f.name !== 'new')
-      .map(s => ({ label: s.displayName, value: s.name }));
+      .filter((f) => !selectedKeys.includes(f.name) && f.name !== 'new')
+      .map((s) => ({ label: s.displayName, value: s.name }));
   }, [selectedFunctions, functionsConfigs]);
 
   const onFunctionChange = useCallback(
@@ -107,7 +107,7 @@ const FunctionsControl = ({ functionsConfigs, selectedFunctions = {}, onChangeFu
   );
 
   const onDelete = useCallback(
-    id => {
+    (id) => {
       const newQuery = { ...selectedFunctions };
       delete newQuery[id];
       onChangeFunctions(newQuery);
@@ -135,11 +135,11 @@ const FunctionsControl = ({ functionsConfigs, selectedFunctions = {}, onChangeFu
               label: selectedFunctions[funcName]?.functionLabel,
               value: selectedFunctions[funcName]?.functionName,
             },
-            onChange: newName => onFunctionChange(funcName, newName, null, i),
+            onChange: (newName) => onFunctionChange(funcName, newName, null, i),
           }}
-          functionConfig={functionsConfigs.find(f => f.name === funcName)}
+          functionConfig={functionsConfigs.find((f) => f.name === funcName)}
           onDelete={() => onDelete(funcName)}
-          onParamsChange={value => onFunctionChange(funcName, null, value, i)}
+          onParamsChange={(value) => onFunctionChange(funcName, null, value, i)}
           paramsValue={selectedFunctions[funcName].parameters}
           index={i}
           groupByPropertiesList={groupByPropertiesList}

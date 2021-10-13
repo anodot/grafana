@@ -110,7 +110,7 @@ export function makeMetricTimeSeriesParams(
     startBucketMode: true,
   };
 
-  const expression = dimensions.map(d => ({
+  const expression = dimensions.map((d) => ({
     ...d,
     type: 'property',
     isExact: !true,
@@ -145,7 +145,7 @@ export function makeMetricTimeSeriesParams(
                 children: [result],
                 function: functionsParsed[currFuncName].functionName,
                 id: '882f-d2a8f8cadf29',
-                parameters: Object.keys(functionsParsed[currFuncName].parameters).map(name => {
+                parameters: Object.keys(functionsParsed[currFuncName].parameters).map((name) => {
                   const param = functionsParsed[currFuncName].parameters[name];
                   return { name, value: isObject(param) ? param.value : param };
                 }),

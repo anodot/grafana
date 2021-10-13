@@ -32,8 +32,9 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
   const { datasource, onFormChange } = props;
   const query = defaults(props.query, defaultAnomaliesQuery);
   const isSpecificMetricSelected = query.metrics?.length > 0;
-  const durationLabel = `Duration (${query.durationStep > 1 ? query.durationStep + ' ' : ''}${query.durationUnit ||
-    ''})`;
+  const durationLabel = `Duration (${query.durationStep > 1 ? query.durationStep + ' ' : ''}${
+    query.durationUnit || ''
+  })`;
 
   useEffect(() => {
     props.onRunQuery();
@@ -46,13 +47,13 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           isMulti
           getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
           value={query.metrics}
-          onChange={value => onFormChange('metrics', value, true)}
+          onChange={(value) => onFormChange('metrics', value, true)}
           placeholder={'All measures'}
           notOptions={{
             notCheckboxDisabled: !isSpecificMetricSelected,
             showNotCheckbox: true,
             notCheckboxValue: isSpecificMetricSelected && query.notOperator,
-            onNotChange: e => onFormChange('notOperator', e.currentTarget.checked, true),
+            onNotChange: (e) => onFormChange('notOperator', e.currentTarget.checked, true),
           }}
         />
       </div>
@@ -63,14 +64,14 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           label={durationLabel}
           value={query.duration}
           tooltip={'Anomaly Duration'}
-          onAfterChange={value => onFormChange('duration', value, true)}
+          onAfterChange={(value) => onFormChange('duration', value, true)}
         />
         <FormSlider
           inputWidth={0}
           label={'Score'}
           value={query.score}
           tooltip={'Anomaly Score'}
-          onAfterChange={value => onFormChange('score', value, true)}
+          onAfterChange={(value) => onFormChange('score', value, true)}
         />
       </div>
       <div className={'gf-form'}>
@@ -81,7 +82,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           tooltip={'Anomalies Delta Type'}
           value={query.deltaType}
           options={deltaTypesOptions}
-          onChange={value => onFormChange('deltaType', value, true)}
+          onChange={(value) => onFormChange('deltaType', value, true)}
         />
         <FormInput
           inputWidth={0}
@@ -89,7 +90,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           tooltip={'Anomalies Delta Value'}
           value={query.deltaValue}
           type={'number'}
-          onChange={e => onFormChange('deltaValue', e.currentTarget.value, true)}
+          onChange={(e) => onFormChange('deltaValue', e.currentTarget.value, true)}
         />
       </div>
       <div className={'gf-form'}>
@@ -101,7 +102,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           tooltip={'Anomaly Time Scale'}
           value={query.timeScales}
           options={timeScaleOptions}
-          onChange={value => {
+          onChange={(value) => {
             const smallestTimescale = value.sort((a, b) => a.meta[3] - b.meta[3])[0];
             const joinedChanges = {
               timeScales: value,
@@ -122,7 +123,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           tooltip={'Anomaly Direction'}
           value={query.direction}
           options={directionsOptions}
-          onChange={value => onFormChange('direction', value, true)}
+          onChange={(value) => onFormChange('direction', value, true)}
           required
         />
         <FormSelect
@@ -131,7 +132,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           tooltip={'Anomalies Sort Order'}
           value={query.sortBy}
           options={sortAnomalyOptions}
-          onChange={value => onFormChange('sortBy', value, true)}
+          onChange={(value) => onFormChange('sortBy', value, true)}
         />
       </div>
       <div className="gf-form gf-form--grow">
@@ -139,14 +140,14 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           label={'Open only'}
           tooltip={'Open Anomalies only'}
           value={query.openedOnly}
-          onChange={e => onFormChange('openedOnly', e.currentTarget.checked, true)}
+          onChange={(e) => onFormChange('openedOnly', e.currentTarget.checked, true)}
         />
         <FormSwitch
           labelWidth={0}
           label={'Request Charts Data'}
           tooltip={'Show Anomalies Charts or Anomalies List'}
           value={query.requestCharts}
-          onChange={e => onFormChange('requestCharts', e.currentTarget.checked, true)}
+          onChange={(e) => onFormChange('requestCharts', e.currentTarget.checked, true)}
         />
         <FormSwitch
           labelWidth={0}
@@ -154,7 +155,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           label={'Include Baseline'}
           tooltip={'Include Baseline'}
           value={query.includeBaseline}
-          onChange={e => onFormChange('includeBaseline', e.currentTarget.checked, true)}
+          onChange={(e) => onFormChange('includeBaseline', e.currentTarget.checked, true)}
         />
         <FormInput
           labelWidth={4}

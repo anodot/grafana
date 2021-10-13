@@ -24,7 +24,7 @@ export async function getEvents(ds) {
   return await getBackendSrv()
     .datasourceRequest(getOptions(ds, url, payload))
     .then(({ data }) => {
-      const result = data.events?.map(e => ({ ...e, startDate: e.date, isEvent: true }));
+      const result = data.events?.map((e) => ({ ...e, startDate: e.date, isEvent: true }));
       result.type = 'events';
       return result;
     });
@@ -66,7 +66,7 @@ export async function getAnomalyChart(anomaly, params, ds) {
   return await getBackendSrv()
     .datasourceRequest(getOptions(ds, makeAnomalyTimeSeriesParams(anomaly, url, params)))
     .then(({ data }) => ({ ...data, metricsCount }))
-    .catch(error => {
+    .catch((error) => {
       console.log('Request Error - Anomaly Chart: ', anomaly, tParams, error);
       return {};
     });
@@ -78,7 +78,7 @@ export async function getAlerts(query, ds) {
   let subscribers = [];
   let channels = [];
 
-  recipient.forEach(r => {
+  recipient.forEach((r) => {
     if (r.type === 'channel') {
       channels.push(r.value);
     }

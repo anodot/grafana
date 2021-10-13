@@ -115,7 +115,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     try {
       return await getBackendSrv()
         .datasourceRequest(this.getOptions(url, payload))
-        .then(d => d.data?.propertyValues || []);
+        .then((d) => d.data?.propertyValues || []);
     } catch (error) {
       return {
         error: {
@@ -156,12 +156,12 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       }));
   }
 
-  async getUsers() {
+  async getUsers(): any[] {
     const url = '/users';
     return await this.makeRequest(url);
   }
 
-  async getChannels() {
+  async getChannels(): any[] {
     const url = '/channels';
     return this.makeRequest(url);
   }
@@ -194,7 +194,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       }
     }
 
-    const promises = options.targets.map(query => {
+    const promises = options.targets.map((query) => {
       query.timeInterval = this.timeInterval;
       switch (query.scenario) {
         case scenarios.alerts: {
@@ -205,7 +205,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
         }
 
         case scenarios.topology: {
-          const setFrameToDataSource = frame => (this.lastTopologyFrame = frame);
+          const setFrameToDataSource = (frame) => (this.lastTopologyFrame = frame);
           return topologyQuery(query, setFrameToDataSource, this);
         }
         case scenarios.anomalies: {
@@ -216,7 +216,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       }
     });
 
-    return Promise.all(promises).then(data => {
+    return Promise.all(promises).then((data) => {
       return { data: [].concat(...data) };
     });
   }

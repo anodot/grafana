@@ -10,8 +10,8 @@ export function metricsCompositeQuery(query, datasource) {
   const dimensions = JSON.parse(query.dimensions);
   const dashboardVars = getTemplateSrv().getVariables();
   const dashboardDimensions = dashboardVars
-    .filter(v => v.current.value && v.description?.includes('[anodot-dimension]'))
-    .map(v => ({ key: v.id, value: v.current.value }));
+    .filter((v) => v.current.value && v.description?.includes('[anodot-dimension]'))
+    .map((v) => ({ key: v.id, value: v.current.value }));
   if (dashboardDimensions?.length) {
     /* push all elements at one time */
     Array.prototype.push.apply(dimensions, dashboardDimensions);
@@ -20,7 +20,7 @@ export function metricsCompositeQuery(query, datasource) {
   const metricsParams = {
     metricName: metricName,
     dimensions: (dimensions || [])
-      .filter(d => d.value)
+      .filter((d) => d.value)
       .map(({ key, value, not }) => ({ key, value: (not ? '!' : '') + value })),
     includeBaseline: baseLine,
     functions,
@@ -61,7 +61,7 @@ export function metricsCompositeQuery(query, datasource) {
     singleFrame.serieName = scenarios.metricsComposite;
     singleFrame.anodotPayload = {
       showMultiline,
-      metricsComposite: metrics?.map(m => ({ ...m, meta: metricsParams })),
+      metricsComposite: metrics?.map((m) => ({ ...m, meta: metricsParams })),
       meta: metricsParams,
       timeInterval,
       query,

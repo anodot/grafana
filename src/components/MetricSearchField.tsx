@@ -27,14 +27,14 @@ const MetricSearchField: React.FC<SearchProps> = ({
 
   useEffect(() => {
     /** Request Metrics Options onMount*/
-    getMetricsOptions('').then(metrics => {
+    getMetricsOptions('').then((metrics) => {
       setMetricsList(arrayToOptions(metrics, 'value'));
     });
   }, []);
 
   const onSearch = useCallback((searchString: string, { action }) => {
     action === 'input-change' &&
-      getMetricsOptions(searchString).then(metrics => {
+      getMetricsOptions(searchString).then((metrics) => {
         setMetricsList(arrayToOptions(metrics, 'value'));
       });
   }, []);

@@ -33,7 +33,7 @@ export function topologyQuery(query, setFrameToDataSource, datasource) {
     eventsDataPromise = [getEvents(datasource)];
   }
 
-  return Promise.all((metricDataPromises || []).concat(anomalyDataPromises, eventsDataPromise)).then(results => {
+  return Promise.all((metricDataPromises || []).concat(anomalyDataPromises, eventsDataPromise)).then((results) => {
     const metricsDatasets = results.reduce((res, curr) => {
       if (curr.type === 'metrics') {
         res.push({ metricName: curr.metricName, dataSet: curr });
@@ -46,7 +46,7 @@ export function topologyQuery(query, setFrameToDataSource, datasource) {
       }
       return res;
     }, []);
-    const eventsDataset = results.find(r => r.type === 'events')?.[0] || [];
+    const eventsDataset = results.find((r) => r.type === 'events')?.[0] || [];
 
     const frame = new MutableDataFrame({
       refId: query.refId,

@@ -40,7 +40,7 @@ export const QueryEditor = (props: QEditorProps) => {
     [query]
   );
 
-  const onScenarioChange = useCallback(scenario => {
+  const onScenarioChange = useCallback((scenario) => {
     /* reset query to empty object */
     props.onChange({ scenario: scenario.value });
   }, []);

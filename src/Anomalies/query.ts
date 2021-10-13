@@ -9,10 +9,10 @@ export async function anomalyQuery(query, datasource) {
   const { metrics = [], requestCharts, includeBaseline } = query;
   const anomalyDataPromises = makeAnomaliesPromises(query, [], datasource);
 
-  return Promise.all(anomalyDataPromises).then(async results => {
+  return Promise.all(anomalyDataPromises).then(async (results) => {
     const anomalyDatasets = metrics.map(({ value }, i) => ({
       metricName: value,
-      dataSet: results[i]?.map(a => ({ ...a, metricName: value })) || [],
+      dataSet: results[i]?.map((a) => ({ ...a, metricName: value })) || [],
     }));
 
     let anomaliesCharts;
@@ -20,7 +20,7 @@ export async function anomalyQuery(query, datasource) {
     if (requestCharts) {
       const params = { baseline: includeBaseline, timeInterval };
       const flattenResults = [].concat(...results);
-      const anomalyChartsPromises = flattenResults.map(anomaly => getAnomalyChart(anomaly, params, datasource));
+      const anomalyChartsPromises = flattenResults.map((anomaly) => getAnomalyChart(anomaly, params, datasource));
       anomaliesCharts = await Promise.all(anomalyChartsPromises);
     }
     const frame = new MutableDataFrame({
@@ -82,7 +82,7 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
         score: (score[0] ?? score) / 100,
         durationUnit,
         durationValue: duration?.[0] ?? duration,
-        resolution: timeScales.map(t => t.meta[2]),
+        resolution: timeScales.map((t) => t.meta[2]),
         anomalyType: 'all',
         bookmark: '',
         correlation: '',

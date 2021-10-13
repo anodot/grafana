@@ -4,6 +4,7 @@ import { alertAcknowledgeOptions, alertTypesOptions, severityOptions } from '../
 import { AlertsQuery, ScenarioProps } from '../types';
 import FormSwitch from '../components/FormField/FormSwitch';
 import defaults from 'lodash/defaults';
+import { SelectableValue } from '@grafana/data';
 
 export const defaultAlertsQuery: Partial<AlertsQuery> = {
   showOpen: false,
@@ -12,18 +13,22 @@ export const defaultAlertsQuery: Partial<AlertsQuery> = {
 
 const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
   const { onRunQuery, datasource, onFormChange } = props;
-  const [subscribersOptions, setSubscribers] = useState([]);
+  const [subscribersOptions, setSubscribers] = useState<SelectableValue[]>([]);
   const query = defaults(props.query, defaultAlertsQuery);
 
   useEffect(() => {
     /* Get options for Users and Channels selectors */
     onRunQuery();
-    Promise.all([datasource.getUsers(), datasource.getChannels()]).then(results => {
+    Promise.all([datasource.getUsers(), datasource.getChannels()]).then((results) => {
       const subscribersDict = {};
-      const usersOptions = results[0].map(u => ({ label: `${u.firstName} ${u.lastName}`, value: u._id, type: 'user' }));
-      const channelsOptions = results[1].map(ch => ({ label: ch.name, value: ch.id, type: 'channel' }));
+      const usersOptions = results[0].map((u) => ({
+        label: `${u.firstName} ${u.lastName}`,
+        value: u._id,
+        type: 'user',
+      }));
+      const channelsOptions = results[1].map((ch) => ({ label: ch.name, value: ch.id, type: 'channel' }));
       const united = usersOptions.concat(channelsOptions);
-      united.forEach(opt => {
+      united.forEach((opt) => {
         subscribersDict[opt.value] = opt;
       });
       setSubscribers(usersOptions.concat(channelsOptions));
@@ -40,7 +45,7 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             label={'Recipient (Users / Channels)'}
             value={query.recipient}
             options={subscribersOptions}
-            onChange={value => onFormChange('recipient', value, true)}
+            onChange={(value) => onFormChange('recipient', value, true)}
           />
         </div>
       </div>
@@ -52,7 +57,7 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             label={'Acknowledge'}
             value={query.acknowledge}
             options={alertAcknowledgeOptions}
-            onChange={value => onFormChange('acknowledge', value, true)}
+            onChange={(value) => onFormChange('acknowledge', value, true)}
           />
         </div>
         <div className="gf-form">
@@ -61,7 +66,7 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             label={'Open only'}
             tooltip={'Show open alerts only'}
             value={query.showOpen}
-            onChange={e => onFormChange('showOpen', e.currentTarget.checked, true)}
+            onChange={(e) => onFormChange('showOpen', e.currentTarget.checked, true)}
           />
         </div>
       </div>
@@ -74,10 +79,10 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             label={'Alert Type'}
             value={query.types}
             options={alertTypesOptions}
-            onChange={value =>
+            onChange={(value) =>
               onFormChange(
                 'types',
-                value.map(d => d.value),
+                value.map((d) => d.value),
                 true
               )
             }
@@ -91,10 +96,10 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             label={'Severity'}
             value={query.severities}
             options={severityOptions}
-            onChange={value =>
+            onChange={(value) =>
               onFormChange(
                 'severities',
-                value.map(d => d.value),
+                value.map((d) => d.value),
                 true
               )
             }

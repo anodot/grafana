@@ -40,7 +40,7 @@ export interface FormSelectProps extends SelectCommonProps<any> {
 /**
  * Default select field including label. Select element is grafana/ui <Select />.
  */
-const FormSelect: React.FC<FormSelectProps> = props => {
+const FormSelect: React.FC<FormSelectProps> = (props) => {
   const {
     label,
     tooltip,
@@ -56,8 +56,13 @@ const FormSelect: React.FC<FormSelectProps> = props => {
     required,
     ...remainingProps
   } = props;
-  const { showNotCheckbox, notCheckboxValue = false, notCheckboxLabel = 'NOT', onNotChange, notCheckboxDisabled } =
-    notOptions || {};
+  const {
+    showNotCheckbox,
+    notCheckboxValue = false,
+    notCheckboxLabel = 'NOT',
+    onNotChange,
+    notCheckboxDisabled,
+  } = notOptions || {};
   return (
     <FormWrapper
       error={error || (required && (props.isMulti ? !props.value?.length : !props.value))}

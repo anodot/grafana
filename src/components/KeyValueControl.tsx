@@ -86,8 +86,8 @@ const KeyValueControl: React.FC<KeyValuePropsType> = ({
 
   useEffect(() => {
     /** Requests values options for every new unknown key */
-    const keys = dimensionsQuery.map(d => d.key);
-    keys.forEach(k => {
+    const keys = dimensionsQuery.map((d) => d.key);
+    keys.forEach((k) => {
       if (!valuesMap[k]) {
         setValuesMap({
           ...valuesMap,
@@ -124,7 +124,7 @@ const KeyValueControl: React.FC<KeyValuePropsType> = ({
   );
 
   const onDelete = useCallback(
-    i => {
+    (i) => {
       const newQuery = [...dimensionsQuery];
       newQuery.splice(i, 1);
       onChangeDimensions(newQuery);
@@ -148,17 +148,17 @@ const KeyValueControl: React.FC<KeyValuePropsType> = ({
             label: `Dimension ${i + 1}`,
             options: availableDimensionsNames,
             value: dimension.key,
-            onChange: d => onChange('key', d.value, i),
+            onChange: (d) => onChange('key', d.value, i),
           }}
           dimensionValue={{
             label: `:`,
             options: dimension.key ? valuesMap[dimension.key] : [],
             value: dimension.value,
-            onChange: d => onChange('value', d.value, i),
+            onChange: (d) => onChange('value', d.value, i),
             isLoading: valuesMap[dimension.key] === 'isLoading',
           }}
           onDelete={() => onDelete(i)}
-          onNotChange={e => onChange('not', e.target.checked, i)}
+          onNotChange={(e) => onChange('not', e.target.checked, i)}
           notValue={Boolean(dimension.not)}
         />
       ))}

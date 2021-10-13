@@ -25,7 +25,7 @@ export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
   size: 10,
 };
 
-const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = props => {
+const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (props) => {
   const { onFormChange, datasource } = props;
   const query = defaults(props.query, defaultMetricsCompositeQuery);
   const [propertiesOptions, setPropertiesOptions] = useState([]);
@@ -51,13 +51,13 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = props
   useEffect(() => {
     /** Reduce already selected propertyNames from available properties */
     if (propertiesOptions) {
-      let choseOptions = JSON.parse(query.dimensions).map(d => d.key); // options were already chose and are not available anymore
-      const availableOptions = difference(propertiesOptions, choseOptions).map(value => ({ label: value, value }));
+      let choseOptions = JSON.parse(query.dimensions).map((d) => d.key); // options were already chose and are not available anymore
+      const availableOptions = difference(propertiesOptions, choseOptions).map((value) => ({ label: value, value }));
       setAvailableOptions(availableOptions);
     }
   }, [propertiesOptions, query.dimensions]);
 
-  const getValues = useCallback(name => datasource.getMetricsPropVal(query.metricName, name), [query.metricName]);
+  const getValues = useCallback((name) => datasource.getMetricsPropVal(query.metricName, name), [query.metricName]);
 
   // TODO: Do ve have availableOptions for empty Measure?
   return (
@@ -69,7 +69,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = props
             isClearable
             getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
             value={query.metricName && addLabel(query.metricName)}
-            onChange={value => onFormChange('metricName', value, true)}
+            onChange={(value) => onFormChange('metricName', value, true)}
           />
         </div>
         <div className="gf-form gf-form--grow">
@@ -90,14 +90,14 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = props
             label={'Include baseline'}
             tooltip={'Include baseline'}
             value={query.baseLine}
-            onChange={e => onFormChange('baseLine', e?.currentTarget?.checked, true)}
+            onChange={(e) => onFormChange('baseLine', e?.currentTarget?.checked, true)}
           />
           <FormSwitch
             label={'Multiline'}
             labelWidth={6}
             tooltip={'Shows all metrics on the single chart together'}
             value={query.showMultiline}
-            onChange={e => onFormChange('showMultiline', e?.currentTarget?.checked, true)}
+            onChange={(e) => onFormChange('showMultiline', e?.currentTarget?.checked, true)}
           />
           <FormInput
             labelWidth={4}
@@ -118,7 +118,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = props
             functionsConfigs={functionsMeta}
             key={`function-${query.metricName}`}
             selectedFunctions={JSON.parse(query.functions)}
-            onChangeFunctions={newFunctions =>
+            onChangeFunctions={(newFunctions) =>
               onFormChange('functions', JSON.stringify(newFunctions), !('new' in newFunctions))
             }
             groupByPropertiesList={propertiesOptions}
@@ -129,7 +129,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = props
         <KeyValueControl
           key={query.metricName}
           dimensionsQuery={JSON.parse(query.dimensions)}
-          onChangeDimensions={value => onFormChange('dimensions', JSON.stringify(value), true)}
+          onChangeDimensions={(value) => onFormChange('dimensions', JSON.stringify(value), true)}
           availableDimensionsNames={availableOptions}
           getValues={getValues}
           withNotControl

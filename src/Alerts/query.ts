@@ -8,7 +8,7 @@ import { getAlerts } from '../api';
 export function alertsQuery(query, datasource) {
   const { urlBase } = datasource;
   return getAlerts(query, datasource).then(({ alertGroups }) => {
-    const flattenAlerts = [].concat(...alertGroups.map(group => group?.alerts));
+    const flattenAlerts = [].concat(...alertGroups.map((group) => group?.alerts));
     const frame = new MutableDataFrame({
       /* TODO: It can be used in native Table panel only, but still needs to be
       configured: add link for title, hide levels column, hide digits from Severity column. How to do that?
@@ -40,7 +40,7 @@ export function alertsQuery(query, datasource) {
               ],
             },
           },
-          parse: value => {
+          parse: (value) => {
             switch (value) {
               case 'critical':
                 return '0';
@@ -94,7 +94,7 @@ export function alertsQuery(query, datasource) {
       if (alert.type === 'anomaly') {
         /* get the score */
         const lastMetric = alert.metrics[alert.metrics.length - 1];
-        score = Math.round(Math.max(...lastMetric.intervals.map(i => i.score)) * 100);
+        score = Math.round(Math.max(...lastMetric.intervals.map((i) => i.score)) * 100);
       }
       alert.formatted = {
         started: format(new Date(alert.startTime * 1000), checkIsToday(alert.startTime * 1000) ? 'HH:mm' : 'MMM dd'), //formatDate(alert.startTime, 'MM DD'),
