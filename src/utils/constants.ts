@@ -1,5 +1,5 @@
 export const urlBase = 'https://app.anodot.com';
-export const urlApiPostfix = '/api/v2';
+export const urlApiPostfix = '/api/v2/';
 export const urlGrafanaHelp = 'https://www.anodot.com/integration/grafana/';
 
 export const scenarios = {

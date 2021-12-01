@@ -1,6 +1,6 @@
 {
   "name": "anodot-datasource",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Anodot Grafana Datasource for anodot-panel plugin",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -20,7 +20,7 @@
     "@types/lodash": "latest"
   },
   "engines": {
-    "node": ">=12 <15"
+    "node": ">=15"
   },
   "dependencies": {
     "@grafana/runtime": "^8.2.0",

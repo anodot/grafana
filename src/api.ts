@@ -120,22 +120,17 @@ export async function getMetricsComposite(metricParams, timeParams, ds) {
 }
 
 function getOptions(datasource, url: string, payload?: object | null, params?: object) {
-  const { localStorageKey, urlApi } = datasource;
-  const fullUrl = urlApi + (!params ? url : getQueryParamsUrl(params, url));
-  const headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem(localStorageKey)}`,
-  };
+  const { dsUrl } = datasource;
+  const fullUrl = dsUrl + (!params ? url : getQueryParamsUrl(params, url));
+
   return payload
     ? {
         url: fullUrl,
         method: 'POST',
         data: JSON.stringify(payload),
-        headers,
       }
     : {
         url: fullUrl,
         method: 'GET',
-        headers,
       };
 }

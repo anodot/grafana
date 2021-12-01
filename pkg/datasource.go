@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
@@ -15,6 +16,8 @@ import (
 type dataSource struct {
 	im instancemgmt.InstanceManager
 }
+
+var tokenStorage string = ""
 
 func newDataSource() *dataSource {
 	return &dataSource{
@@ -27,13 +30,6 @@ func newDataSource() *dataSource {
 // req contains information about the HTTP request
 // sender is used for returning a response back to the client
 func (ds *dataSource) CallResource(ctx context.Context, req *backend.CallResourceRequest, sender backend.CallResourceResponseSender) error {
-	if req.Path != "access-token" {
-		sender.Send(&backend.CallResourceResponse{
-			Status: http.StatusNotFound,
-		})
-		return nil
-	}
-
 	instance, err := ds.im.Get(req.PluginContext)
 	if err != nil {
 		return err
@@ -43,42 +39,87 @@ func (ds *dataSource) CallResource(ctx context.Context, req *backend.CallResourc
 
 	var jsonData struct {
 		URL string `json:"url"`
+		POSTFIX string `json:"apiPostfix"`
 	}
+
 	if err := json.Unmarshal(dsInstance.settings.JSONData, &jsonData); err != nil {
 		return err
 	}
 
-	refreshToken := dsInstance.settings.DecryptedSecureJSONData["token"]
+	if ((req.Path == "access-token") || (tokenStorage == "")) {
+    // get the API token with refresh token from Datasource config
+    refreshToken := dsInstance.settings.DecryptedSecureJSONData["token"]
 
-	payload, err := json.Marshal(map[string]string{"refreshToken": refreshToken})
-	if err != nil {
-		return err
+    payload, err := json.Marshal(map[string]string{"refreshToken": refreshToken})
+    if err != nil {
+      return err
+    }
+
+    authReq, err := http.NewRequest("POST", jsonData.URL+"/api/v2/access-token", bytes.NewReader(payload))
+    if err != nil {
+      return err
+    }
+    authReq.Header.Set("Content-Type", "application/json")
+
+    resp, err := http.DefaultClient.Do(authReq)
+    if err != nil {
+      return err
+    }
+    defer resp.Body.Close()
+
+    b, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+      return err
+    }
+    if (resp.StatusCode == 200) {
+      tokenStorage = strings.Trim(string(b), "\"")
+    }
+
+    if (req.Path == "access-token") {
+      // Here we just forward the response from the API call since we're only
+      // acting as a proxy.
+      sender.Send(&backend.CallResourceResponse{
+        Status:  resp.StatusCode,
+        Headers: resp.Header,
+        Body:    b,
+      })
+      return nil
+    }
 	}
 
-	authReq, err := http.NewRequest("POST", jsonData.URL+"/api/v2/access-token", bytes.NewReader(payload))
-	if err != nil {
-		return err
-	}
-	authReq.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(authReq)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+  payload := req.Body
+  if (req.Method == "GET") {
+    payload = []byte("")
+  }
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
+  authReq, err := http.NewRequest(req.Method, jsonData.URL+jsonData.POSTFIX + req.URL, bytes.NewReader(payload))
+  if err != nil {
+    return err
+  }
 
-	// Here we just forward the response from the API call since we're only
-	// acting as a proxy.
-	sender.Send(&backend.CallResourceResponse{
-		Status:  resp.StatusCode,
-		Headers: resp.Header,
-		Body:    b,
-	})
+  tokenStr := "Bearer " + tokenStorage
+  authReq.Header.Set("Content-Type", "application/json")
+  authReq.Header.Set("Authorization", tokenStr)
+
+  resp, err := http.DefaultClient.Do(authReq)
+  if err != nil {
+    return err
+  }
+  defer resp.Body.Close()
+
+  b, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+    return err
+  }
+
+  // Here we just forward the response from the API call since we're only
+  // acting as a proxy.
+  sender.Send(&backend.CallResourceResponse{
+    Status:  resp.StatusCode,
+    Headers: resp.Header,
+    Body:    b,
+  })
 
 	return nil
 }

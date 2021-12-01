@@ -10,30 +10,17 @@ import { alertsQuery } from './Alerts/query';
 import { anomalyQuery } from './Anomalies/query';
 import { topologyQuery } from './Topology/query';
 
-const localStorageKey = 'andt-token';
-
 export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> {
   url?: string;
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
-    const { url, apiPostfix } = instanceSettings?.jsonData;
-    this.urlApi = url + apiPostfix;
-    this.urlBase = url;
     this.id = instanceSettings.id;
-    this.localStorageKey = `${instanceSettings.id}-${localStorageKey}`;
+    this.dsUrl = `/api/datasources/${instanceSettings.id}/resources`;
   }
 
   async makeRequest(url, payload, params, thenCallback) {
     const defaultClb = ({ data }) => data;
-    let storedToken = localStorage.getItem(this.localStorageKey);
-    if (!storedToken) {
-      const tokenResponse = await this.testDatasource();
-      const { isError, message } = tokenResponse;
-      if (isError) {
-        throw new Error(message);
-      }
-    }
 
     return await getBackendSrv()
       .datasourceRequest(this.getOptions(url, payload, params))
@@ -41,17 +28,15 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
   }
 
   async testDatasource() {
-    /* It runs on 'Test Datasource', and gets the Auth token from Anodot side */
+    /* It runs on 'Test Datasource', and stores the API token from Anodot side in the server runtime */
     const defaultErrorMessage = 'Cannot connect to API. Please check your credentials in datasource config';
 
     try {
       const response = await getBackendSrv().datasourceRequest({
-        url: `/api/datasources/${this.id}/resources/access-token`,
+        url: this.dsUrl + '/access-token',
       });
 
       if (response.status === 200) {
-        const token = await response.data;
-        localStorage.setItem(this.localStorageKey, token);
         return {
           status: 'success',
           message: "You've  successfully authorized Anodot datasource",
@@ -85,22 +70,16 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
   }
 
   getOptions(url, payload, params) {
-    const fullUrl = this.urlApi + (!params ? url : getQueryParamsUrl(params, url));
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem(this.localStorageKey)}`,
-    };
+    const fullUrl = this.dsUrl + (!params ? url : getQueryParamsUrl(params, url));
     return payload
       ? {
           url: fullUrl,
           method: 'POST',
           data: JSON.stringify(payload),
-          headers,
         }
       : {
           url: fullUrl,
           method: 'GET',
-          headers,
         };
   }
 
@@ -185,15 +164,6 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     this.callId = Math.floor(Math.random() * 1000000);
     this.timeInterval = readTime(options.range!);
 
-    let storedToken = localStorage.getItem(this.localStorageKey);
-    if (!storedToken) {
-      const tokenResponse = await this.testDatasource();
-      const { isError, message } = tokenResponse;
-      if (isError) {
-        throw new Error(message);
-      }
-    }
-
     const promises = options.targets.map((query) => {
       query.timeInterval = this.timeInterval;
       switch (query.scenario) {
@@ -203,7 +173,6 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
         case scenarios.metricsComposite: {
           return metricsCompositeQuery(query, this);
         }
-
         case scenarios.topology: {
           const setFrameToDataSource = (frame) => (this.lastTopologyFrame = frame);
           return topologyQuery(query, setFrameToDataSource, this);
