@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { arrayToOptions } from '../utils/helpers';
-import FormSelect, { NotOptionsType, FormSelectProps } from './FormField/FormSelect';
+import FormSelect, { FormSelectProps, NotOptionsType } from './FormField/FormSelect';
 import { SelectableValue } from '@grafana/data';
 
 interface SearchProps extends Partial<FormSelectProps> {
@@ -12,6 +12,7 @@ interface SearchProps extends Partial<FormSelectProps> {
   notOptions?: NotOptionsType;
   placeholder?: string;
 }
+
 const MetricSearchField: React.FC<SearchProps> = ({
   value,
   onChange,
@@ -30,14 +31,17 @@ const MetricSearchField: React.FC<SearchProps> = ({
     getMetricsOptions('').then((metrics) => {
       setMetricsList(arrayToOptions(metrics, 'value'));
     });
-  }, []);
+  }, [getMetricsOptions]);
 
-  const onSearch = useCallback((searchString: string, { action }) => {
-    action === 'input-change' &&
-      getMetricsOptions(searchString).then((metrics) => {
-        setMetricsList(arrayToOptions(metrics, 'value'));
-      });
-  }, []);
+  const onSearch = useCallback(
+    (searchString: string, { action }) => {
+      action === 'input-change' &&
+        getMetricsOptions(searchString).then((metrics) => {
+          setMetricsList(arrayToOptions(metrics, 'value'));
+        });
+    },
+    [getMetricsOptions]
+  );
 
   return (
     <FormSelect

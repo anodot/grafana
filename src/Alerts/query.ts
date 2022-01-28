@@ -29,10 +29,6 @@ export function alertsQuery(query, datasource) {
             thresholds: {
               mode: 'absolute',
               steps: [
-                // { value: 'critical', color: 'red' },
-                // { value: 'high', color: 'blue' },
-                // { value: 'medium', color: 'green' },
-                // { value: 'low', color: 'purple' },
                 { value: 0, color: '#d10f37' },
                 { value: 1, color: '#f9771f' },
                 { value: 2, color: '#ffbe2f' },

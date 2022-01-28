@@ -17,6 +17,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
     super(instanceSettings);
     this.id = instanceSettings.id;
     this.dsUrl = `/api/datasources/${instanceSettings.id}/resources`;
+    this.urlBase = instanceSettings.jsonData.url + instanceSettings.jsonData.apiPostfix;
   }
 
   async makeRequest(url, payload, params, thenCallback) {

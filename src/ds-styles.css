@@ -4,3 +4,7 @@
 .notCheckbox > span {
   top: 7px;
 }
+.gf-form-text {
+  margin-top: 6px;
+  opacity: 0.6;
+}

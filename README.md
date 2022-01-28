@@ -63,6 +63,11 @@ yarn watch
 yarn build
 ```
 
+4. Optional: build the backend plugin
+```BASH
+mage
+```
+
 ## Setting up the Anodot Data Source
 
 Once you have the plugin installed, please follow the steps below to configure it for use:

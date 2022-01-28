@@ -95,7 +95,7 @@ export const ConfigEditor: React.FC<Props> = (props) => {
           onChange={(e) => setFullUrl(e.target.checked)}
           tooltip={<p>Relative API path E.g: &quot;/api/v2&quot;</p>}
         />
-        {showFullUrl && (
+        {showFullUrl ? (
           <Input
             type={'text'}
             placeholder={"E.g: '/api/v2'"}
@@ -103,6 +103,8 @@ export const ConfigEditor: React.FC<Props> = (props) => {
             value={jsonData.apiPostfix}
             onChange={onUrlSuffixChange}
           />
+        ) : (
+          <div className="gf-form-text">{jsonData.apiPostfix}</div>
         )}
       </div>
       <div className={'gf-form'}>
