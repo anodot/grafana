@@ -74,7 +74,7 @@ export async function getAnomalyChart(anomaly, params, ds) {
 
 export async function getAlerts(query, ds) {
   const { timeInterval } = ds;
-  const { severities = [], types, recipient = [], showOpen, acknowledge } = query;
+  const { severities = [], types = [], recipient = [], showOpen, acknowledge } = query;
   let subscribers = [];
   let channels = [];
 
@@ -89,7 +89,7 @@ export async function getAlerts(query, ds) {
 
   const params = {
     severities: severities.length ? severities : null,
-    types,
+    types: types?.length ? types : undefined,
     startTime: timeInterval?.startDate,
     size: 200,
     subscribers: subscribers.length ? subscribers.join(',') : null,

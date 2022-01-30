@@ -5,7 +5,7 @@ import { getQ, getQueryParamsUrl } from '../utils/helpers';
 import { loadAnomalyData, getAnomalyChart } from '../api';
 
 export async function anomalyQuery(query, datasource) {
-  const { timeInterval, callId } = datasource;
+  const { timeInterval, callId, urlBase } = datasource;
   const { metrics = [], requestCharts, includeBaseline } = query;
   const anomalyDataPromises = makeAnomaliesPromises(query, [], datasource);
 
@@ -36,6 +36,7 @@ export async function anomalyQuery(query, datasource) {
       callId,
       timeInterval,
       query,
+      urlBase,
     };
 
     return frame;

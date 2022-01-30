@@ -31,7 +31,7 @@ const MetricSearchField: React.FC<SearchProps> = ({
     getMetricsOptions('').then((metrics) => {
       setMetricsList(arrayToOptions(metrics, 'value'));
     });
-  }, [getMetricsOptions]);
+  }, []);
 
   const onSearch = useCallback(
     (searchString: string, { action }) => {
