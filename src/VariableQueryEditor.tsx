@@ -7,7 +7,7 @@ interface VariableQueryProps {
 }
 
 export const VariableQueryEditor: React.FC<VariableQueryProps> = ({ onChange, query }) => {
- // const [state, setState] = useState(query);
+  // const [state, setState] = useState(query);
 
   // const saveQuery = () => {
   //   onChange(state, `${state.query} (${state.namespace})`);

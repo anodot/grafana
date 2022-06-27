@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FormSelect from '../components/FormField/FormSelect';
 import FormSlider from '../components/FormField/FormSlider';
 import FormInput from '../components/FormField/FormInput';
@@ -7,10 +7,10 @@ import MetricSearchField from '../components/MetricSearchField';
 import defaults from 'lodash/defaults';
 import { AnomalyQuery, ScenarioProps } from '../types';
 import { deltaTypesOptions, directionsOptions, sortAnomalyOptions, timeScaleOptions } from '../utils/constants';
-import DimensionsRows from "../components/KeyValueControl";
-import {SelectableValue} from "@grafana/data";
-import difference from "lodash/difference";
-import {defaultMetricsCompositeQuery} from "../MetricsComposite/QueryEditor";
+import DimensionsRows from '../components/KeyValueControl';
+import { SelectableValue } from '@grafana/data';
+import difference from 'lodash/difference';
+import { defaultMetricsCompositeQuery } from '../MetricsComposite/QueryEditor';
 
 const maxSize = 20;
 
@@ -31,7 +31,7 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   durationStep: 1,
   durationUnit: 'minutes',
   dimensions: '[]',
-  applyVariables: false
+  applyVariables: false,
 };
 
 const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
@@ -45,7 +45,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
     query.durationUnit || ''
   })`;
   // TODO: the whole dimensions works for single (first) metric only
-  const firstMetricName = query.metrics?.[0]?.value || "";
+  const firstMetricName = query.metrics?.[0]?.value || '';
   const getValues = useCallback((name) => datasource.getMetricsPropVal(firstMetricName, name), [firstMetricName]);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
       /* save it in Query to be able to validate dashboardVarsDimensions in datasource */
       onFormChange('dimensionsOptions', properties, false);
     });
-  }, [firstMetricName]);
+  }, [firstMetricName, isPristine]);
 
   useEffect(() => {
     /** Reduce already selected propertyNames from available properties */
@@ -202,7 +202,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
         <FormSwitch
           labelWidth={0}
           label={'Apply variables'}
-          tooltip={'Apply dashboard\'s dimension variables'}
+          tooltip={"Apply dashboard's dimension variables"}
           value={Boolean(query.applyVariables)}
           onChange={(e) => onFormChange('applyVariables', e.currentTarget.checked, true)}
         />

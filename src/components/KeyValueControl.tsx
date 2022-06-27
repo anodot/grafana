@@ -20,7 +20,7 @@ interface KVRowPropsType {
   withNotControl?: boolean;
   onNotChange(a: any): void;
   notValue: boolean;
-  isMultiValue?: boolean
+  isMultiValue?: boolean;
 }
 
 const KVRow: React.FC<KVRowPropsType> = ({
@@ -30,7 +30,7 @@ const KVRow: React.FC<KVRowPropsType> = ({
   withNotControl,
   onNotChange,
   notValue,
-  isMultiValue
+  isMultiValue,
 }) => (
   <div className="gf-form-inline">
     <div className="gf-form gf-form--grow">
@@ -51,7 +51,7 @@ const KVRow: React.FC<KVRowPropsType> = ({
         tooltip={dimensionValue.tooltip}
         labelWidth={1}
         inputWidth={30}
-        value={dimensionValue?.value?.map?.(d => d.value)}
+        value={dimensionValue?.value?.map?.((d) => d.value)}
         options={dimensionValue.options}
         onChange={dimensionValue.onChange}
         isLoading={dimensionValue.isLoading}

@@ -23,7 +23,7 @@ export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
   metricName: undefined,
   sortBy: 'alphanumeric',
   size: 10,
-  applyVariables: false
+  applyVariables: false,
 };
 
 const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (props) => {
@@ -105,7 +105,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
           <FormSwitch
             labelWidth={0}
             label={'Apply variables'}
-            tooltip={'Apply dashboard\'s dimension variables'}
+            tooltip={"Apply dashboard's dimension variables"}
             value={Boolean(query.applyVariables)}
             onChange={(e) => onFormChange('applyVariables', e.currentTarget.checked, true)}
           />

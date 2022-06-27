@@ -42,7 +42,7 @@ export interface MetricsQuery extends EditorQuery {
   functions: string;
   sortBy: string;
   size: number;
-  applyVariables?: boolean
+  applyVariables?: boolean;
 }
 
 export interface AnomalyQuery extends EditorQuery {
@@ -62,7 +62,7 @@ export interface AnomalyQuery extends EditorQuery {
   notOperator: boolean;
   size: number;
   dimensions: string;
-  applyVariables?: boolean
+  applyVariables?: boolean;
 }
 
 export interface ScenarioProps<TsQuery extends EditorQuery> extends QueryEditorProps<DataSource, EditorQuery> {

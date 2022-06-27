@@ -1,9 +1,9 @@
 //@ts-nocheck
-import {FieldType, MutableDataFrame} from '@grafana/data';
+import { FieldType, MutableDataFrame } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getQ, getQueryParamsUrl } from '../utils/helpers';
 import { loadAnomalyData, getAnomalyChart } from '../api';
-import {getTemplateSrv} from "@grafana/runtime";
+import { getTemplateSrv } from '@grafana/runtime';
 
 export async function anomalyQuery(query, datasource) {
   const { timeInterval, callId, urlBase } = datasource;
@@ -44,8 +44,8 @@ export async function anomalyQuery(query, datasource) {
       urlBase,
       meta: {
         dimensions: query.dimensions ? JSON.parse(query.dimensions) : [],
-        metrics
-      }
+        metrics,
+      },
     };
 
     return frame;
@@ -67,7 +67,7 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     notOperator,
     size = 10,
     durationUnit,
-    applyVariables
+    applyVariables,
   } = query;
 
   let dimensions = query.dimensions ? JSON.parse(query.dimensions) : [];
@@ -83,16 +83,19 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     .filter((d) => d.key)
     .reduce((res, { key, value, not }) => {
       res[key] = res[key] || [];
-      if (typeof value === "string") {
-        res[key].push(value)
-      } else if(value?.length) {
-        Array.prototype.push.apply(res[key], value.map(d => d.value));
+      if (typeof value === 'string') {
+        res[key].push(value);
+      } else if (value?.length) {
+        Array.prototype.push.apply(
+          res[key],
+          value.map((d) => d.value)
+        );
       }
-      return res
+      return res;
     }, {});
   dimensions = Object.entries(uniqDimensionsMap)
     .filter(([key, values]) => key && values.length)
-    .map(([key,values]) => ({key, value: values.join(" OR "), type: "property", isExact: true}));
+    .map(([key, values]) => ({ key, value: values.join(' OR '), type: 'property', isExact: true }));
 
   const { timeInterval } = ds;
 

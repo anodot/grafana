@@ -20,16 +20,19 @@ export function metricsCompositeQuery(query, datasource) {
     .filter((d) => d.key)
     .reduce((res, { key, value, not }) => {
       res[key] = res[key] || [];
-      if (typeof value === "string") {
-        res[key].push(value)
-      } else if(value?.length) {
-        Array.prototype.push.apply(res[key], value.map(d => d.value));
+      if (typeof value === 'string') {
+        res[key].push(value);
+      } else if (value?.length) {
+        Array.prototype.push.apply(
+          res[key],
+          value.map((d) => d.value)
+        );
       }
-      return res
+      return res;
     }, {});
   dimensions = Object.entries(uniqDimensionsMap)
     .filter(([key, values]) => key && values.length)
-    .map(([key,values]) => ({key, value: values.join(" OR "), type: "property", isExact: true}));
+    .map(([key, values]) => ({ key, value: values.join(' OR '), type: 'property', isExact: true }));
 
   const metricsParams = {
     metricName: metricName,
