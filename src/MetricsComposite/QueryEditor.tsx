@@ -3,7 +3,7 @@ import defaults from 'lodash/defaults';
 import { MetricsQuery, ScenarioProps } from '../types';
 import difference from 'lodash/difference';
 import FormSwitch from '../components/FormField/FormSwitch';
-import KeyValueControl from '../components/KeyValueControl';
+import DimensionsRows from '../components/KeyValueControl';
 import FunctionsControl from '../components/FunctionsControl';
 import { functionsMeta } from './searchFunctionsMeta';
 import MetricSearchField from '../components/MetricSearchField';
@@ -23,6 +23,7 @@ export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
   metricName: undefined,
   sortBy: 'alphanumeric',
   size: 10,
+  applyVariables: false
 };
 
 const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (props) => {
@@ -99,6 +100,15 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
             value={query.showMultiline}
             onChange={(e) => onFormChange('showMultiline', e?.currentTarget?.checked, true)}
           />
+        </div>
+        <div className="gf-form gf-form--grow">
+          <FormSwitch
+            labelWidth={0}
+            label={'Apply variables'}
+            tooltip={'Apply dashboard\'s dimension variables'}
+            value={Boolean(query.applyVariables)}
+            onChange={(e) => onFormChange('applyVariables', e.currentTarget.checked, true)}
+          />
           <FormInput
             labelWidth={4}
             inputWidth={0}
@@ -126,7 +136,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
         </div>
       )}
       <div style={{ marginBottom: 4 }}>
-        <KeyValueControl
+        <DimensionsRows
           key={query.metricName}
           dimensionsQuery={JSON.parse(query.dimensions)}
           onChangeDimensions={(value) => onFormChange('dimensions', JSON.stringify(value), true)}

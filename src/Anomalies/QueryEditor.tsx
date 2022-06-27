@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import FormSelect from '../components/FormField/FormSelect';
 import FormSlider from '../components/FormField/FormSlider';
 import FormInput from '../components/FormField/FormInput';
@@ -7,6 +7,10 @@ import MetricSearchField from '../components/MetricSearchField';
 import defaults from 'lodash/defaults';
 import { AnomalyQuery, ScenarioProps } from '../types';
 import { deltaTypesOptions, directionsOptions, sortAnomalyOptions, timeScaleOptions } from '../utils/constants';
+import DimensionsRows from "../components/KeyValueControl";
+import {SelectableValue} from "@grafana/data";
+import difference from "lodash/difference";
+import {defaultMetricsCompositeQuery} from "../MetricsComposite/QueryEditor";
 
 const maxSize = 20;
 
@@ -26,19 +30,52 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   size: 10,
   durationStep: 1,
   durationUnit: 'minutes',
+  dimensions: '[]',
+  applyVariables: false
 };
 
 const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
   const { datasource, onFormChange } = props;
+  const [propertiesOptions, setPropertiesOptions] = useState([]);
+  const [availableOptions, setAvailableOptions] = useState([] as SelectableValue[]);
+  const [isPristine, setIsPristine] = useState(true);
   const query = defaults(props.query, defaultAnomaliesQuery);
   const isSpecificMetricSelected = query.metrics?.length > 0;
   const durationLabel = `Duration (${query.durationStep > 1 ? query.durationStep + ' ' : ''}${
     query.durationUnit || ''
   })`;
+  // TODO: the whole dimensions works for single (first) metric only
+  const firstMetricName = query.metrics?.[0]?.value || "";
+  const getValues = useCallback((name) => datasource.getMetricsPropVal(firstMetricName, name), [firstMetricName]);
 
   useEffect(() => {
     props.onRunQuery();
   }, []);
+
+  useEffect(() => {
+    setIsPristine(false);
+    props.onRunQuery();
+  }, []);
+
+  useEffect(() => {
+    /** Request available propertyNames by selected metrics */
+    /* Reset previous selections: */
+    !isPristine && onFormChange('dimensions', defaultMetricsCompositeQuery.dimensions, false);
+    datasource.getPropertiesDict(firstMetricName).then(({ properties }) => {
+      setPropertiesOptions(properties);
+      /* save it in Query to be able to validate dashboardVarsDimensions in datasource */
+      onFormChange('dimensionsOptions', properties, false);
+    });
+  }, [firstMetricName]);
+
+  useEffect(() => {
+    /** Reduce already selected propertyNames from available properties */
+    if (propertiesOptions) {
+      let choseOptions = JSON.parse(query.dimensions).map((d) => d.key); // options were already chose and are not available anymore
+      const availableOptions = difference(propertiesOptions, choseOptions).map((value) => ({ label: value, value }));
+      setAvailableOptions(availableOptions);
+    }
+  }, [propertiesOptions, query.dimensions]);
 
   return (
     <>
@@ -70,7 +107,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           inputWidth={0}
           label={'Score'}
           value={query.score}
-          tooltip={'Anomaly Score'}
+          tooltip={'Anomaly Score2'}
           onAfterChange={(value) => onFormChange('score', value, true)}
         />
       </div>
@@ -126,36 +163,21 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           onChange={(value) => onFormChange('direction', value, true)}
           required
         />
-        <FormSelect
-          inputWidth={0}
-          label={'Sort by'}
-          tooltip={'Anomalies Sort Order'}
-          value={query.sortBy}
-          options={sortAnomalyOptions}
-          onChange={(value) => onFormChange('sortBy', value, true)}
-        />
-      </div>
-      <div className="gf-form gf-form--grow">
         <FormSwitch
+          labelWidth={6}
           label={'Open only'}
           tooltip={'Open Anomalies only'}
           value={query.openedOnly}
           onChange={(e) => onFormChange('openedOnly', e.currentTarget.checked, true)}
         />
-        <FormSwitch
-          labelWidth={0}
-          label={'Request Charts Data'}
-          tooltip={'Show Anomalies Charts or Anomalies List'}
-          value={query.requestCharts}
-          onChange={(e) => onFormChange('requestCharts', e.currentTarget.checked, true)}
-        />
-        <FormSwitch
-          labelWidth={0}
-          disabled={!query.requestCharts}
-          label={'Include Baseline'}
-          tooltip={'Include Baseline'}
-          value={query.includeBaseline}
-          onChange={(e) => onFormChange('includeBaseline', e.currentTarget.checked, true)}
+      </div>
+      <div className="gf-form gf-form--grow">
+        <FormSelect
+          label={'Sort by'}
+          tooltip={'Anomalies Sort Order'}
+          value={query.sortBy}
+          options={sortAnomalyOptions}
+          onChange={(value) => onFormChange('sortBy', value, true)}
         />
         <FormInput
           labelWidth={4}
@@ -167,6 +189,38 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           type={'number'}
           value={query.size}
           onChange={({ target: { value } }) => onFormChange('size', Math.max(1, Math.min(maxSize, value)), true)}
+        />
+      </div>
+      <div className="gf-form gf-form--grow">
+        <FormSwitch
+          disabled={!query.requestCharts}
+          label={'Include Baseline'}
+          tooltip={'Include Baseline'}
+          value={query.includeBaseline}
+          onChange={(e) => onFormChange('includeBaseline', e.currentTarget.checked, true)}
+        />
+        <FormSwitch
+          labelWidth={0}
+          label={'Apply variables'}
+          tooltip={'Apply dashboard\'s dimension variables'}
+          value={Boolean(query.applyVariables)}
+          onChange={(e) => onFormChange('applyVariables', e.currentTarget.checked, true)}
+        />
+        <FormSwitch
+          labelWidth={0}
+          label={'Request Charts Data'}
+          tooltip={'Show Anomalies Charts or Anomalies List'}
+          value={query.requestCharts}
+          onChange={(e) => onFormChange('requestCharts', e.currentTarget.checked, true)}
+        />
+      </div>
+      <div style={{ marginBottom: 4 }}>
+        <DimensionsRows
+          key={firstMetricName}
+          getValues={getValues}
+          dimensionsQuery={JSON.parse(query.dimensions)}
+          onChangeDimensions={(value) => onFormChange('dimensions', JSON.stringify(value), true)}
+          availableDimensionsNames={availableOptions}
         />
       </div>
     </>
