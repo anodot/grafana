@@ -1,8 +1,9 @@
 //@ts-nocheck
-import { MutableDataFrame } from '@grafana/data';
+import {FieldType, MutableDataFrame} from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getQ, getQueryParamsUrl } from '../utils/helpers';
 import { loadAnomalyData, getAnomalyChart } from '../api';
+import {getTemplateSrv} from "@grafana/runtime";
 
 export async function anomalyQuery(query, datasource) {
   const { timeInterval, callId, urlBase } = datasource;
@@ -25,7 +26,11 @@ export async function anomalyQuery(query, datasource) {
     }
     const frame = new MutableDataFrame({
       refId: query.refId,
-      fields: [],
+      fields: [
+        { name: 'time', type: FieldType.time },
+        { name: 'value', type: FieldType.number },
+        { name: 'name', type: FieldType.string },
+      ],
     });
 
     frame.serieName = scenarios.anomalies;
@@ -37,6 +42,10 @@ export async function anomalyQuery(query, datasource) {
       timeInterval,
       query,
       urlBase,
+      meta: {
+        dimensions: query.dimensions ? JSON.parse(query.dimensions) : [],
+        metrics
+      }
     };
 
     return frame;
@@ -58,7 +67,32 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     notOperator,
     size = 10,
     durationUnit,
+    applyVariables
   } = query;
+
+  let dimensions = query.dimensions ? JSON.parse(query.dimensions) : [];
+  const dashboardVars = applyVariables ? getTemplateSrv().getVariables() : [];
+  const dashboardDimensions = dashboardVars
+    .filter((v) => v.current.value && v.description?.includes('[anodot-dimension]'))
+    .map((v) => ({ key: v.id, value: v.current.value }));
+  if (dashboardDimensions?.length) {
+    /* push all elements at one time */
+    Array.prototype.push.apply(dimensions, dashboardDimensions);
+  }
+  const uniqDimensionsMap = (dimensions || [])
+    .filter((d) => d.key)
+    .reduce((res, { key, value, not }) => {
+      res[key] = res[key] || [];
+      if (typeof value === "string") {
+        res[key].push(value)
+      } else if(value?.length) {
+        Array.prototype.push.apply(res[key], value.map(d => d.value));
+      }
+      return res
+    }, {});
+  dimensions = Object.entries(uniqDimensionsMap)
+    .filter(([key, values]) => key && values.length)
+    .map(([key,values]) => ({key, value: values.join(" OR "), type: "property", isExact: true}));
 
   const { timeInterval } = ds;
 
@@ -90,7 +124,7 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
         delta: deltaValue,
         deltaType: deltaType,
         order: 'desc',
-        q: getQ(value, filters, true, notOperator),
+        q: getQ(value, dimensions, true, notOperator),
         sort: sortBy,
         startBucketMode: true,
         state: openedOnly ? 'open' : 'both',

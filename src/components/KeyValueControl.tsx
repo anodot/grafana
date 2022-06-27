@@ -17,9 +17,10 @@ interface KVRowPropsType {
   dimensionName: any;
   dimensionValue: any;
   onDelete(a: any): void;
-  withNotControl: boolean;
+  withNotControl?: boolean;
   onNotChange(a: any): void;
   notValue: boolean;
+  isMultiValue?: boolean
 }
 
 const KVRow: React.FC<KVRowPropsType> = ({
@@ -29,6 +30,7 @@ const KVRow: React.FC<KVRowPropsType> = ({
   withNotControl,
   onNotChange,
   notValue,
+  isMultiValue
 }) => (
   <div className="gf-form-inline">
     <div className="gf-form gf-form--grow">
@@ -48,17 +50,18 @@ const KVRow: React.FC<KVRowPropsType> = ({
         label={dimensionValue.label}
         tooltip={dimensionValue.tooltip}
         labelWidth={1}
-        inputWidth={0}
-        value={addLabel(dimensionValue.value)}
+        inputWidth={30}
+        value={dimensionValue?.value?.map?.(d => d.value)}
         options={dimensionValue.options}
         onChange={dimensionValue.onChange}
         isLoading={dimensionValue.isLoading}
-        notOptions={{
-          notCheckboxDisabled: false,
-          showNotCheckbox: withNotControl,
-          notCheckboxValue: notValue,
-          onNotChange,
-        }}
+        isMulti={isMultiValue}
+        // notOptions={{
+        //   notCheckboxDisabled: false,
+        //   showNotCheckbox: withNotControl,
+        //   notCheckboxValue: notValue,
+        //   onNotChange,
+        // }}
       />
     </div>
     <div className={iconWrapperClass}>
@@ -72,7 +75,7 @@ interface KeyValuePropsType {
   onChangeDimensions(a: any): void;
   availableDimensionsNames: SelectableValue[];
   getValues(name: any): Promise<any>;
-  withNotControl: boolean;
+  withNotControl?: boolean;
 }
 
 const KeyValueControl: React.FC<KeyValuePropsType> = ({
@@ -133,10 +136,10 @@ const KeyValueControl: React.FC<KeyValuePropsType> = ({
   );
 
   const onAdd = useCallback(() => {
-    onChangeDimensions([...dimensionsQuery, { key: null, value: null, not: false }]);
+    onChangeDimensions([...dimensionsQuery, { key: null, value: [], not: false }]);
   }, [dimensionsQuery]);
 
-  const isLastEmpty = dimensionsQuery.length && !dimensionsQuery[dimensionsQuery.length - 1]?.value;
+  const isLastEmpty = dimensionsQuery.length && !dimensionsQuery[dimensionsQuery.length - 1]?.value?.length;
 
   return (
     <>
@@ -153,13 +156,14 @@ const KeyValueControl: React.FC<KeyValuePropsType> = ({
           dimensionValue={{
             label: `:`,
             options: dimension.key ? valuesMap[dimension.key] : [],
-            value: dimension.value,
-            onChange: (d) => onChange('value', d.value, i),
+            value: dimension,
+            onChange: (d) => onChange('value', d, i),
             isLoading: valuesMap[dimension.key] === 'isLoading',
           }}
           onDelete={() => onDelete(i)}
           onNotChange={(e) => onChange('not', e.target.checked, i)}
           notValue={Boolean(dimension.not)}
+          isMultiValue
         />
       ))}
       <Button disabled={Boolean(availableDimensionsNames.length === 0 || isLastEmpty)} onClick={onAdd}>

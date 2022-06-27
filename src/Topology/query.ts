@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { requestStrategies, scenarios } from '../utils/constants';
 import { makeAnomaliesPromises } from '../Anomalies/query';
-import { MutableDataFrame } from '@grafana/data';
+import {FieldType, MutableDataFrame} from '@grafana/data';
 import { getEvents, getMetricsData } from '../api';
 
 export function topologyQuery(query, setFrameToDataSource, datasource) {
@@ -50,7 +50,11 @@ export function topologyQuery(query, setFrameToDataSource, datasource) {
 
     const frame = new MutableDataFrame({
       refId: query.refId,
-      fields: [],
+      fields: [
+        { name: 'time', type: FieldType.time },
+        { name: 'value', type: FieldType.number },
+        { name: 'name', type: FieldType.string },
+      ],
     });
 
     frame.serieName = scenarios.topology;

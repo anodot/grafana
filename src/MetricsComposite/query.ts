@@ -7,8 +7,8 @@ import { getTemplateSrv } from '@grafana/runtime';
 export function metricsCompositeQuery(query, datasource) {
   const { timeInterval } = datasource;
   const { metricName, baseLine, showMultiline, functions, sortBy, size } = query;
-  const dimensions = JSON.parse(query.dimensions);
-  const dashboardVars = getTemplateSrv().getVariables();
+  let dimensions = JSON.parse(query.dimensions);
+  const dashboardVars = query.applyVariables ? getTemplateSrv().getVariables() : [];
   const dashboardDimensions = dashboardVars
     .filter((v) => v.current.value && v.description?.includes('[anodot-dimension]'))
     .map((v) => ({ key: v.id, value: v.current.value }));
@@ -16,12 +16,24 @@ export function metricsCompositeQuery(query, datasource) {
     /* push all elements at one time */
     Array.prototype.push.apply(dimensions, dashboardDimensions);
   }
+  const uniqDimensionsMap = (dimensions || [])
+    .filter((d) => d.key)
+    .reduce((res, { key, value, not }) => {
+      res[key] = res[key] || [];
+      if (typeof value === "string") {
+        res[key].push(value)
+      } else if(value?.length) {
+        Array.prototype.push.apply(res[key], value.map(d => d.value));
+      }
+      return res
+    }, {});
+  dimensions = Object.entries(uniqDimensionsMap)
+    .filter(([key, values]) => key && values.length)
+    .map(([key,values]) => ({key, value: values.join(" OR "), type: "property", isExact: true}));
 
   const metricsParams = {
     metricName: metricName,
-    dimensions: (dimensions || [])
-      .filter((d) => d.value)
-      .map(({ key, value, not }) => ({ key, value: (not ? '!' : '') + value })),
+    dimensions,
     includeBaseline: baseLine,
     functions,
     sortBy,
@@ -37,11 +49,11 @@ export function metricsCompositeQuery(query, datasource) {
         { name: 'name', type: FieldType.string },
       ],
     };
-    const frames = [];
+    // const frames = [];
 
     const singleFrame = new MutableDataFrame(frameSource);
 
-    metrics?.forEach(({ dataPoints, name }, i) => {
+    metrics?.forEach(({ dataPoints, name }) => {
       const frame = new MutableDataFrame(frameSource);
       dataPoints.forEach(([time, value]) => {
         frame.add({
@@ -55,7 +67,7 @@ export function metricsCompositeQuery(query, datasource) {
           name,
         });
       });
-      frames.push(frame);
+      // frames.push(frame);
     });
 
     singleFrame.serieName = scenarios.metricsComposite;
