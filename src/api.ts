@@ -74,7 +74,7 @@ export async function getAnomalyChart(anomaly, params, ds) {
 
 export async function getAlerts(query, ds) {
   const { timeInterval } = ds;
-  const { severities = [], types = [], recipient = [], showOpen, acknowledge } = query;
+  const { severities = [], types = [], recipient = [], showOpen, acknowledge, feedback = [] } = query;
   let subscribers = [];
   let channels = [];
 
@@ -97,6 +97,10 @@ export async function getAlerts(query, ds) {
     order: 'desc',
     sort: 'updatedTime',
   };
+
+  feedback.forEach((option) => {
+    params[option.value] = true;
+  });
 
   if (showOpen) {
     params.status = 'OPEN';

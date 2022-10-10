@@ -19,6 +19,7 @@ import FormSwitch from '../components/FormField/FormSwitch';
 import FormInput from '../components/FormField/FormInput';
 import { SelectableValue } from '@grafana/data';
 import MetricSearchField from '../components/MetricSearchField';
+// import DimensionsRows from '../components/KeyValueControl';
 
 export const defaultTopologyQuery: Partial<TopologyQuery> = {
   deltaValue: 5,
@@ -320,6 +321,15 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
             required
           />
         </div>
+        {/*<div style={{ marginBottom: 4 }}>*/}
+        {/*  <DimensionsRows*/}
+        {/*    key={firstMetricName}*/}
+        {/*    getValues={getValues}*/}
+        {/*    dimensionsQuery={JSON.parse(query.dimensions)}*/}
+        {/*    onChangeDimensions={(value) => onFormChange('dimensions', JSON.stringify(value), true)}*/}
+        {/*    availableDimensionsNames={availableOptions}*/}
+        {/*  />*/}
+        {/*</div>*/}
       </>
     );
   }

@@ -70,6 +70,12 @@ export const alertTypesOptions = [
   { label: 'No Data', value: 'noData' },
 ];
 
+export const feedbackOptions = [
+  { label: 'Good catch', value: 'positiveFeedback' },
+  { label: 'Not interesting', value: 'negativeFeedback' },
+  { label: 'No Feedback', value: 'noFeedback' },
+];
+
 export const alertAcknowledgeOptions = [
   { label: 'All', value: '' },
   { label: 'Acknowledged', value: 'ACK' },

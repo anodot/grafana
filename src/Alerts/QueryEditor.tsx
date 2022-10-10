@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import FormSelect from '../components/FormField/FormSelect';
-import { alertAcknowledgeOptions, alertTypesOptions, severityOptions } from '../utils/constants';
+import { alertAcknowledgeOptions, alertTypesOptions, feedbackOptions, severityOptions } from '../utils/constants';
 import { AlertsQuery, ScenarioProps } from '../types';
 import FormSwitch from '../components/FormField/FormSwitch';
 import defaults from 'lodash/defaults';
@@ -9,6 +9,7 @@ import { SelectableValue } from '@grafana/data';
 export const defaultAlertsQuery: Partial<AlertsQuery> = {
   showOpen: false,
   acknowledge: '',
+  feedback: [],
 };
 
 const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
@@ -37,17 +38,15 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
 
   return (
     <>
-      <div className="gf-form-inline">
-        <div className="gf-form gf-form--grow">
-          <FormSelect
-            isMulti
-            inputWidth={0}
-            label={'Recipient (Users / Channels)'}
-            value={query.recipient}
-            options={subscribersOptions}
-            onChange={(value) => onFormChange('recipient', value, true)}
-          />
-        </div>
+      <div className="gf-form gf-form--grow">
+        <FormSelect
+          isMulti
+          inputWidth={0}
+          label={'Recipient (Users / Channels)'}
+          value={query.recipient}
+          options={subscribersOptions}
+          onChange={(value) => onFormChange('recipient', value, true)}
+        />
       </div>
       <div className="gf-form-inline">
         <div className="gf-form gf-form--grow">
@@ -69,6 +68,21 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
             onChange={(e) => onFormChange('showOpen', e.currentTarget.checked, true)}
           />
         </div>
+      </div>
+      <div className="gf-form gf-form--grow">
+        <FormSelect
+          isMulti
+          inputWidth={0}
+          label={'Feedback'}
+          value={query.feedback}
+          options={feedbackOptions}
+          onChange={(currentMultiValues, { option }) => {
+            if (option.value === 'noFeedback') {
+              currentMultiValues = [option];
+            }
+            return onFormChange('feedback', currentMultiValues, true);
+          }}
+        />
       </div>
       <div className="gf-form-inline">
         <div className="gf-form gf-form--grow">

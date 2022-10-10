@@ -30,7 +30,7 @@ export interface FormSelectProps extends SelectCommonProps<any> {
   isLoading?: boolean;
   isMulti?: boolean;
   isClearable?: boolean;
-  onChange(event?: any): any;
+  onChange(event?: any, currentSelection?: any): any;
   onInputChange?(str: string, options?: any): any;
   notOptions?: NotOptionsType;
   error?: boolean;
