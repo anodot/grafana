@@ -77,7 +77,7 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
           value={query.feedback}
           options={feedbackOptions}
           onChange={(currentMultiValues, { option }) => {
-            if (option.value === 'noFeedback') {
+            if (option?.value === 'noFeedback') {
               currentMultiValues = [option];
             }
             return onFormChange('feedback', currentMultiValues, true);
