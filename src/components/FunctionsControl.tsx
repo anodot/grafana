@@ -145,7 +145,11 @@ const FunctionsControl = ({ functionsConfigs, selectedFunctions = {}, onChangeFu
           groupByPropertiesList={groupByPropertiesList}
         />
       ))}
-      <Button disabled={!availableFunctions.length || 'new' in selectedFunctions} onClick={onAdd}>
+      <Button
+        style={{ width: 112 }}
+        disabled={!availableFunctions.length || 'new' in selectedFunctions}
+        onClick={onAdd}
+      >
         + {Object.keys(selectedFunctions).length > 0 && 'Child '}Function
       </Button>
     </>

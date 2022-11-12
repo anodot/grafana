@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FormSelect from '../components/FormField/FormSelect';
 import { alertAcknowledgeOptions, alertTypesOptions, feedbackOptions, severityOptions } from '../utils/constants';
 import { AlertsQuery, ScenarioProps } from '../types';
@@ -11,6 +11,12 @@ export const defaultAlertsQuery: Partial<AlertsQuery> = {
   acknowledge: '',
   feedback: [],
 };
+
+enum FeedbacksEnums {
+  noFeedback = 'noFeedback',
+  positiveFeedback = 'positiveFeedback',
+  negativeFeedback = 'negativeFeedback',
+}
 
 const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
   const { onRunQuery, datasource, onFormChange } = props;
@@ -34,6 +40,19 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
       });
       setSubscribers(usersOptions.concat(channelsOptions));
     });
+  }, []);
+
+  const onFeedbackChange = useCallback((currentMultiValues, selected) => {
+    const selectedValue = selected?.option?.value;
+    if (selectedValue) {
+      if (selectedValue === FeedbacksEnums.noFeedback) {
+        currentMultiValues = [selected?.option];
+      }
+      if ([FeedbacksEnums.positiveFeedback, FeedbacksEnums.negativeFeedback].includes(selectedValue)) {
+        currentMultiValues = currentMultiValues.filter((v) => v.value !== FeedbacksEnums.noFeedback);
+      }
+    }
+    return onFormChange('feedback', currentMultiValues, true);
   }, []);
 
   return (
@@ -76,12 +95,7 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
           label={'Feedback'}
           value={query.feedback}
           options={feedbackOptions}
-          onChange={(currentMultiValues, { option }) => {
-            if (option?.value === 'noFeedback') {
-              currentMultiValues = [option];
-            }
-            return onFormChange('feedback', currentMultiValues, true);
-          }}
+          onChange={onFeedbackChange}
         />
       </div>
       <div className="gf-form-inline">
