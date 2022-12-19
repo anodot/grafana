@@ -9,7 +9,7 @@ export function alertsQuery(query, datasource) {
   const { urlBase } = datasource;
 
   return getAlerts(query, datasource).then((result) => {
-    const { alertGroups, alerts } = result;
+    const { alertGroups, alerts = [] } = result;
     const flattenAlerts = alertGroups ? [].concat(...alertGroups?.map((group) => group?.alerts)) : alerts;
     const frame = new MutableDataFrame({
       /* TODO: It can be used in native Table panel only, but still needs to be
