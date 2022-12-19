@@ -28,12 +28,12 @@ const AlertsQueryEditor = (props: ScenarioProps<AlertsQuery>) => {
     onRunQuery();
     Promise.all([datasource.getUsers(), datasource.getChannels()]).then((results) => {
       const subscribersDict = {};
-      const usersOptions = results[0].map((u) => ({
+      const usersOptions = results[0]?.map((u) => ({
         label: `${u.firstName} ${u.lastName}`,
         value: u._id,
         type: 'user',
       }));
-      const channelsOptions = results[1].map((ch) => ({ label: ch.name, value: ch.id, type: 'channel' }));
+      const channelsOptions = results[1]?.map((ch) => ({ label: ch.name, value: ch.id, type: 'channel' }));
       const united = usersOptions.concat(channelsOptions);
       united.forEach((opt) => {
         subscribersDict[opt.value] = opt;

@@ -122,6 +122,16 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
           />
         </div>
       </div>
+      <div style={{ marginBottom: 4 }}>
+        <DimensionsRows
+          key={query.metricName}
+          dimensionsQuery={JSON.parse(query.dimensions)}
+          onChangeDimensions={(value) => onFormChange('dimensions', JSON.stringify(value), true)}
+          availableDimensionsNames={availableOptions}
+          getValues={getValues}
+          withNotControl
+        />
+      </div>
       {query.metricName && (
         <div style={{ marginBottom: 4 }}>
           <FunctionsControl
@@ -135,16 +145,6 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
           />
         </div>
       )}
-      <div style={{ marginBottom: 4 }}>
-        <DimensionsRows
-          key={query.metricName}
-          dimensionsQuery={JSON.parse(query.dimensions)}
-          onChangeDimensions={(value) => onFormChange('dimensions', JSON.stringify(value), true)}
-          availableDimensionsNames={availableOptions}
-          getValues={getValues}
-          withNotControl
-        />
-      </div>
     </>
   );
 };
