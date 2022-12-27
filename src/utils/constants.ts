@@ -1,3 +1,5 @@
+import { DataQuery } from '@grafana/data';
+
 export const urlBase = 'https://app.anodot.com';
 export const urlApiPostfix = '/api/v2/';
 export const urlGrafanaHelp = 'https://www.anodot.com/integration/grafana/';
@@ -99,3 +101,14 @@ export const metricsSortingOptions = [
   { label: 'Lowest Min', value: 'lowestMin' },
   { label: 'Most Deviant', value: 'mostDeviant' },
 ];
+
+const mockDataQuery: Required<DataQuery> = {
+  refId: 'mock',
+  hide: false,
+  datasource: null,
+  key: 'mock',
+  queryType: 'mock',
+};
+
+/* we need it to be able to clean only custom query's fields while leave default fields */
+export const dataQueryDefaultKeys = Object.keys(mockDataQuery);

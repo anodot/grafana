@@ -1,8 +1,7 @@
 import React from 'react';
-import { InlineFormLabel, Select, PopoverContent, Checkbox } from '@grafana/ui';
+import { InlineFormLabel, Select, PopoverContent, Checkbox, SelectCommonProps } from '@grafana/ui';
 import FormWrapper from './FormWrapper';
 import { SelectableValue } from '@grafana/data';
-import { SelectCommonProps } from '@grafana/ui/components/Select/types';
 
 export type NotOptionsType = Partial<{
   onNotChange(e: any): any;

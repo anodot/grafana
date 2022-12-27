@@ -14,6 +14,8 @@ export interface TopologyQuery extends EditorQuery {
   duration: number[];
   score: number[];
   direction: SelectableValue;
+  durationStep?: number;
+  durationUnit: 'minutes';
   deltaType: string;
   sortBy: string;
   timeScales: SelectableValue[];
@@ -37,6 +39,7 @@ export interface AlertsQuery extends EditorQuery {
 
 export interface MetricsQuery extends EditorQuery {
   baseLine: boolean;
+  addQuery: boolean;
   showMultiline: boolean;
   dimensions: string;
   metricName: string;
@@ -56,6 +59,7 @@ export interface AnomalyQuery extends EditorQuery {
   direction: string[] | SelectableValue[];
   timeScales: object;
   requestCharts: boolean;
+  addQuery: boolean;
   includeBaseline: boolean;
   sortBy: string;
   metrics: SelectableValue[];
@@ -67,7 +71,7 @@ export interface AnomalyQuery extends EditorQuery {
 }
 
 export interface ScenarioProps<TsQuery extends EditorQuery> extends QueryEditorProps<DataSource, EditorQuery> {
-  metricsList: object[];
+  metricsList?: object[];
   query: TsQuery;
   onFormChange: OnChangeType;
 }

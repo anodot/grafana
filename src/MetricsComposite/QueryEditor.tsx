@@ -18,6 +18,7 @@ const maxSize = 20;
 export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
   baseLine: true,
   showMultiline: true,
+  addQuery: true,
   dimensions: '[]',
   functions: '{}',
   metricName: undefined,
@@ -90,7 +91,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
             labelWidth={14}
             label={'Include baseline'}
             tooltip={'Include baseline'}
-            value={query.baseLine}
+            value={!query.showMultiline && query.baseLine}
             onChange={(e) => onFormChange('baseLine', e?.currentTarget?.checked, true)}
           />
           <FormSwitch
@@ -100,25 +101,33 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
             value={query.showMultiline}
             onChange={(e) => onFormChange('showMultiline', e?.currentTarget?.checked, true)}
           />
+          <FormSwitch
+            labelWidth={0}
+            label={'Data Frame'}
+            tooltip={
+              'Return grafana data frame https://grafana.com/docs/grafana/latest/developers/plugins/working-with-data-frames/'
+            }
+            value={query.addQuery}
+            onChange={(e) => onFormChange('addQuery', e.currentTarget.checked, true)}
+          />
         </div>
         <div className="gf-form gf-form--grow">
+          <FormInput
+            inputWidth={0}
+            tooltip={`Maximum amount of the requested charts (1 - ${maxSize})`}
+            min={1}
+            max={maxSize}
+            type={'number'}
+            label={'Limit'}
+            value={query.size}
+            onChange={({ target: { value } }) => onFormChange('size', Math.max(1, Math.min(maxSize, value)), true)}
+          />
           <FormSwitch
             labelWidth={0}
             label={'Apply variables'}
             tooltip={"Apply dashboard's dimension variables"}
             value={Boolean(query.applyVariables)}
             onChange={(e) => onFormChange('applyVariables', e.currentTarget.checked, true)}
-          />
-          <FormInput
-            labelWidth={4}
-            inputWidth={0}
-            tooltip={`Maximum amount of the requested charts (1 - ${maxSize})`}
-            min={1}
-            max={maxSize}
-            type={'number'}
-            label={'Size'}
-            value={query.size}
-            onChange={({ target: { value } }) => onFormChange('size', Math.max(1, Math.min(maxSize, value)), true)}
           />
         </div>
       </div>

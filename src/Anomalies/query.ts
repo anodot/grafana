@@ -7,7 +7,7 @@ import { getTemplateSrv } from '@grafana/runtime';
 
 export async function anomalyQuery(query, datasource) {
   const { timeInterval, callId, urlBase } = datasource;
-  const { metrics = [], requestCharts, includeBaseline } = query;
+  const { metrics = [], requestCharts, includeBaseline, addQuery } = query;
   const anomalyDataPromises = makeAnomaliesPromises(query, [], datasource);
 
   return Promise.all(anomalyDataPromises).then(async (results) => {
@@ -24,14 +24,38 @@ export async function anomalyQuery(query, datasource) {
       const anomalyChartsPromises = flattenResults.map((anomaly) => getAnomalyChart(anomaly, params, datasource));
       anomaliesCharts = await Promise.all(anomalyChartsPromises);
     }
+
+    let fields = [{ name: 'time', type: FieldType.time }];
+    const timeMap = {};
+    if (addQuery && anomaliesCharts.length) {
+      anomaliesCharts.forEach(({ name, dataPoints }) => {
+        fields.push({ name, type: FieldType.number });
+        dataPoints.forEach(([time, value]) => {
+          timeMap[time] = timeMap[time] || {};
+          timeMap[time][name] = value;
+        });
+      });
+    }
+
     const frame = new MutableDataFrame({
       refId: query.refId,
-      fields: [
-        { name: 'time', type: FieldType.time },
-        { name: 'value', type: FieldType.number },
-        { name: 'name', type: FieldType.string },
-      ],
+      name: `${query.refId}-series`,
+      meta: { type: 'timeseries-wide', preferredVisualisationType: 'graph' },
+      fields,
     });
+
+    if (addQuery && anomaliesCharts.length) {
+      Object.entries(timeMap).forEach(([time, points]) => {
+        frame.add({
+          time: time * 1000,
+          ...points,
+        });
+      });
+    } else {
+      frame.add({
+        time: Date.now(),
+      });
+    }
 
     frame.serieName = scenarios.anomalies;
     frame.anodotPayload = {
@@ -62,7 +86,7 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     direction = [],
     deltaValue,
     deltaType,
-    filters = [],
+    // filters = [],
     timeScales,
     notOperator,
     size = 10,

@@ -22,6 +22,7 @@ const defaultAnomaliesQuery: Partial<AnomalyQuery> = {
   direction: directionsOptions,
   timeScales: [timeScaleOptions[0], timeScaleOptions[1]],
   requestCharts: true,
+  addQuery: true,
   includeBaseline: true,
   sortBy: 'score',
   openedOnly: false,
@@ -182,7 +183,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
         <FormInput
           labelWidth={4}
           inputWidth={0}
-          label={'Size'}
+          label={'Limit'}
           tooltip={`Maximum amount of the requested charts (1 - ${maxSize})`}
           min={1}
           max={maxSize}
@@ -191,28 +192,44 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           onChange={({ target: { value } }) => onFormChange('size', Math.max(1, Math.min(maxSize, value)), true)}
         />
       </div>
-      <div className="gf-form gf-form--grow">
-        <FormSwitch
-          disabled={!query.requestCharts}
-          label={'Include Baseline'}
-          tooltip={'Include Baseline'}
-          value={query.includeBaseline}
-          onChange={(e) => onFormChange('includeBaseline', e.currentTarget.checked, true)}
-        />
-        <FormSwitch
-          labelWidth={0}
-          label={'Apply variables'}
-          tooltip={"Apply dashboard's dimension variables"}
-          value={Boolean(query.applyVariables)}
-          onChange={(e) => onFormChange('applyVariables', e.currentTarget.checked, true)}
-        />
-        <FormSwitch
-          labelWidth={0}
-          label={'Request Charts Data'}
-          tooltip={'Show Anomalies Charts or Anomalies List'}
-          value={query.requestCharts}
-          onChange={(e) => onFormChange('requestCharts', e.currentTarget.checked, true)}
-        />
+      <div className="gf-form-inline">
+        <div className="gf-form gf-form--grow">
+          <FormSwitch
+            label={'Request Charts Data'}
+            tooltip={'Show Anomalies Charts or Anomalies List'}
+            value={query.requestCharts}
+            onChange={(e) => onFormChange('requestCharts', e.currentTarget.checked, true)}
+          />
+          <FormSwitch
+            labelWidth={0}
+            disabled={!query.requestCharts}
+            label={'Include Baseline'}
+            tooltip={'Include Baseline'}
+            value={query.requestCharts && query.includeBaseline}
+            onChange={(e) => onFormChange('includeBaseline', e.currentTarget.checked, true)}
+          />
+        </div>
+        <div className="gf-form">
+          <FormSwitch
+            labelWidth={0}
+            label={'Data Frame'}
+            tooltip={
+              'Return grafana data frame https://grafana.com/docs/grafana/latest/developers/plugins/working-with-data-frames/'
+            }
+            value={query.requestCharts && query.addQuery}
+            disabled={!query.requestCharts}
+            onChange={(e) => onFormChange('addQuery', e.currentTarget.checked, true)}
+          />
+        </div>
+        <div className="gf-form">
+          <FormSwitch
+            labelWidth={0}
+            label={'Apply variables'}
+            tooltip={"Apply dashboard's dimension variables"}
+            value={Boolean(query.applyVariables)}
+            onChange={(e) => onFormChange('applyVariables', e.currentTarget.checked, true)}
+          />
+        </div>
       </div>
       <div style={{ marginBottom: 4 }}>
         <DimensionsRows

@@ -4,7 +4,7 @@ import uniq from 'lodash/uniq';
 import isEqual from 'lodash/isEqual';
 import defaults from 'lodash/defaults';
 import React from 'react';
-import { EditorQuery, TopologyQuery } from '../types';
+import { ScenarioProps, TopologyQuery } from '../types';
 import FormSelect from '../components/FormField/FormSelect';
 import FormSlider from '../components/FormField/FormSlider';
 import {
@@ -19,7 +19,6 @@ import FormSwitch from '../components/FormField/FormSwitch';
 import FormInput from '../components/FormField/FormInput';
 import { SelectableValue } from '@grafana/data';
 import MetricSearchField from '../components/MetricSearchField';
-// import DimensionsRows from '../components/KeyValueControl';
 
 export const defaultTopologyQuery: Partial<TopologyQuery> = {
   deltaValue: 5,
@@ -43,15 +42,7 @@ interface TopologyQueryState {
   availableOptions: SelectableValue[];
 }
 
-interface Props extends EditorQuery {
-  query: TopologyQuery;
-
-  onRunQuery(): void;
-
-  onChange(value: TopologyQuery): void;
-}
-
-class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
+class TopologyQueryEditor extends React.Component<ScenarioProps<TopologyQuery>, TopologyQueryState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -77,7 +68,11 @@ class TopologyQueryEditor extends React.Component<Props, TopologyQueryState> {
     }
   }
 
-  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<TopologyQueryState>, snapshot?: any) {
+  componentDidUpdate(
+    prevProps: Readonly<ScenarioProps<TopologyQuery>>,
+    prevState: Readonly<TopologyQueryState>,
+    snapshot?: any
+  ) {
     const { query, onChange, onRunQuery, datasource } = this.props;
     const prevQuery = prevProps.query;
     const {

@@ -21,6 +21,8 @@ interface Props extends Partial<SliderProps> {
   placeholder?: string | '-';
   tooltip?: PopoverContent;
   className?: string;
+  min?: number;
+  max?: number;
   /* Triggers after slider's move stops */
   onAfterChange(event?: any): any;
   /* Exhaustively riggers on every slider's move */

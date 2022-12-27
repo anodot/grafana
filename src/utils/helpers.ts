@@ -1,5 +1,6 @@
-import { TimeRange } from '@grafana/data/types/time';
+import { TimeRange } from '@grafana/data';
 import { TimeFilter } from '../types';
+import { isNull } from 'lodash';
 
 export const getPluoral = (n, base, suffix = 's') => base + (n === 1 ? '' : suffix);
 
@@ -72,8 +73,8 @@ export function getDateRange(days, startFlag) {
 
 export function getQueryParamsUrl(params, url = '') {
   const format = (str, key) => {
-    if (params[key]) {
-      return str + (str === url ? '?' : '&') + `${key}=${params[key]}`;
+    if (params[key] !== undefined && !isNull(params[key])) {
+      return str + (str === url ? '?' : '&') + `${key}=${String(params[key])}`;
     }
     return str;
   };

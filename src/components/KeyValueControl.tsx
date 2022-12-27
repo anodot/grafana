@@ -27,9 +27,9 @@ const KVRow: React.FC<KVRowPropsType> = ({
   dimensionName = {},
   dimensionValue = {},
   onDelete,
-  withNotControl,
-  onNotChange,
-  notValue,
+  // withNotControl,
+  // onNotChange,
+  // notValue,
   isMultiValue,
 }) => (
   <div className="gf-form-inline">
@@ -65,7 +65,7 @@ const KVRow: React.FC<KVRowPropsType> = ({
       />
     </div>
     <div className={iconWrapperClass}>
-      <IconButton onClick={onDelete} name={'trash-alt'} size={'xl'} surface={'panel'} />
+      <IconButton onClick={onDelete} name={'trash-alt'} size={'xl'} />
     </div>
   </div>
 );

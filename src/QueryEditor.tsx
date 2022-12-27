@@ -1,15 +1,23 @@
-//@ts-nocheck
 import defaults from 'lodash/defaults';
 import React, { useCallback } from 'react';
-// import { Alert } from '@grafana/ui';
-import { EditorQuery, QEditorProps } from './types';
+import {
+  AlertsQuery,
+  AnomalyQuery,
+  MetricsQuery,
+  TopologyQuery,
+  EditorQuery,
+  QEditorProps,
+  ScenarioProps,
+} from './types';
 import FormSelect from './components/FormField/FormSelect';
-import { scenarios } from './utils/constants';
+import { scenarios, dataQueryDefaultKeys } from './utils/constants';
 import AlertsQueryEditor from './Alerts/QueryEditor';
 import AnomaliesQueryEditor from './Anomalies/QueryEditor';
 import TopologyQueryEditor from './Topology/QueryEditor';
 import MetricsComposite from './MetricsComposite/QueryEditor';
+import pick from 'lodash/pick';
 import './ds-styles.css';
+import { DataQuery } from '@grafana/data';
 
 const scenarioOptions = {
   [scenarios.alerts]: { label: 'Alerts', value: scenarios.alerts },
@@ -40,10 +48,13 @@ export const QueryEditor = (props: QEditorProps) => {
     [query]
   );
 
-  const onScenarioChange = useCallback((scenario) => {
-    /* reset query to empty object */
-    props.onChange({ scenario: scenario.value });
-  }, []);
+  const onScenarioChange = useCallback(
+    (scenario) => {
+      /* reset query to empty object */
+      props.onChange({ scenario: scenario.value, ...(pick(query, dataQueryDefaultKeys) as DataQuery) });
+    },
+    [query]
+  );
 
   const editorsProps = {
     ...props,
@@ -54,16 +65,16 @@ export const QueryEditor = (props: QEditorProps) => {
 
   switch (query.scenario) {
     case scenarios.alerts:
-      editor = <AlertsQueryEditor {...editorsProps} />;
+      editor = <AlertsQueryEditor {...(editorsProps as ScenarioProps<AlertsQuery>)} />;
       break;
     case scenarios.anomalies:
-      editor = <AnomaliesQueryEditor {...editorsProps} />;
+      editor = <AnomaliesQueryEditor {...(editorsProps as ScenarioProps<AnomalyQuery>)} />;
       break;
     case scenarios.topology:
-      editor = <TopologyQueryEditor {...editorsProps} />;
+      editor = <TopologyQueryEditor {...(editorsProps as ScenarioProps<TopologyQuery>)} />;
       break;
     case scenarios.metricsComposite:
-      editor = <MetricsComposite {...editorsProps} />;
+      editor = <MetricsComposite {...(editorsProps as ScenarioProps<MetricsQuery>)} />;
       break;
     default:
       editor = null;
@@ -80,7 +91,7 @@ export const QueryEditor = (props: QEditorProps) => {
           value={query.scenario}
           options={Object.values(scenarioOptions)}
           onChange={onScenarioChange}
-          isOptionDisabled={({ value }) => value === query.scenario}
+          isOptionDisabled={(({ value }) => value === query.scenario) as () => boolean}
         />
       </div>
       {editor}

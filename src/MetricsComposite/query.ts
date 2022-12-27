@@ -6,7 +6,7 @@ import { getTemplateSrv } from '@grafana/runtime';
 
 export function metricsCompositeQuery(query, datasource) {
   const { timeInterval } = datasource;
-  const { metricName, baseLine, showMultiline, functions, sortBy, size } = query;
+  const { metricName, baseLine, showMultiline, functions, sortBy, size, addQuery } = query;
   let dimensions = JSON.parse(query.dimensions);
   const dashboardVars = query.applyVariables ? getTemplateSrv().getVariables() : [];
   const dashboardDimensions = dashboardVars
@@ -41,46 +41,50 @@ export function metricsCompositeQuery(query, datasource) {
     functions,
     sortBy,
     size,
+    addQuery,
   };
 
-  return getMetricsComposite(metricsParams, { timeInterval }, datasource).then(({ metrics }) => {
-    const frameSource = {
-      refId: query.refId,
-      fields: [
-        { name: 'time', type: FieldType.time },
-        { name: 'value', type: FieldType.number },
-        { name: 'name', type: FieldType.string },
-      ],
-    };
-    // const frames = [];
-
-    const singleFrame = new MutableDataFrame(frameSource);
-
-    metrics?.forEach(({ dataPoints, name }) => {
-      const frame = new MutableDataFrame(frameSource);
-      dataPoints.forEach(([time, value]) => {
-        frame.add({
-          time: time * 1000,
-          value,
-          name,
-        });
-        singleFrame.add({
-          time: time * 1000,
-          value,
-          name,
+  return getMetricsComposite({ addQuery, ...metricsParams }, { timeInterval }, datasource).then(({ metrics }) => {
+    let fields = [{ name: 'time', type: FieldType.time }];
+    const timeMap = {};
+    if (addQuery && metrics.length) {
+      metrics.forEach(({ name, dataPoints }) => {
+        fields.push({ name, type: FieldType.number });
+        dataPoints.forEach(([time, value]) => {
+          timeMap[time] = timeMap[time] || {};
+          timeMap[time][name] = value;
         });
       });
-      // frames.push(frame);
+    }
+
+    const frame = new MutableDataFrame({
+      refId: query.refId,
+      name: `${query.refId}-anodot-${scenarios.metrics}`,
+      meta: { type: 'timeseries-wide', preferredVisualisationType: 'graph' },
+      fields,
     });
 
-    singleFrame.serieName = scenarios.metricsComposite;
-    singleFrame.anodotPayload = {
+    if (addQuery && metrics.length) {
+      Object.entries(timeMap).forEach(([time, points]) => {
+        frame.add({
+          time: time * 1000,
+          ...points,
+        });
+      });
+    } else {
+      frame.add({
+        time: Date.now(),
+      });
+    }
+
+    frame.serieName = scenarios.metricsComposite;
+    frame.anodotPayload = {
       showMultiline,
       metricsComposite: metrics?.map((m) => ({ ...m, meta: metricsParams })),
       meta: metricsParams,
       timeInterval,
       query,
     };
-    return singleFrame; //frames; TODO: return multiple series works well with native Graph but requires changes on anodot-panel side
+    return frame; //TODO: return multiple series works well with native Graph but requires changes on anodot-panel side
   });
 }

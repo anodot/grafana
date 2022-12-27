@@ -13,9 +13,11 @@ export function alertsQuery(query, datasource) {
     const flattenAlerts = alertGroups ? [].concat(...alertGroups?.map((group) => group?.alerts)) : alerts;
     const frame = new MutableDataFrame({
       /* TODO: It can be used in native Table panel only, but still needs to be
-      configured: add link for title, hide levels column, hide digits from Severity column. How to do that?
+        configured: add link for title, hide levels column, hide digits from Severity column. How to do that?
        */
       refId: query.refId,
+      name: `${query.refId}-anodot-${scenarios.alerts}`,
+      meta: { type: 'timeseries-wide', preferredVisualisationType: 'table' },
       fields: [
         {
           name: 'Severity',
@@ -66,6 +68,10 @@ export function alertsQuery(query, datasource) {
           },
         },
         {
+          name: 'time',
+          type: FieldType.time,
+        },
+        {
           name: 'Duration',
           type: FieldType.string,
           config: {
@@ -87,24 +93,25 @@ export function alertsQuery(query, datasource) {
       ],
     });
 
-    flattenAlerts.forEach((alert, i) => {
+    flattenAlerts.forEach((alert) => {
       let score;
-      if (alert.type === 'anomaly') {
-        /* get the score */
-        const lastMetric = alert.metrics[alert.metrics.length - 1];
-        score = Math.round(Math.max(...lastMetric.intervals?.map((i) => i.score)) * 100);
-      }
+      // if (alert?.type?.toLowerCase() === 'anomaly') {
+      //   /* get the score - TODO: no metrics in last API update? */
+      //   const lastMetric = alert.metrics[alert.metrics.length - 1];
+      //   score = Math.round(Math.max(...lastMetric.intervals?.map((i) => i.score)) * 100);
+      // }
       alert.formatted = {
         started: format(new Date(alert.startTime * 1000), checkIsToday(alert.startTime * 1000) ? 'HH:mm' : 'MMM dd'), //formatDate(alert.startTime, 'MM DD'),
         duration: formatDuration(alert.duration, true),
         score,
       };
       frame.add({
+        time: alert.startTime * 1000,
         Name: alert.title,
         Started: alert.formatted.started,
         Duration: alert.formatted.duration,
         Score: score,
-        level: alert.severity === 'high' ? 'error' : i % 2 ? 'warn' : 'info',
+        level: ['high', 'critical'].includes(alert.severity) ? 'error' : alert.severity === 'medium' ? 'warn' : 'info',
         Severity: alert.severity,
       });
     });
