@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "@grafana/eslint-config"
+  ],
+  "rules": {
+    "react-hooks/exhaustive-deps": "off",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "react/prop-types": "off"
+  }
+}

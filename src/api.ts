@@ -67,7 +67,7 @@ export async function getAnomalyChart(anomaly, params, ds) {
     .datasourceRequest(getOptions(ds, makeAnomalyTimeSeriesParams(anomaly, url, params)))
     .then(({ data }) => ({ ...data, metricsCount }))
     .catch((error) => {
-      console.log('Request Error - Anomaly Chart: ', anomaly, tParams, error);
+      console.error('Request Error - Anomaly Chart: ', anomaly, tParams, error);
       return {};
     });
 }
