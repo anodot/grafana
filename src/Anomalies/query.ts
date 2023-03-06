@@ -16,7 +16,7 @@ export async function anomalyQuery(query, datasource) {
       dataSet: results[i]?.map((a) => ({ ...a, metricName: value })) || [],
     }));
 
-    let anomaliesCharts;
+    let anomaliesCharts = [];
 
     if (requestCharts) {
       const params = { baseline: includeBaseline, timeInterval };
@@ -27,6 +27,7 @@ export async function anomalyQuery(query, datasource) {
 
     let fields = [{ name: 'time', type: FieldType.time }];
     const timeMap = {};
+
     if (addQuery && anomaliesCharts.length) {
       anomaliesCharts.forEach(({ name, dataPoints }) => {
         fields.push({ name, type: FieldType.number });
