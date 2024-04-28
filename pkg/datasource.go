@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -18,6 +19,8 @@ import (
 type dataSource struct {
 	im instancemgmt.InstanceManager
 }
+
+const tokenRefreshInterval = 40 * time.Minute
 
 // Define the JSON data struct
 type jsonDataStruct struct {
@@ -31,6 +34,7 @@ var (
 	debounceDuration     = 2 * time.Minute // Adjust as needed
 	jsonData             jsonDataStruct
 )
+var once sync.Once
 
 func handleError(err error, sender backend.CallResourceResponseSender) {
 	if err != nil {
@@ -104,6 +108,42 @@ func doRefreshToken(apiToken string, jsonData *jsonDataStruct, sender backend.Ca
 	return "", fmt.Errorf("failed to refresh token: HTTP status code %d", resp.StatusCode)
 }
 
+func (ds *dataSource) refreshTokenPeriodically(apiToken string) {
+	// Initially wait for a short time before first token refresh
+	time.Sleep(1 * time.Minute)
+
+	// Set up a ticker to trigger token refresh every tokenRefreshInterval
+	ticker := time.Tick(tokenRefreshInterval)
+	for range ticker {
+		// Trigger token refresh
+		payload, err := json.Marshal(map[string]string{"refreshToken": apiToken})
+		if err != nil {
+			continue
+		}
+
+		authReq, err := http.NewRequest("POST", jsonData.URL+"/api/v2/access-token", bytes.NewReader(payload))
+		if err != nil {
+			continue
+		}
+		authReq.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(authReq)
+		if err != nil {
+			continue
+		}
+
+		b, err := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			continue
+		}
+
+		if resp.StatusCode == http.StatusOK {
+			tokenStorage = strings.Trim(string(b), "\"")
+		}
+	}
+}
+
 // CallResource handles any requests to /api/datasources/:id/resources.
 //
 // req contains information about the HTTP request
@@ -123,6 +163,10 @@ func (ds *dataSource) CallResource(ctx context.Context, req *backend.CallResourc
 	}
 
 	var apiToken = dsInstance.settings.DecryptedSecureJSONData["token"]
+	once.Do(func() {
+		// Start a goroutine to refresh the token periodically
+		go ds.refreshTokenPeriodically(apiToken)
+	})
 
 	if (req.Path == "access-token") || (tokenStorage == "") {
 		newToken, err := doRefreshToken(apiToken, &jsonData, sender, req.Path == "access-token")
