@@ -116,8 +116,6 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
           <FormInput
             inputWidth={0}
             tooltip={`Maximum amount of the requested charts (1 - ${maxSize})`}
-            min={1}
-            max={maxSize}
             type={'number'}
             label={'Limit'}
             value={query.size}

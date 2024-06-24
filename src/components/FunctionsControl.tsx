@@ -12,7 +12,7 @@ const iconWrapperClass = `gf-form ${cx(
   `
 )}`;
 type RowProps = {
-  functionName: FlatObject<any>;
+  selectedFunction: FlatObject<any>;
   functionConfig?: FlatObject<any>;
   paramsValue: FlatObject<any>;
   groupByPropertiesList: string[];
@@ -21,7 +21,7 @@ type RowProps = {
   onParamsChange(params: FlatObject<any>): void;
 };
 const FunctionsRow: React.FC<RowProps> = ({
-  functionName = {},
+  selectedFunction = {},
   functionConfig = {},
   onDelete,
   onParamsChange,
@@ -36,13 +36,13 @@ const FunctionsRow: React.FC<RowProps> = ({
       <div className="gf-form gf-form--grow">
         <div style={{ width: 10 * index }} />
         <FormSelect
-          disabled={functionName.disabled}
-          label={functionName.label}
-          tooltip={functionName.tooltip}
+          disabled={selectedFunction.disabled}
+          label={selectedFunction.label}
+          tooltip={selectedFunction.tooltip}
           inputWidth={0}
-          value={functionName.value}
-          options={functionName.options}
-          onChange={functionName.onChange}
+          value={selectedFunction.value}
+          options={selectedFunction.options}
+          onChange={selectedFunction.onChange}
         />
       </div>
       {parameters?.map((param) => (
@@ -147,7 +147,7 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
       {Object.keys(selectedFunctions).map((funcName, i) => (
         <FunctionsRow
           key={funcName}
-          functionName={{
+          selectedFunction={{
             label: `Function ${i + 1}`,
             options: availableFunctions,
             value: {

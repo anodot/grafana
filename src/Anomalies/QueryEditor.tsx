@@ -185,8 +185,6 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           inputWidth={0}
           label={'Limit'}
           tooltip={`Maximum amount of the requested charts (1 - ${maxSize})`}
-          min={1}
-          max={maxSize}
           type={'number'}
           value={query.size}
           onChange={({ target: { value } }) => onFormChange('size', Math.max(1, Math.min(maxSize, value)), true)}
