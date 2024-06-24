@@ -12,6 +12,7 @@ import FormSelect from '../components/FormField/FormSelect';
 import FormInput from '../components/FormField/FormInput';
 import { metricsSortingOptions } from '../utils/constants';
 import { SelectableValue } from '@grafana/data';
+import { FlatObject } from '../utils/types';
 
 const maxSize = 20;
 
@@ -147,7 +148,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
             functionsConfigs={functionsMeta}
             key={`function-${query.metricName}`}
             selectedFunctions={JSON.parse(query.functions)}
-            onChangeFunctions={(newFunctions) =>
+            onChangeFunctions={(newFunctions: FlatObject) =>
               onFormChange('functions', JSON.stringify(newFunctions), !('new' in newFunctions))
             }
             groupByPropertiesList={propertiesOptions}

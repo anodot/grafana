@@ -65,7 +65,7 @@ const KVRow: React.FC<KVRowPropsType> = ({
       />
     </div>
     <div className={iconWrapperClass}>
-      <IconButton onClick={onDelete} name={'trash-alt'} size={'xl'} />
+      <IconButton aria-label="trash" onClick={onDelete} name={'trash-alt'} size={'xl'} />
     </div>
   </div>
 );

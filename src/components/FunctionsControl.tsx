@@ -1,9 +1,9 @@
-// @ts-nocheck
 import React, { useCallback, useMemo, useState } from 'react';
 import FormSelect from './FormField/FormSelect';
 import { Button, IconButton, Input, Select } from '@grafana/ui';
 import { css, cx } from 'emotion';
 import { arrayToOptions } from '../utils/helpers';
+import { FlatObject } from '../utils/types';
 
 const iconWrapperClass = `gf-form ${cx(
   css`
@@ -11,8 +11,16 @@ const iconWrapperClass = `gf-form ${cx(
     margin-left: 5px;
   `
 )}`;
-
-const FunctionsRow = ({
+type RowProps = {
+  functionName: FlatObject<any>;
+  functionConfig?: FlatObject<any>;
+  paramsValue: FlatObject<any>;
+  groupByPropertiesList: string[];
+  index: number;
+  onDelete(): void;
+  onParamsChange(params: FlatObject<any>): void;
+};
+const FunctionsRow: React.FC<RowProps> = ({
   functionName = {},
   functionConfig = {},
   onDelete,
@@ -42,7 +50,7 @@ const FunctionsRow = ({
           {param.name === 'Scale Factor' && (
             <Input
               type="number"
-              onChange={(e) => onParamsChange({ ...paramsValue, [param.name]: e.target.value })}
+              onChange={(e: any) => onParamsChange({ ...paramsValue, [param.name]: e.target.value })}
               value={paramsValue?.[param.name]}
               required
             />
@@ -72,15 +80,26 @@ const FunctionsRow = ({
         </div>
       ))}
       <div className={iconWrapperClass}>
-        <IconButton onClick={onDelete} name={'trash-alt'} size={'xl'} surface={'panel'} />
+        <IconButton aria-label="trash" onClick={onDelete} name={'trash-alt'} size={'xl'} />
       </div>
     </div>
   );
 };
 
-const FunctionsControl = ({ functionsConfigs, selectedFunctions = {}, onChangeFunctions, groupByPropertiesList }) => {
-  const [nestCounter, setCounter] = useState(0);
+type FunctionsProps = {
+  functionsConfigs: Array<FlatObject<any>>;
+  selectedFunctions: FlatObject<any>;
+  onChangeFunctions(f: FlatObject<any>): void;
+  groupByPropertiesList: string[];
+};
 
+const FunctionsControl: React.FC<FunctionsProps> = ({
+  functionsConfigs,
+  selectedFunctions = {},
+  onChangeFunctions,
+  groupByPropertiesList,
+}) => {
+  const [nestCounter, setCounter] = useState(0);
   const availableFunctions = useMemo(() => {
     const selectedKeys = Object.keys(selectedFunctions);
     return functionsConfigs
@@ -135,11 +154,11 @@ const FunctionsControl = ({ functionsConfigs, selectedFunctions = {}, onChangeFu
               label: selectedFunctions[funcName]?.functionLabel,
               value: selectedFunctions[funcName]?.functionName,
             },
-            onChange: (newName) => onFunctionChange(funcName, newName, null, i),
+            onChange: (newName) => onFunctionChange(funcName, newName, null),
           }}
           functionConfig={functionsConfigs.find((f) => f.name === funcName)}
           onDelete={() => onDelete(funcName)}
-          onParamsChange={(value) => onFunctionChange(funcName, null, value, i)}
+          onParamsChange={(value) => onFunctionChange(funcName, null, value)}
           paramsValue={selectedFunctions[funcName].parameters}
           index={i}
           groupByPropertiesList={groupByPropertiesList}
