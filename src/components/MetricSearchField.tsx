@@ -11,6 +11,7 @@ interface SearchProps extends Partial<FormSelectProps> {
   isClearable?: boolean;
   notOptions?: NotOptionsType;
   placeholder?: string;
+  label?: string;
 }
 
 const MetricSearchField: React.FC<SearchProps> = ({
@@ -20,6 +21,7 @@ const MetricSearchField: React.FC<SearchProps> = ({
   isClearable,
   isMulti,
   notOptions,
+  label,
   placeholder = '',
   ...otherProps
 }) => {
@@ -46,7 +48,7 @@ const MetricSearchField: React.FC<SearchProps> = ({
   return (
     <FormSelect
       inputWidth={0}
-      label={`Measure${isMulti ? 's' : ''}`}
+      label={label || `Measure${isMulti ? 's' : ''}`}
       tooltip={'Select measures.'}
       value={value}
       options={options}

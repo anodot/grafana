@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import defaults from 'lodash/defaults';
-import { MetricsQuery, ScenarioProps } from '../types';
+import { FlatObject, MetricsQuery, ScenarioProps } from '../types';
 import difference from 'lodash/difference';
 import FormSwitch from '../components/FormField/FormSwitch';
 import DimensionsRows from '../components/KeyValueControl';
@@ -12,7 +12,6 @@ import FormSelect from '../components/FormField/FormSelect';
 import FormInput from '../components/FormField/FormInput';
 import { metricsSortingOptions } from '../utils/constants';
 import { SelectableValue } from '@grafana/data';
-import { FlatObject } from '../utils/types';
 
 const maxSize = 20;
 
@@ -34,6 +33,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
   const [propertiesOptions, setPropertiesOptions] = useState([]);
   const [availableOptions, setAvailableOptions] = useState([] as SelectableValue[]);
   const [isPristine, setIsPristine] = useState(true);
+  const getMetricsOptions = datasource.getMetricsOptions.bind(datasource);
 
   useEffect(() => {
     setIsPristine(false);
@@ -70,7 +70,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
           <MetricSearchField
             placeholder={'Any Measure'}
             isClearable
-            getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
+            getMetricsOptions={getMetricsOptions}
             value={query.metricName && addLabel(query.metricName)}
             onChange={(value) => onFormChange('metricName', value, true)}
           />
@@ -150,6 +150,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
               onFormChange('functions', JSON.stringify(newFunctions), !('new' in newFunctions))
             }
             groupByPropertiesList={propertiesOptions}
+            getMetricsOptions={getMetricsOptions}
           />
         </div>
       )}

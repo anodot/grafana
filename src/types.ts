@@ -1,4 +1,5 @@
-import { DataQuery, DataSourceJsonData, QueryEditorProps, SelectableValue } from '@grafana/data';
+import { DataSourceJsonData, QueryEditorProps, SelectableValue } from '@grafana/data';
+import { DataQuery } from '@grafana/schema';
 import { DataSource } from './DataSource';
 
 export type OnChangeType = (key: string | object, value?: any, runQuery?: boolean) => void;
@@ -71,7 +72,7 @@ export interface AnomalyQuery extends EditorQuery {
 }
 
 export interface ScenarioProps<TsQuery extends EditorQuery> extends QueryEditorProps<DataSource, EditorQuery> {
-  metricsList?: object[];
+  metricsList?: Array<FlatObject<any>>;
   query: TsQuery;
   onFormChange: OnChangeType;
 }
@@ -105,3 +106,5 @@ export interface DimensionType {
   value: any;
   not?: boolean;
 }
+
+export type FlatObject<T = string | number | boolean> = Record<string, T>;

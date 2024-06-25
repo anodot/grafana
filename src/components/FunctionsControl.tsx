@@ -3,7 +3,9 @@ import FormSelect from './FormField/FormSelect';
 import { Button, IconButton, Input, Select } from '@grafana/ui';
 import { css, cx } from 'emotion';
 import { arrayToOptions } from '../utils/helpers';
-import { FlatObject } from '../utils/types';
+
+import { FlatObject } from '../types';
+import MetricSearchField from './MetricSearchField';
 
 const iconWrapperClass = `gf-form ${cx(
   css`
@@ -11,11 +13,19 @@ const iconWrapperClass = `gf-form ${cx(
     margin-left: 5px;
   `
 )}`;
-type RowProps = {
+
+type FunctionsProps = {
+  functionsConfigs: Array<FlatObject<any>>;
+  selectedFunctions: FlatObject<any>;
+  onChangeFunctions(f: FlatObject<any>): void;
+  groupByPropertiesList: string[];
+  getMetricsOptions(str: string): Promise<any>;
+};
+
+type RowProps = Omit<FunctionsProps, 'onChangeFunctions' | 'functionsConfigs' | 'selectedFunctions'> & {
   selectedFunction: FlatObject<any>;
   functionConfig?: FlatObject<any>;
   paramsValue: FlatObject<any>;
-  groupByPropertiesList: string[];
   index: number;
   onDelete(): void;
   onParamsChange(params: FlatObject<any>): void;
@@ -28,6 +38,7 @@ const FunctionsRow: React.FC<RowProps> = ({
   paramsValue = {},
   index,
   groupByPropertiesList,
+  getMetricsOptions,
 }) => {
   const { parameters } = functionConfig;
 
@@ -77,6 +88,19 @@ const FunctionsRow: React.FC<RowProps> = ({
               }}
             />
           )}
+          {param.name === 'metrics' && (
+            <MetricSearchField
+              placeholder={'Any Measure'}
+              isClearable
+              getMetricsOptions={getMetricsOptions}
+              value={paramsValue[param.name]}
+              onChange={(value) => {
+                console.log('FunctionsControl:98', value);
+                onParamsChange({ ...paramsValue, [param.name]: value });
+              }}
+              label="Divisor measure"
+            />
+          )}
         </div>
       ))}
       <div className={iconWrapperClass}>
@@ -86,18 +110,12 @@ const FunctionsRow: React.FC<RowProps> = ({
   );
 };
 
-type FunctionsProps = {
-  functionsConfigs: Array<FlatObject<any>>;
-  selectedFunctions: FlatObject<any>;
-  onChangeFunctions(f: FlatObject<any>): void;
-  groupByPropertiesList: string[];
-};
-
 const FunctionsControl: React.FC<FunctionsProps> = ({
   functionsConfigs,
   selectedFunctions = {},
   onChangeFunctions,
   groupByPropertiesList,
+  getMetricsOptions,
 }) => {
   const [nestCounter, setCounter] = useState(0);
   const availableFunctions = useMemo(() => {
@@ -162,6 +180,7 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
           paramsValue={selectedFunctions[funcName].parameters}
           index={i}
           groupByPropertiesList={groupByPropertiesList}
+          getMetricsOptions={getMetricsOptions}
         />
       ))}
       <Button

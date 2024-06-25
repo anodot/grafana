@@ -14,6 +14,7 @@
   "devDependencies": {
     "@grafana/data": "^11.0.0",
     "@grafana/runtime": "^11.0.0",
+    "@grafana/schema": "^11.0.0",
     "@grafana/toolkit": "^9.5.19",
     "@grafana/ui": "^11.0.0",
     "@types/lodash": "^4.17.5"

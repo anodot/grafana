@@ -82,4 +82,35 @@ export const functionsMeta = [
       },
     ],
   },
+  {
+    displayOnly: false,
+    displayName: 'Ratio Pairs',
+    description: 'Divides one or more time-series by another time-series',
+    type: 'transform',
+    example: '',
+    output: { name: 'Transformed Time Series', description: 'Transformed time series', type: 'multipleTimeSeries' },
+    input: [
+      { name: 'Time Series', description: 'Single time series or a multiple time series', type: 'multipleTimeSeries' },
+    ],
+    functionGroup: 'top',
+    name: 'ratioPairs',
+    shortName: 'ratioPairs',
+    helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/115002021094-ratioPairs',
+    extendedDescription: 'Divides one or more time-series by another time-series',
+    parameters: [
+      {
+        displayType: 'numeric',
+        optionalValues: null,
+        validators: [
+          { name: 'null', parameters: {} },
+          { name: 'nan', parameters: {} },
+          { name: 'finite', parameters: {} },
+        ],
+        name: 'metrics',
+        description: 'Divides one or more time-series by another time-series',
+        type: 'double',
+        mandatory: true,
+      },
+    ],
+  },
 ];
