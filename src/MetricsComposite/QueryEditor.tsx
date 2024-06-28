@@ -4,7 +4,7 @@ import { FlatObject, MetricsQuery, ScenarioProps } from '../types';
 import difference from 'lodash/difference';
 import FormSwitch from '../components/FormField/FormSwitch';
 import DimensionsRows from '../components/KeyValueControl';
-import FunctionsControl from '../components/FunctionsControl';
+import FunctionsControl from '../components/Functions';
 import { functionsMeta } from './searchFunctionsMeta';
 import MetricSearchField from '../components/MetricSearchField';
 import { addLabel } from '../utils/helpers';

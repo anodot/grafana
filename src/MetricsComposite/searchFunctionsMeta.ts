@@ -1,3 +1,7 @@
+export enum FunctionsNamesEnum {
+  GROUP_BY = 'groupBy',
+  RATIO_PAIRS = 'ratioPairs',
+}
 export const functionsMeta = [
   {
     displayOnly: false,
@@ -8,8 +12,8 @@ export const functionsMeta = [
     output: { name: 'Grouped Time Series', description: 'Grouped time series', type: 'multipleTimeSeries' },
     input: [{ name: 'Time Series', description: 'Multiple time series', type: 'multipleTimeSeries' }],
     functionGroup: 'top',
-    name: 'groupBy',
-    shortName: 'groupBy',
+    name: FunctionsNamesEnum.GROUP_BY,
+    shortName: FunctionsNamesEnum.GROUP_BY,
     helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/207926235-GroupBy',
     extendedDescription: 'The Group By function groups rows that have the same values into a single row.',
     parameters: [
@@ -93,8 +97,8 @@ export const functionsMeta = [
       { name: 'Time Series', description: 'Single time series or a multiple time series', type: 'multipleTimeSeries' },
     ],
     functionGroup: 'top',
-    name: 'ratioPairs',
-    shortName: 'ratioPairs',
+    name: FunctionsNamesEnum.RATIO_PAIRS,
+    shortName: FunctionsNamesEnum.RATIO_PAIRS,
     helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/115002021094-ratioPairs',
     extendedDescription: 'Divides one or more time-series by another time-series',
     parameters: [

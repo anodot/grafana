@@ -97,3 +97,11 @@ export function getQ(metric, filters = [], stringify, notOperator = false) {
   };
   return stringify ? JSON.stringify(q) : q;
 }
+
+export const tryJSONParse = (str: string) => {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return str;
+  }
+};
