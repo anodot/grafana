@@ -3,6 +3,7 @@ import { FunctionsNamesEnum } from '../components/Functions/searchFunctionsMeta'
 import { RatioParams } from '../components/Functions/RatioPairFunc';
 import isObject from 'lodash/isObject';
 import { getQueryParamsUrl } from './helpers';
+import { PairsParams } from '../components/Functions/PairsFunc';
 
 export function makeMetricTimeSeriesParams(
   { metricName, dimensions = [], includeBaseline = false, functions, sortBy, size },
@@ -47,10 +48,13 @@ export function makeMetricTimeSeriesParams(
   let root = firstMetricChild;
   const functionsParsed = JSON.parse(functions);
   const isRatioPairs = !!functionsParsed[FunctionsNamesEnum.RATIO_PAIRS];
-
+  const isPairs = !!functionsParsed[FunctionsNamesEnum.PAIRS];
   if (isRatioPairs) {
     const ratioFunc = { ...functionsParsed[FunctionsNamesEnum.RATIO_PAIRS] };
     root = getRatioPairsRoot(firstMetricChild, ratioFunc) || root;
+  } else if (isPairs) {
+    const func = { ...functionsParsed[FunctionsNamesEnum.PAIRS] };
+    root = getPairsRoot(firstMetricChild, func) || root;
   } else if (Object.keys(functionsParsed)?.length) {
     root = Object.keys(functionsParsed)
       .sort((aName, bName) => functionsParsed[bName].index - functionsParsed[aName].index)
@@ -166,6 +170,59 @@ function getRatioPairsRoot(firstMetricChild, ratioFunc) {
       function: FunctionsNamesEnum.RATIO_PAIRS,
       id: '662f-d2a8f8cadf29',
       parameters: [],
+      type: 'function',
+    };
+  }
+  return;
+}
+function getPairsRoot(firstMetricChild, func) {
+  const { operation, secondGroupBy, secondMeasure, secondAggregation, firstGroupBy, firstAggregation } =
+    func.parameters as PairsParams;
+
+  if (firstGroupBy && secondGroupBy && [secondMeasure, secondAggregation, firstAggregation].every((d) => d.value)) {
+    const firstParams = [
+      { name: 'Aggregation', value: firstAggregation.value },
+      { name: 'Group By', value: firstGroupBy },
+    ];
+    const firstWithParams = {
+      children: [firstMetricChild],
+      function: 'groupBy',
+      id: `882f-d2a8f8cadf39`,
+      parameters: firstParams,
+      type: 'function',
+    };
+    const secondParams = [
+      { name: 'Aggregation', value: secondAggregation.value },
+      { name: 'Group By', value: secondGroupBy },
+    ];
+    const secondChild = {
+      children: [],
+      id: 'af66-b2a649812b33',
+      searchObject: {
+        expression: [
+          {
+            key: 'what',
+            value: secondMeasure.value,
+            type: 'property',
+            isExact: true,
+          },
+        ],
+      },
+      type: 'metric',
+      uiIndex: 0,
+    };
+    const secondWithParams = {
+      children: [secondChild],
+      function: 'groupBy',
+      id: `882f-d2a8f8cadf49`,
+      parameters: secondParams,
+      type: 'function',
+    };
+    return {
+      children: [firstWithParams, secondWithParams],
+      function: FunctionsNamesEnum.PAIRS,
+      id: '662f-d2a8f8cadf29',
+      parameters: [{ name: 'Operation', value: operation.value }],
       type: 'function',
     };
   }

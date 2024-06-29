@@ -13,35 +13,38 @@ const iconWrapperClass = `gf-form ${cx(
     margin-left: 5px;
   `
 )}`;
-export type RatioParams = {
-  dividentMeasure?: Option;
-  dividentAggregation: Option;
-  dividentGroupBy: string;
+export type PairsParams = {
+  operation: Option;
+  firstMeasure?: Option;
+  firstAggregation: Option;
+  firstGroupBy: string;
 
-  divisorMeasure: Option;
-  divisorAggregation: Option;
-  divisorGroupBy: string;
+  secondMeasure: Option;
+  secondAggregation: Option;
+  secondGroupBy: string;
 };
-type RatioPairFuncProps = {
+type Props = {
   selectedFunction: FlatObject<any>;
-  paramsValue: RatioParams;
+  paramsValue: PairsParams;
   index: number;
+  functionConfig?: FlatObject<any>;
   onDelete(): void;
-  onParamsChange(params: RatioParams): void;
+  onParamsChange(params: PairsParams): void;
   groupByPropertiesList: string[];
   getMetricsOptions(str: string): Promise<any>;
   selectedMeasure?: string;
 };
 
-const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
+const PairsFunc: React.FC<Props> = ({
   selectedFunction = {},
   onDelete,
   onParamsChange,
-  paramsValue = {} as RatioParams,
+  paramsValue = {} as PairsParams,
   index,
   groupByPropertiesList,
   getMetricsOptions,
   selectedMeasure,
+  functionConfig,
 }) => {
   return (
     <>
@@ -57,6 +60,17 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
             onChange={selectedFunction.onChange}
           />
         </div>
+        <InlineFormLabel>Operation:</InlineFormLabel>
+        <div className="gf-form gf-form--grow">
+          <Select
+            menuPlacement={'bottom'}
+            value={paramsValue.operation}
+            options={arrayToOptions(functionConfig?.operationOptions)}
+            onChange={(value) => {
+              onParamsChange({ ...paramsValue, operation: value });
+            }}
+          />
+        </div>
         <div className={iconWrapperClass}>
           <IconButton aria-label="trash" onClick={onDelete} name={'trash-alt'} size={'xl'} />
         </div>
@@ -70,7 +84,7 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
             getMetricsOptions={getMetricsOptions}
             value={addLabel(selectedMeasure)}
             onChange={(value) => {
-              onParamsChange({ ...paramsValue, dividentMeasure: value });
+              onParamsChange({ ...paramsValue, firstMeasure: value });
             }}
             label="Divident measure"
             disabled
@@ -80,10 +94,10 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
         <div className="gf-form">
           <Select
             menuPlacement={'bottom'}
-            value={paramsValue.dividentAggregation}
+            value={paramsValue.firstAggregation}
             options={arrayToOptions(aggregationKeys)}
             onChange={(value) => {
-              onParamsChange({ ...paramsValue, dividentAggregation: value });
+              onParamsChange({ ...paramsValue, firstAggregation: value });
             }}
           />
         </div>
@@ -91,13 +105,13 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
           <Select
             isMulti
             menuPlacement={'bottom'}
-            value={paramsValue.dividentGroupBy && JSON.parse(paramsValue.dividentGroupBy)?.properties}
+            value={paramsValue.firstGroupBy && JSON.parse(paramsValue.firstGroupBy)?.properties}
             options={arrayToOptions(groupByPropertiesList)}
             onChange={(selectedOptions) => {
               const selected = selectedOptions.map((o) => o.value);
               onParamsChange({
                 ...paramsValue,
-                dividentGroupBy: JSON.stringify({ properties: selected }),
+                firstGroupBy: JSON.stringify({ properties: selected }),
               });
             }}
           />
@@ -110,9 +124,9 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
             placeholder={'Any Measure'}
             isClearable
             getMetricsOptions={getMetricsOptions}
-            value={paramsValue.divisorMeasure}
+            value={paramsValue.secondMeasure}
             onChange={(value) => {
-              onParamsChange({ ...paramsValue, divisorMeasure: value });
+              onParamsChange({ ...paramsValue, secondMeasure: value });
             }}
             label="Divisor measure"
           />
@@ -121,10 +135,10 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
         <div className="gf-form">
           <Select
             menuPlacement={'bottom'}
-            value={paramsValue.divisorAggregation}
+            value={paramsValue.secondAggregation}
             options={arrayToOptions(aggregationKeys)}
             onChange={(value) => {
-              onParamsChange({ ...paramsValue, divisorAggregation: value });
+              onParamsChange({ ...paramsValue, secondAggregation: value });
             }}
           />
         </div>
@@ -132,13 +146,13 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
           <Select
             isMulti
             menuPlacement={'bottom'}
-            value={paramsValue.divisorGroupBy && JSON.parse(paramsValue.divisorGroupBy)?.properties}
+            value={paramsValue.secondGroupBy && JSON.parse(paramsValue.secondGroupBy)?.properties}
             options={arrayToOptions(groupByPropertiesList)}
             onChange={(selectedOptions) => {
               const selected = selectedOptions.map((o) => o.value);
               onParamsChange({
                 ...paramsValue,
-                divisorGroupBy: JSON.stringify({ properties: selected }),
+                secondGroupBy: JSON.stringify({ properties: selected }),
               });
             }}
           />
@@ -148,4 +162,4 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
   );
 };
 
-export default RatioPairFunc;
+export default PairsFunc;

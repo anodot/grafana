@@ -1,7 +1,7 @@
 export enum FunctionsNamesEnum {
   GROUP_BY = 'groupBy',
   RATIO_PAIRS = 'ratioPairs',
-  AGGREGATION = 'Aggregation',
+  PAIRS = 'pairs',
 }
 export const aggregationKeys = ['Avg', 'Sum', 'Median', 'Max', 'Min', 'Std', 'P90', 'P95', 'P99', 'Count'];
 export const functionsConfigs = {
@@ -115,20 +115,12 @@ export const functionsConfigs = {
     shortName: FunctionsNamesEnum.RATIO_PAIRS,
     helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/115002021094-ratioPairs',
     extendedDescription: 'Divides one or more time-series by another time-series',
-    parameters: [
-      {
-        displayType: 'numeric',
-        optionalValues: null,
-        validators: [
-          { name: 'null', parameters: {} },
-          { name: 'nan', parameters: {} },
-          { name: 'finite', parameters: {} },
-        ],
-        name: 'metrics',
-        description: 'Divides one or more time-series by another time-series',
-        type: 'double',
-        mandatory: true,
-      },
-    ],
+  },
+  [FunctionsNamesEnum.PAIRS]: {
+    displayName: 'Pairs',
+    name: FunctionsNamesEnum.PAIRS,
+    helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/115002020674-Pairs',
+    extendedDescription: ' Divide / multiply / add / subtract pairs of time-series',
+    operationOptions: ['Add', 'Subtract', 'Divide', 'Multiply'],
   },
 };

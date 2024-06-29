@@ -4,7 +4,8 @@ import { Button } from '@grafana/ui';
 import { FlatObject, Option } from '../../types';
 import { FunctionsRow } from './FunctionsRow';
 import { FunctionsNamesEnum, functionsConfigs } from './searchFunctionsMeta';
-import RatioPairFunc from './RatioPairFunc';
+import RatioPairFunc, { RatioParams } from './RatioPairFunc';
+import PairsFunc, { PairsParams } from './PairsFunc';
 
 export type FunctionsProps = {
   selectedFunctions: Record<FunctionsNamesEnum, any>;
@@ -28,10 +29,14 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
   const availableFunctions = useMemo(() => {
     const selectedKeys = Object.keys(selectedFunctions);
     return functionsOptions.filter((f) => !selectedKeys.includes(f.value) && f.value !== 'new');
-  }, [selectedFunctions, functionsConfigs]);
+  }, [selectedFunctions, functionsOptions]);
 
   const onFunctionChange = useCallback(
-    (funcId: FunctionsNamesEnum, newSelectedFunc: Option<FunctionsNamesEnum> | null, fParams: FlatObject | null) => {
+    (
+      funcId: FunctionsNamesEnum,
+      newSelectedFunc: Option<FunctionsNamesEnum> | null,
+      fParams: RatioParams | PairsParams | FlatObject | null
+    ) => {
       const newFunctions = { ...selectedFunctions };
       const func = {
         functionName: newSelectedFunc?.value || newFunctions[funcId]?.functionName,
@@ -84,37 +89,53 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
           getMetricsOptions,
           selectedMeasure,
         };
-        return funcName === FunctionsNamesEnum.RATIO_PAIRS ? (
-          <RatioPairFunc
-            key={funcName}
-            functionConfig={functionsConfigs[funcName]}
-            onDelete={() => onDelete(funcName)}
-            onParamsChange={(value) => onFunctionChange(funcName, null, value)}
-            paramsValue={selectedFunctions[funcName]?.parameters}
-            index={i}
-            {...sharedProps}
-          />
-        ) : (
-          <FunctionsRow
-            key={funcName}
-            functionConfig={functionsConfigs[funcName]}
-            onDelete={() => onDelete(funcName)}
-            onParamsChange={(value) => onFunctionChange(funcName, null, value)}
-            paramsValue={selectedFunctions[funcName].parameters}
-            index={i}
-            {...sharedProps}
-          />
-        );
+        if (funcName === FunctionsNamesEnum.RATIO_PAIRS) {
+          return (
+            <RatioPairFunc
+              key={funcName}
+              onDelete={() => onDelete(funcName)}
+              onParamsChange={(value) => onFunctionChange(funcName, null, value)}
+              paramsValue={selectedFunctions[funcName]?.parameters}
+              index={i}
+              {...sharedProps}
+            />
+          );
+        } else if (funcName === FunctionsNamesEnum.PAIRS) {
+          return (
+            <PairsFunc
+              key={funcName}
+              onDelete={() => onDelete(funcName)}
+              onParamsChange={(value) => onFunctionChange(funcName, null, value)}
+              paramsValue={selectedFunctions[funcName]?.parameters}
+              index={i}
+              functionConfig={functionsConfigs[funcName]}
+              {...sharedProps}
+            />
+          );
+        } else {
+          return (
+            <FunctionsRow
+              key={funcName}
+              functionConfig={functionsConfigs[funcName]}
+              onDelete={() => onDelete(funcName)}
+              onParamsChange={(value) => onFunctionChange(funcName, null, value)}
+              paramsValue={selectedFunctions[funcName].parameters}
+              index={i}
+              {...sharedProps}
+            />
+          );
+        }
       })}
-      {!Object.keys(selectedFunctions).includes(FunctionsNamesEnum.RATIO_PAIRS) && (
-        <Button
-          style={{ width: 112 }}
-          disabled={!availableFunctions.length || 'new' in selectedFunctions}
-          onClick={onAdd}
-        >
-          + {Object.keys(selectedFunctions).length > 0 && 'Child '}Function
-        </Button>
-      )}
+      {!Object.keys(selectedFunctions).includes(FunctionsNamesEnum.RATIO_PAIRS) &&
+        !Object.keys(selectedFunctions).includes(FunctionsNamesEnum.PAIRS) && (
+          <Button
+            style={{ width: 112 }}
+            disabled={!availableFunctions.length || 'new' in selectedFunctions}
+            onClick={onAdd}
+          >
+            + {Object.keys(selectedFunctions).length > 0 && 'Child '}Function
+          </Button>
+        )}
     </>
   );
 };
