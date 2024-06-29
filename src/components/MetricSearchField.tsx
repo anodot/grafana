@@ -4,7 +4,7 @@ import FormSelect, { FormSelectProps, NotOptionsType } from './FormField/FormSel
 import { SelectableValue } from '@grafana/data';
 
 interface SearchProps extends Partial<FormSelectProps> {
-  value: string | SelectableValue[];
+  value: string | SelectableValue;
   onChange: (v: any) => void;
   getMetricsOptions: (str: string) => Promise<Array<{ value: string }>>;
   isMulti?: boolean;

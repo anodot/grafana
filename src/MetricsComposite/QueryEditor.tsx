@@ -5,7 +5,6 @@ import difference from 'lodash/difference';
 import FormSwitch from '../components/FormField/FormSwitch';
 import DimensionsRows from '../components/KeyValueControl';
 import FunctionsControl from '../components/Functions';
-import { functionsMeta } from './searchFunctionsMeta';
 import MetricSearchField from '../components/MetricSearchField';
 import { addLabel } from '../utils/helpers';
 import FormSelect from '../components/FormField/FormSelect';
@@ -143,7 +142,6 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
       {query.metricName && (
         <div style={{ marginBottom: 4 }}>
           <FunctionsControl
-            functionsConfigs={functionsMeta}
             key={`function-${query.metricName}`}
             selectedFunctions={JSON.parse(query.functions)}
             onChangeFunctions={(newFunctions: FlatObject) =>
@@ -151,6 +149,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
             }
             groupByPropertiesList={propertiesOptions}
             getMetricsOptions={getMetricsOptions}
+            selectedMeasure={query.metricName}
           />
         </div>
       )}

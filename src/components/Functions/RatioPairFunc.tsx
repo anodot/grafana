@@ -1,10 +1,11 @@
 import React from 'react';
 import FormSelect from '../FormField/FormSelect';
-import { IconButton, Input, Select } from '@grafana/ui';
-import { arrayToOptions } from '../../utils/helpers';
+import { IconButton, InlineFormLabel, Select } from '@grafana/ui';
+import { addLabel, arrayToOptions } from '../../utils/helpers';
 import MetricSearchField from '../MetricSearchField';
-import { FlatObject } from '../../types';
+import { FlatObject, Option } from '../../types';
 import { css, cx } from 'emotion';
+import { aggregationKeys } from './searchFunctionsMeta';
 
 const iconWrapperClass = `gf-form ${cx(
   css`
@@ -12,103 +13,138 @@ const iconWrapperClass = `gf-form ${cx(
     margin-left: 5px;
   `
 )}`;
+export type RatioParams = {
+  dividentMeasure?: Option;
+  dividentAggregation: Option;
+  dividentGroupBy: string;
 
+  divisorMeasure: Option;
+  divisorAggregation: Option;
+  divisorGroupBy: string;
+};
 type RatioPairFuncProps = {
   selectedFunction: FlatObject<any>;
   functionConfig?: FlatObject<any>;
-  paramsValue: FlatObject<any>;
+  paramsValue: RatioParams;
   index: number;
   onDelete(): void;
-  onParamsChange(params: FlatObject<any>): void;
+  onParamsChange(params: RatioParams): void;
   groupByPropertiesList: string[];
   getMetricsOptions(str: string): Promise<any>;
+  selectedMeasure?: string;
 };
 
 export const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
   selectedFunction = {},
-  functionConfig = {},
   onDelete,
   onParamsChange,
-  paramsValue = {},
+  paramsValue = {} as RatioParams,
   index,
   groupByPropertiesList,
   getMetricsOptions,
+  selectedMeasure,
 }) => {
-  const { parameters } = functionConfig;
-
   return (
-    <div className="gf-form-inline">
-      <div className="gf-form gf-form--grow">
-        <div style={{ width: 10 * index }} />
-        <FormSelect
-          disabled={selectedFunction.disabled}
-          label={selectedFunction.label}
-          tooltip={selectedFunction.tooltip}
-          inputWidth={0}
-          value={selectedFunction.value}
-          options={selectedFunction.options}
-          onChange={selectedFunction.onChange}
-        />
-      </div>
-      {parameters?.map((param) => (
-        <div key={param.name} className="gf-form gf-form--grow">
-          {param.name === 'Scale Factor' && (
-            <Input
-              type="number"
-              onChange={(e: any) => onParamsChange({ ...paramsValue, [param.name]: e.target.value })}
-              value={paramsValue?.[param.name]}
-              required
-            />
-          )}
-          {param.name === 'Group By' && (
-            <Select
-              isMulti
-              menuPlacement={'bottom'}
-              value={paramsValue[param.name] && JSON.parse(paramsValue[param.name])?.properties}
-              options={arrayToOptions(groupByPropertiesList)}
-              onChange={(selectedOptions) => {
-                const selected = selectedOptions.map((o) => o.value);
-                onParamsChange({ ...paramsValue, [param.name]: JSON.stringify({ properties: selected }) });
-              }}
-            />
-          )}
-          {param.name === 'Aggregation' && (
-            <Select
-              menuPlacement={'bottom'}
-              value={paramsValue[param.name]}
-              options={arrayToOptions(param.optionalValues)}
-              onChange={(value) => {
-                onParamsChange({ ...paramsValue, [param.name]: value });
-              }}
-            />
-          )}
-
-          <MetricSearchField
-            placeholder={'Any Measure'}
-            isClearable
-            getMetricsOptions={getMetricsOptions}
-            value={paramsValue[param.name]}
-            onChange={(value) => {
-              onParamsChange({ ...paramsValue, [param.name]: value });
-            }}
-            label="Divisor measure"
+    <>
+      <div className="gf-form-inline">
+        <div className="gf-form gf-form--grow">
+          <div style={{ width: 10 * index }} />
+          <FormSelect
+            disabled={selectedFunction.disabled}
+            label={selectedFunction.label}
+            tooltip={selectedFunction.tooltip}
+            inputWidth={0}
+            value={selectedFunction.value}
+            options={selectedFunction.options}
+            onChange={selectedFunction.onChange}
           />
+        </div>
+        <div className={iconWrapperClass}>
+          <IconButton aria-label="trash" onClick={onDelete} name={'trash-alt'} size={'xl'} />
+        </div>
+      </div>
+      <div className="gf-form-inline" style={{ padding: '0, 20px' }}>
+        <div className="gf-form">
           <MetricSearchField
             placeholder={'Any Measure'}
             isClearable
             getMetricsOptions={getMetricsOptions}
-            value={paramsValue[param.name]}
+            value={addLabel(selectedMeasure)}
             onChange={(value) => {
-              onParamsChange({ ...paramsValue, [param.name]: value });
+              onParamsChange({ ...paramsValue, dividentMeasure: value });
+            }}
+            label="Divident measure"
+            disabled
+          />
+        </div>
+        <InlineFormLabel>Group By:</InlineFormLabel>
+        <div className="gf-form">
+          <Select
+            menuPlacement={'bottom'}
+            value={paramsValue.dividentAggregation}
+            options={arrayToOptions(aggregationKeys)}
+            onChange={(value) => {
+              onParamsChange({ ...paramsValue, dividentAggregation: value });
+            }}
+          />
+        </div>
+        <div className="gf-form gf-form--grow">
+          <Select
+            isMulti
+            menuPlacement={'bottom'}
+            value={paramsValue.dividentGroupBy && JSON.parse(paramsValue.dividentGroupBy)?.properties}
+            options={arrayToOptions(groupByPropertiesList)}
+            onChange={(selectedOptions) => {
+              const selected = selectedOptions.map((o) => o.value);
+              onParamsChange({
+                ...paramsValue,
+                dividentGroupBy: JSON.stringify({ properties: selected }),
+              });
+            }}
+          />
+        </div>
+      </div>
+      <div className="gf-form-inline">
+        <div className="gf-form">
+          <MetricSearchField
+            placeholder={'Any Measure'}
+            isClearable
+            getMetricsOptions={getMetricsOptions}
+            value={paramsValue.divisorMeasure}
+            onChange={(value) => {
+              onParamsChange({ ...paramsValue, divisorMeasure: value });
             }}
             label="Divisor measure"
           />
         </div>
-      ))}
-      <div className={iconWrapperClass}>
-        <IconButton aria-label="trash" onClick={onDelete} name={'trash-alt'} size={'xl'} />
+        <InlineFormLabel>Group By:</InlineFormLabel>
+        <div className="gf-form">
+          <Select
+            menuPlacement={'bottom'}
+            value={paramsValue.divisorAggregation}
+            options={arrayToOptions(aggregationKeys)}
+            onChange={(value) => {
+              onParamsChange({ ...paramsValue, divisorAggregation: value });
+            }}
+          />
+        </div>
+        <div className="gf-form gf-form--grow">
+          <Select
+            isMulti
+            menuPlacement={'bottom'}
+            value={paramsValue.divisorGroupBy && JSON.parse(paramsValue.divisorGroupBy)?.properties}
+            options={arrayToOptions(groupByPropertiesList)}
+            onChange={(selectedOptions) => {
+              const selected = selectedOptions.map((o) => o.value);
+              onParamsChange({
+                ...paramsValue,
+                divisorGroupBy: JSON.stringify({ properties: selected }),
+              });
+            }}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

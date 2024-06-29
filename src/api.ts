@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { getBackendSrv } from '@grafana/runtime';
 import { getQueryParamsUrl } from './utils/helpers';
-import { makeAnomalyTimeSeriesParams, makeMetricsPayload, makeMetricTimeSeriesParams } from './utils/makeParams';
+import { makeAnomalyTimeSeriesParams, makeMetricsPayload } from './utils/makeParams';
+import { makeMetricTimeSeriesParams } from './utils/makeMetricTimeSeriesParams';
 
 export async function getEvents(ds) {
   const { timeInterval } = ds;

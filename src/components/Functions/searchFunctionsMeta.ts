@@ -1,9 +1,11 @@
 export enum FunctionsNamesEnum {
   GROUP_BY = 'groupBy',
   RATIO_PAIRS = 'ratioPairs',
+  AGGREGATION = 'Aggregation',
 }
-export const functionsMeta = [
-  {
+export const aggregationKeys = ['Avg', 'Sum', 'Median', 'Max', 'Min', 'Std', 'P90', 'P95', 'P99', 'Count'];
+export const functionsConfigs = {
+  [FunctionsNamesEnum.GROUP_BY]: {
     displayOnly: false,
     displayName: 'Group By',
     description: 'Group multiple time series by applying an aggregation function.',
@@ -19,7 +21,7 @@ export const functionsMeta = [
     parameters: [
       {
         displayType: 'list_single_selection',
-        optionalValues: ['Avg', 'Sum', 'Median', 'Max', 'Min', 'Std', 'P90', 'P95', 'P99', 'Count'],
+        optionalValues: aggregationKeys,
         defaultValue: 'Sum',
         validators: [],
         name: 'Aggregation',
@@ -38,7 +40,7 @@ export const functionsMeta = [
       },
     ],
   },
-  {
+  sum: {
     displayOnly: false,
     displayName: 'Sum',
     description: 'Returns the sum of the input time series list at each time sample.',
@@ -46,7 +48,11 @@ export const functionsMeta = [
     example: '',
     output: { name: 'Sum Time Series', description: 'Sum time series', type: 'singleTimeSeries' },
     input: [
-      { name: 'Time Series', description: 'Single time series or a multiple time series', type: 'multipleTimeSeries' },
+      {
+        name: 'Time Series',
+        description: 'Single time series or a multiple time series',
+        type: 'multipleTimeSeries',
+      },
     ],
     functionGroup: 'top',
     name: 'sumSeries',
@@ -55,7 +61,7 @@ export const functionsMeta = [
     extendedDescription: 'Sum a group of metrics',
     parameters: [],
   },
-  {
+  scale: {
     displayOnly: false,
     displayName: 'Scale',
     description: 'Scales each sample in the input time series with the constant provided.',
@@ -63,7 +69,11 @@ export const functionsMeta = [
     example: '',
     output: { name: 'Transformed Time Series', description: 'Transformed time series', type: 'multipleTimeSeries' },
     input: [
-      { name: 'Time Series', description: 'Single time series or a multiple time series', type: 'multipleTimeSeries' },
+      {
+        name: 'Time Series',
+        description: 'Single time series or a multiple time series',
+        type: 'multipleTimeSeries',
+      },
     ],
     functionGroup: 'top',
     name: 'scale',
@@ -86,7 +96,7 @@ export const functionsMeta = [
       },
     ],
   },
-  {
+  [FunctionsNamesEnum.RATIO_PAIRS]: {
     displayOnly: false,
     displayName: 'Ratio Pairs',
     description: 'Divides one or more time-series by another time-series',
@@ -94,7 +104,11 @@ export const functionsMeta = [
     example: '',
     output: { name: 'Transformed Time Series', description: 'Transformed time series', type: 'multipleTimeSeries' },
     input: [
-      { name: 'Time Series', description: 'Single time series or a multiple time series', type: 'multipleTimeSeries' },
+      {
+        name: 'Time Series',
+        description: 'Single time series or a multiple time series',
+        type: 'multipleTimeSeries',
+      },
     ],
     functionGroup: 'top',
     name: FunctionsNamesEnum.RATIO_PAIRS,
@@ -117,4 +131,4 @@ export const functionsMeta = [
       },
     ],
   },
-];
+};

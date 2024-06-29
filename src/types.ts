@@ -108,3 +108,5 @@ export interface DimensionType {
 }
 
 export type FlatObject<T = string | number | boolean> = Record<string, T>;
+
+export type Option<T = any> = SelectableValue<T>;
