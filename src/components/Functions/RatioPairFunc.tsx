@@ -25,7 +25,6 @@ export type RatioParams = {
 type RatioPairFuncProps = {
   selectedFunction: FlatObject<any>;
   paramsValue: RatioParams;
-  index: number;
   onDelete(): void;
   onParamsChange(params: RatioParams): void;
   groupByPropertiesList: string[];
@@ -38,7 +37,6 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
   onDelete,
   onParamsChange,
   paramsValue = {} as RatioParams,
-  index,
   groupByPropertiesList,
   getMetricsOptions,
   selectedMeasure,

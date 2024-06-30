@@ -6,6 +6,7 @@ import { FunctionsRow } from './FunctionsRow';
 import { FunctionsNamesEnum, functionsConfigs } from './searchFunctionsMeta';
 import RatioPairFunc, { RatioParams } from './RatioPairFunc';
 import PairsFunc, { PairsParams } from './PairsFunc';
+import TimeShiftFunc, { TimeShiftParams } from './TimeShift';
 
 export type FunctionsProps = {
   selectedFunctions: Record<FunctionsNamesEnum, any>;
@@ -35,7 +36,7 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
     (
       funcId: FunctionsNamesEnum,
       newSelectedFunc: Option<FunctionsNamesEnum> | null,
-      fParams: RatioParams | PairsParams | FlatObject | null
+      fParams: RatioParams | PairsParams | FlatObject | TimeShiftParams | null
     ) => {
       const newFunctions = { ...selectedFunctions };
       const func = {
@@ -96,7 +97,6 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
               onDelete={() => onDelete(funcName)}
               onParamsChange={(value) => onFunctionChange(funcName, null, value)}
               paramsValue={selectedFunctions[funcName]?.parameters}
-              index={i}
               {...sharedProps}
             />
           );
@@ -107,9 +107,19 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
               onDelete={() => onDelete(funcName)}
               onParamsChange={(value) => onFunctionChange(funcName, null, value)}
               paramsValue={selectedFunctions[funcName]?.parameters}
-              index={i}
               functionConfig={functionsConfigs[funcName]}
               {...sharedProps}
+            />
+          );
+        } else if (funcName === FunctionsNamesEnum.TIME_SHIFT) {
+          return (
+            <TimeShiftFunc
+              key={funcName}
+              onDelete={() => onDelete(funcName)}
+              onParamsChange={(value) => onFunctionChange(funcName, null, value)}
+              paramsValue={selectedFunctions[funcName]?.parameters}
+              functionConfig={functionsConfigs[funcName]}
+              selectedFunction={selectedFunction}
             />
           );
         } else {
@@ -127,7 +137,8 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
         }
       })}
       {!Object.keys(selectedFunctions).includes(FunctionsNamesEnum.RATIO_PAIRS) &&
-        !Object.keys(selectedFunctions).includes(FunctionsNamesEnum.PAIRS) && (
+        !Object.keys(selectedFunctions).includes(FunctionsNamesEnum.PAIRS) &&
+        !Object.keys(selectedFunctions).includes(FunctionsNamesEnum.TIME_SHIFT) && (
           <Button
             style={{ width: 112 }}
             disabled={!availableFunctions.length || 'new' in selectedFunctions}

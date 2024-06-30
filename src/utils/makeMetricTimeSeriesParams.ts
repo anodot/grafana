@@ -4,6 +4,7 @@ import { RatioParams } from '../components/Functions/RatioPairFunc';
 import isObject from 'lodash/isObject';
 import { getQueryParamsUrl } from './helpers';
 import { PairsParams } from '../components/Functions/PairsFunc';
+import { TimeShiftParams } from '../components/Functions/TimeShift';
 
 export function makeMetricTimeSeriesParams(
   { metricName, dimensions = [], includeBaseline = false, functions, sortBy, size },
@@ -49,12 +50,13 @@ export function makeMetricTimeSeriesParams(
   const functionsParsed = JSON.parse(functions);
   const isRatioPairs = !!functionsParsed[FunctionsNamesEnum.RATIO_PAIRS];
   const isPairs = !!functionsParsed[FunctionsNamesEnum.PAIRS];
+  const isTimeShift = !!functionsParsed[FunctionsNamesEnum.TIME_SHIFT];
   if (isRatioPairs) {
-    const ratioFunc = { ...functionsParsed[FunctionsNamesEnum.RATIO_PAIRS] };
-    root = getRatioPairsRoot(firstMetricChild, ratioFunc) || root;
+    root = getRatioPairsRoot(firstMetricChild, functionsParsed[FunctionsNamesEnum.RATIO_PAIRS]) || root;
   } else if (isPairs) {
-    const func = { ...functionsParsed[FunctionsNamesEnum.PAIRS] };
-    root = getPairsRoot(firstMetricChild, func) || root;
+    root = getPairsRoot(firstMetricChild, functionsParsed[FunctionsNamesEnum.PAIRS]) || root;
+  } else if (isTimeShift) {
+    root = getTimeShiftRoot(firstMetricChild, functionsParsed[FunctionsNamesEnum.TIME_SHIFT]) || root;
   } else if (Object.keys(functionsParsed)?.length) {
     root = Object.keys(functionsParsed)
       .sort((aName, bName) => functionsParsed[bName].index - functionsParsed[aName].index)
@@ -227,4 +229,14 @@ function getPairsRoot(firstMetricChild, func) {
     };
   }
   return;
+}
+function getTimeShiftRoot(firstMetricChild, func) {
+  const { size, number } = func.parameters as TimeShiftParams;
+  return {
+    children: [firstMetricChild],
+    function: 'timeShift',
+    id: '662f-d2a8f8dddf29',
+    parameters: [{ name: 'Time Shift', value: Number(number) * size.value }],
+    type: 'function',
+  };
 }

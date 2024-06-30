@@ -26,7 +26,6 @@ export type PairsParams = {
 type Props = {
   selectedFunction: FlatObject<any>;
   paramsValue: PairsParams;
-  index: number;
   functionConfig?: FlatObject<any>;
   onDelete(): void;
   onParamsChange(params: PairsParams): void;
@@ -40,7 +39,6 @@ const PairsFunc: React.FC<Props> = ({
   onDelete,
   onParamsChange,
   paramsValue = {} as PairsParams,
-  index,
   groupByPropertiesList,
   getMetricsOptions,
   selectedMeasure,

@@ -2,6 +2,7 @@ export enum FunctionsNamesEnum {
   GROUP_BY = 'groupBy',
   RATIO_PAIRS = 'ratioPairs',
   PAIRS = 'pairs',
+  TIME_SHIFT = 'timeShift',
 }
 export const aggregationKeys = ['Avg', 'Sum', 'Median', 'Max', 'Min', 'Std', 'P90', 'P95', 'P99', 'Count'];
 export const functionsConfigs = {
@@ -122,5 +123,16 @@ export const functionsConfigs = {
     helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/115002020674-Pairs',
     extendedDescription: ' Divide / multiply / add / subtract pairs of time-series',
     operationOptions: ['Add', 'Subtract', 'Divide', 'Multiply'],
+  },
+  [FunctionsNamesEnum.TIME_SHIFT]: {
+    displayName: 'Time Shift',
+    name: FunctionsNamesEnum.TIME_SHIFT,
+    helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/207926495-TimeShift',
+    extendedDescription: 'Shifts each data point by the given period.',
+    durationOptions: [
+      { label: 'Days', value: 86400 },
+      { label: 'Hours', value: 3600 },
+      { label: 'Minutes', value: 60 },
+    ],
   },
 };
