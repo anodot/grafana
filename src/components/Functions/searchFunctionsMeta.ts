@@ -3,6 +3,7 @@ export enum FunctionsNamesEnum {
   RATIO_PAIRS = 'ratioPairs',
   PAIRS = 'pairs',
   TIME_SHIFT = 'timeShift',
+  ALIAS = 'alias',
 }
 export const aggregationKeys = ['Avg', 'Sum', 'Median', 'Max', 'Min', 'Std', 'P90', 'P95', 'P99', 'Count'];
 export const functionsConfigs = {
@@ -134,5 +135,11 @@ export const functionsConfigs = {
       { label: 'Hours', value: 3600 },
       { label: 'Minutes', value: 60 },
     ],
+  },
+  [FunctionsNamesEnum.ALIAS]: {
+    displayName: 'Alias',
+    name: FunctionsNamesEnum.ALIAS,
+    helpResourceURI: 'https://support.anodot.com/hc/en-us/articles/207214929-Alias',
+    extendedDescription: 'Replaces the metric name with the given string.',
   },
 };

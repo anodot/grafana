@@ -105,3 +105,12 @@ export const tryJSONParse = (str: string) => {
     return str;
   }
 };
+function randomHex(size: number) {
+  return [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+}
+export function generateAnodotUID() {
+  const part1 = randomHex(4); // 4 characters
+  const part2 = randomHex(12); // 12 characters
+
+  return `${part1}-${part2}`;
+}

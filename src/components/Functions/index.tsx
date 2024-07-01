@@ -7,6 +7,7 @@ import { FunctionsNamesEnum, functionsConfigs } from './searchFunctionsMeta';
 import RatioPairFunc, { RatioParams } from './RatioPairFunc';
 import PairsFunc, { PairsParams } from './PairsFunc';
 import TimeShiftFunc, { TimeShiftParams } from './TimeShift';
+import AliasFunc, { AliasParams } from './AliasFun';
 
 export type FunctionsProps = {
   selectedFunctions: Record<FunctionsNamesEnum, any>;
@@ -36,7 +37,7 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
     (
       funcId: FunctionsNamesEnum,
       newSelectedFunc: Option<FunctionsNamesEnum> | null,
-      fParams: RatioParams | PairsParams | FlatObject | TimeShiftParams | null
+      fParams: RatioParams | PairsParams | FlatObject | TimeShiftParams | AliasParams | null
     ) => {
       const newFunctions = { ...selectedFunctions };
       const func = {
@@ -119,6 +120,16 @@ const FunctionsControl: React.FC<FunctionsProps> = ({
               onParamsChange={(value) => onFunctionChange(funcName, null, value)}
               paramsValue={selectedFunctions[funcName]?.parameters}
               functionConfig={functionsConfigs[funcName]}
+              selectedFunction={selectedFunction}
+            />
+          );
+        } else if (funcName === FunctionsNamesEnum.ALIAS) {
+          return (
+            <AliasFunc
+              key={funcName}
+              onDelete={() => onDelete(funcName)}
+              onParamsChange={(value) => onFunctionChange(funcName, null, value)}
+              paramsValue={selectedFunctions[funcName]?.parameters}
               selectedFunction={selectedFunction}
             />
           );

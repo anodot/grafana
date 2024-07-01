@@ -5,6 +5,7 @@ import isObject from 'lodash/isObject';
 import { getQueryParamsUrl } from './helpers';
 import { PairsParams } from '../components/Functions/PairsFunc';
 import { TimeShiftParams } from '../components/Functions/TimeShift';
+import { AliasParams } from '../components/Functions/AliasFun';
 
 export function makeMetricTimeSeriesParams(
   { metricName, dimensions = [], includeBaseline = false, functions, sortBy, size },
@@ -51,12 +52,15 @@ export function makeMetricTimeSeriesParams(
   const isRatioPairs = !!functionsParsed[FunctionsNamesEnum.RATIO_PAIRS];
   const isPairs = !!functionsParsed[FunctionsNamesEnum.PAIRS];
   const isTimeShift = !!functionsParsed[FunctionsNamesEnum.TIME_SHIFT];
+  const isAlias = !!functionsParsed[FunctionsNamesEnum.ALIAS];
   if (isRatioPairs) {
     root = getRatioPairsRoot(firstMetricChild, functionsParsed[FunctionsNamesEnum.RATIO_PAIRS]) || root;
   } else if (isPairs) {
     root = getPairsRoot(firstMetricChild, functionsParsed[FunctionsNamesEnum.PAIRS]) || root;
   } else if (isTimeShift) {
     root = getTimeShiftRoot(firstMetricChild, functionsParsed[FunctionsNamesEnum.TIME_SHIFT]) || root;
+  } else if (isAlias) {
+    root = getAliasRoot(firstMetricChild, functionsParsed[FunctionsNamesEnum.ALIAS]) || root;
   } else if (Object.keys(functionsParsed)?.length) {
     root = Object.keys(functionsParsed)
       .sort((aName, bName) => functionsParsed[bName].index - functionsParsed[aName].index)
@@ -237,6 +241,17 @@ function getTimeShiftRoot(firstMetricChild, func) {
     function: 'timeShift',
     id: '662f-d2a8f8dddf29',
     parameters: [{ name: 'Time Shift', value: Number(number) * size.value }],
+    type: 'function',
+  };
+}
+
+function getAliasRoot(firstMetricChild, func) {
+  const { aliasName } = func.parameters as AliasParams;
+  return {
+    children: [firstMetricChild],
+    function: 'timeShift',
+    id: '662f-d2a8f8cccf29',
+    parameters: [{ name: 'Metric Name', value: aliasName }],
     type: 'function',
   };
 }
