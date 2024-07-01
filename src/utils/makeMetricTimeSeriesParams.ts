@@ -90,7 +90,7 @@ export function makeMetricTimeSeriesParams(
         prefix: null,
       },
       displayOnly: true,
-      excludeComposites: isRatioPairs ? true : undefined,
+      excludeComposites: Object.keys(functionsParsed || {}).length ? true : undefined,
       filter: {
         function: sortBy,
         parameters: [
@@ -249,7 +249,7 @@ function getAliasRoot(firstMetricChild, func) {
   const { aliasName } = func.parameters as AliasParams;
   return {
     children: [firstMetricChild],
-    function: 'timeShift',
+    function: 'alias',
     id: '662f-d2a8f8cccf29',
     parameters: [{ name: 'Metric Name', value: aliasName }],
     type: 'function',

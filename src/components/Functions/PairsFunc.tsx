@@ -56,12 +56,13 @@ const PairsFunc: React.FC<Props> = ({
             value={selectedFunction.value}
             options={selectedFunction.options}
             onChange={selectedFunction.onChange}
+            menuPlacement={'top'}
           />
         </div>
         <InlineFormLabel>Operation:</InlineFormLabel>
         <div className="gf-form gf-form--grow">
           <Select
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.operation}
             options={arrayToOptions(functionConfig?.operationOptions)}
             onChange={(value) => {
@@ -86,12 +87,13 @@ const PairsFunc: React.FC<Props> = ({
             }}
             label="Divident measure"
             disabled
+            menuPlacement={'top'}
           />
         </div>
         <InlineFormLabel>Group By:</InlineFormLabel>
         <div className="gf-form">
           <Select
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.firstAggregation}
             options={arrayToOptions(aggregationKeys)}
             onChange={(value) => {
@@ -102,7 +104,7 @@ const PairsFunc: React.FC<Props> = ({
         <div className="gf-form gf-form--grow">
           <Select
             isMulti
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.firstGroupBy && JSON.parse(paramsValue.firstGroupBy)?.properties}
             options={arrayToOptions(groupByPropertiesList)}
             onChange={(selectedOptions) => {
@@ -127,12 +129,13 @@ const PairsFunc: React.FC<Props> = ({
               onParamsChange({ ...paramsValue, secondMeasure: value });
             }}
             label="Divisor measure"
+            menuPlacement={'top'}
           />
         </div>
         <InlineFormLabel>Group By:</InlineFormLabel>
         <div className="gf-form">
           <Select
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.secondAggregation}
             options={arrayToOptions(aggregationKeys)}
             onChange={(value) => {
@@ -143,7 +146,7 @@ const PairsFunc: React.FC<Props> = ({
         <div className="gf-form gf-form--grow">
           <Select
             isMulti
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.secondGroupBy && JSON.parse(paramsValue.secondGroupBy)?.properties}
             options={arrayToOptions(groupByPropertiesList)}
             onChange={(selectedOptions) => {

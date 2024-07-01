@@ -53,6 +53,7 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
             value={selectedFunction.value}
             options={selectedFunction.options}
             onChange={selectedFunction.onChange}
+            menuPlacement={'top'}
           />
         </div>
         <div className={iconWrapperClass}>
@@ -77,7 +78,7 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
         <InlineFormLabel>Group By:</InlineFormLabel>
         <div className="gf-form">
           <Select
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.dividentAggregation}
             options={arrayToOptions(aggregationKeys)}
             onChange={(value) => {
@@ -88,7 +89,7 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
         <div className="gf-form gf-form--grow">
           <Select
             isMulti
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.dividentGroupBy && JSON.parse(paramsValue.dividentGroupBy)?.properties}
             options={arrayToOptions(groupByPropertiesList)}
             onChange={(selectedOptions) => {
@@ -113,12 +114,13 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
               onParamsChange({ ...paramsValue, divisorMeasure: value });
             }}
             label="Divisor measure"
+            menuPlacement={'top'}
           />
         </div>
         <InlineFormLabel>Group By:</InlineFormLabel>
         <div className="gf-form">
           <Select
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.divisorAggregation}
             options={arrayToOptions(aggregationKeys)}
             onChange={(value) => {
@@ -129,7 +131,7 @@ const RatioPairFunc: React.FC<RatioPairFuncProps> = ({
         <div className="gf-form gf-form--grow">
           <Select
             isMulti
-            menuPlacement={'bottom'}
+            menuPlacement={'top'}
             value={paramsValue.divisorGroupBy && JSON.parse(paramsValue.divisorGroupBy)?.properties}
             options={arrayToOptions(groupByPropertiesList)}
             onChange={(selectedOptions) => {

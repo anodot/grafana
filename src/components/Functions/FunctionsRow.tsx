@@ -48,6 +48,7 @@ export const FunctionsRow: React.FC<RowProps> = ({
           value={selectedFunction.value}
           options={selectedFunction.options}
           onChange={selectedFunction.onChange}
+          menuPlacement={'top'}
         />
       </div>
       {parameters?.map((param) => (

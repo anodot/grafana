@@ -44,6 +44,7 @@ const TimeShiftFunc: React.FC<Props> = ({
           value={selectedFunction.value}
           options={selectedFunction.options}
           onChange={selectedFunction.onChange}
+          menuPlacement={'top'}
         />
       </div>
       <div className="gf-form">

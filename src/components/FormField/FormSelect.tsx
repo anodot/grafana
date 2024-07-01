@@ -34,6 +34,7 @@ export interface FormSelectProps extends SelectCommonProps<any> {
   notOptions?: NotOptionsType;
   error?: boolean;
   required?: boolean;
+  menuPlacement?: 'auto' | 'bottom' | 'top';
 }
 
 /**
@@ -53,6 +54,7 @@ const FormSelect: React.FC<FormSelectProps> = (props) => {
     notOptions,
     error,
     required,
+    menuPlacement = 'bottom',
     ...remainingProps
   } = props;
   const {
@@ -77,7 +79,7 @@ const FormSelect: React.FC<FormSelectProps> = (props) => {
       </InlineFormLabel>
       <Select
         prefix={notCheckboxValue ? '!' : null}
-        menuPlacement={'bottom'}
+        menuPlacement={menuPlacement}
         disabled={disabled}
         width={inputWidth}
         isSearchable={searchable}

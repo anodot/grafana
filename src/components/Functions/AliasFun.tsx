@@ -37,6 +37,7 @@ const AliasFunc: React.FC<Props> = ({
           value={selectedFunction.value}
           options={selectedFunction.options}
           onChange={selectedFunction.onChange}
+          menuPlacement={'top'}
         />
       </div>
       <div className="gf-form">
@@ -45,6 +46,7 @@ const AliasFunc: React.FC<Props> = ({
           value={paramsValue.aliasName}
           onChange={({ target }) => onParamsChange({ ...paramsValue, aliasName: target['value'] })}
           width={7}
+          invalid={!paramsValue.aliasName}
         />
       </div>
       <div className={iconWrapperClass}>
