@@ -1,11 +1,12 @@
 {
   "type": "datasource",
-  "name": "Anodot",
+  "name": "Anodot Datasource",
   "id": "anodot-datasource",
   "metrics": true,
   "logs": true,
   "backend": true,
   "executable": "gpx_anodot-datasource",
+  "alerting": false,
   "info": {
     "description": "Datasource for anodot-panel plugin",
     "author": {
