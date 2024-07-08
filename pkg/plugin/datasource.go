@@ -16,12 +16,7 @@ import (
 	"github.com/anodot/grafana-datasource/pkg/models"
 )
 
-type dataSourceInstance struct {
-	settings backend.DataSourceInstanceSettings
-}
-
 var tokenStorage string = ""
-
 
 // Make sure Datasource implements required interfaces. This is important to do
 // since otherwise we will only get a not implemented error response from plugin in
