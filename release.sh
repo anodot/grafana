@@ -1,6 +1,6 @@
 #! /bin/bash
-mv anodot-datasource dist
-# mage -v
+rm -rf dist
+mage -v
 npm run build
 # export GRAFANA_ACCESS_POLICY_TOKEN=<Your token>
 npx @grafana/sign-plugin@latest
