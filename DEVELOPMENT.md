@@ -1,6 +1,25 @@
-# Grafana data source plugin template
+# Grafana data source development info
+## Installing/Updating with grafana-cli
 
-This template is a starting point for building a Data Source Plugin for Grafana.
+```
+grafana-cli plugins install anodot-datasource
+```
+
+or
+
+```
+grafana-cli plugins update anodot-datasource
+```
+
+Restart Grafana after installation:
+
+```
+brew services restart grafana
+```
+
+See more details [here](https://grafana.com/docs/grafana/latest/administration/cli/#plugins-commands).
+
+Once you have the plugin installed, please go through [setting up the Anodot Data Source](https://github.com/anodot/grafana-datasource#setting-up-the-anodot-data-source).
 
 ## What are Grafana data source plugins?
 

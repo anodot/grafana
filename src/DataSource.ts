@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { DataQueryRequest, DataQueryResponse, DataSourceApi, DataSourceInstanceSettings } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
-import { MyDataSourceOptions, EditorQuery } from './types';
+import { MyDataSourceOptions, EditorQuery, MeasureWithComposites } from './types';
 import { getQueryParamsUrl, readTime } from './utils/helpers';
 import { scenarios } from './utils/constants';
 import { makePropValPayload } from './utils/makeParams';
@@ -10,6 +10,20 @@ import { alertsQuery } from './Alerts/query';
 import { anomalyQuery } from './Anomalies/query';
 import { topologyQuery } from './Topology/query';
 
+const propsListDescription = [
+  { valueType: 'measures', count: 20 },
+  { valueType: 'composites', count: 10 },
+  // { valueType: 'dimensions', count: 20 },
+  // { valueType: 'streams', count: 10 },
+  // { valueType: 'alerts', count: 10 },
+  // { valueType: 'tags', count: 10 },
+];
+type ExpectedPropsListResponse = Array<{
+  title: string;
+  count: number;
+  type: string;
+  values: Array<string | MeasureWithComposites>;
+}>;
 export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> {
   url?: string;
 
@@ -85,17 +99,25 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
   }
 
   async getMetricsOptions(expression = '') {
-    const url = `/search/metrics/props`;
+    const url = `/search/metrics/propsList`;
     const payload = {
-      properties: ['what'],
       expression,
       filter: [],
+      listDescription: propsListDescription,
       size: 50,
+      search: '',
     };
     try {
       return await getBackendSrv()
         .datasourceRequest(this.getOptions(url, payload))
-        .then((d) => d.data?.propertyValues || []);
+        .then(
+          (d: { data: ExpectedPropsListResponse }): MeasureWithComposites[] =>
+            d.data
+              ?.map((d) =>
+                d.values.map((v) => (typeof v === 'string' ? { value: v, type: d.type } : { ...v, type: d.type }))
+              )
+              .flat() || []
+        );
     } catch (error) {
       return {
         error: {
@@ -136,7 +158,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       }));
   }
 
-  async getUsers(): any[] {
+  async getUsers(): Promise<any[]> {
     const url = '/users';
     return await this.makeRequest(url);
   }
@@ -153,7 +175,7 @@ export class DataSource extends DataSourceApi<EditorQuery, MyDataSourceOptions> 
       .then(({ data }) => data);
   }
 
-  async getMetricsPropVal(metricName, propsName) {
+  async getMetricsPropVal(metricName: string, propsName: string) {
     const url = '/search/metrics/props';
     const payload = makePropValPayload(metricName, propsName);
     return await getBackendSrv()

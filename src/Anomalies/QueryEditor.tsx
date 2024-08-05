@@ -85,7 +85,7 @@ const AnomaliesQueryEditor = (props: ScenarioProps<AnomalyQuery>) => {
           isMulti
           getMetricsOptions={datasource.getMetricsOptions.bind(datasource)}
           value={query.metrics}
-          onChange={(value) => onFormChange('metrics', value, true)}
+          onChange={(selectedMeasures) => onFormChange('metrics', selectedMeasures, true)}
           placeholder={'All measures'}
           notOptions={{
             notCheckboxDisabled: !isSpecificMetricSelected,

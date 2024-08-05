@@ -37,13 +37,22 @@ export interface AlertsQuery extends EditorQuery {
   acknowledge: '' | 'ACK' | 'NOACK';
   feedback: object[];
 }
+export enum MeasuresTypesEnum {
+  COMPOSITES = 'composites',
+  MEASURES = 'measures',
+}
+export type MeasureWithComposites = {
+  value: string;
+  type: MeasuresTypesEnum;
+  originId?: string;
+};
 
 export interface MetricsQuery extends EditorQuery {
   baseLine: boolean;
   addQuery: boolean;
   showMultiline: boolean;
   dimensions: string;
-  metricName: string;
+  metricName: MeasureWithComposites;
   functions: string;
   sortBy: string;
   size: number;

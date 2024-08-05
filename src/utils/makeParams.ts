@@ -1,7 +1,7 @@
-// @ts-nocheck
 import { getDateRange, getQ, getQueryParamsUrl } from './helpers';
+import { MeasureWithComposites } from '../types';
 
-export const makeMetricsPayload = (metricName, filters = [], notOperator) => ({
+export const makeMetricsPayload = (measure: MeasureWithComposites, filters = [], notOperator) => ({
   name: {
     auto: true,
     prefix: null,
@@ -21,7 +21,7 @@ export const makeMetricsPayload = (metricName, filters = [], notOperator) => ({
   },
   expressionTree: {
     root: {
-      searchObject: getQ(metricName, filters, false, notOperator),
+      searchObject: getQ([measure], filters, false, notOperator),
       children: [],
       type: 'metric',
       id: '5800-25645814655e',
@@ -92,7 +92,7 @@ export function makeAnomalyTimeSeriesParams(anomaly, url, { baseline = false, da
   return getQueryParamsUrl(params, url + encodeURIComponent(metricId));
 }
 
-export const makePropValPayload = (metricName, propertyName) => ({
+export const makePropValPayload = (metricName: string, propertyName?: string) => ({
   properties: propertyName ? [propertyName] : [],
   expression: '',
   filter: [

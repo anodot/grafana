@@ -3,10 +3,11 @@ import { FieldType, MutableDataFrame } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getMetricsComposite } from '../api';
 import { getTemplateSrv } from '@grafana/runtime';
+import { MetricParams } from '../utils/makeMetricTimeSeriesParams';
 
 export function metricsCompositeQuery(query, datasource) {
   const { timeInterval } = datasource;
-  const { metricName, baseLine, showMultiline, functions, sortBy, size, addQuery } = query;
+  const { metricName: measure, baseLine, showMultiline, functions, sortBy, size, addQuery } = query;
   let dimensions = JSON.parse(query.dimensions);
   const dashboardVars = query.applyVariables ? getTemplateSrv().getVariables() : [];
   const dashboardDimensions = dashboardVars
@@ -34,8 +35,8 @@ export function metricsCompositeQuery(query, datasource) {
     .filter(([key, values]) => key && values.length)
     .map(([key, values]) => ({ key, value: values.join(' OR '), type: 'property', isExact: true }));
 
-  const metricsParams = {
-    metricName: metricName,
+  const metricsParams: MetricParams = {
+    measure,
     dimensions,
     includeBaseline: baseLine,
     functions,

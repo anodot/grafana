@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { FunctionsNamesEnum } from '../components/Functions/searchFunctionsMeta';
 import { RatioParams } from '../components/Functions/RatioPairFunc';
 import isObject from 'lodash/isObject';
@@ -6,9 +5,25 @@ import { getQueryParamsUrl } from './helpers';
 import { PairsParams } from '../components/Functions/PairsFunc';
 import { TimeShiftParams } from '../components/Functions/TimeShift';
 import { AliasParams } from '../components/Functions/AliasFun';
+import { MeasuresTypesEnum, MeasureWithComposites } from '../types';
+
+export type MetricParams = {
+  measure: MeasureWithComposites;
+  dimensions: any[];
+  includeBaseline: boolean;
+  functions: string;
+  sortBy: string;
+  size: number;
+};
+
+type ParsedFunction = {
+  index: number;
+  functionName: string;
+  parameters: Array<{ value: string }>;
+};
 
 export function makeMetricTimeSeriesParams(
-  { metricName, dimensions = [], includeBaseline = false, functions, sortBy, size },
+  { measure, dimensions = [], includeBaseline = false, functions, sortBy, size }: MetricParams,
   { timeInterval },
   url
 ) {
@@ -24,18 +39,27 @@ export function makeMetricTimeSeriesParams(
     startBucketMode: true,
   };
 
-  const expression = dimensions.map((d) => ({
+  const expression = dimensions.map((d: any) => ({
     ...d,
     type: 'property',
     isExact: true,
   }));
 
-  if (metricName) {
+  if (measure?.type === MeasuresTypesEnum.MEASURES) {
     expression.unshift({
       key: 'what',
-      value: metricName,
+      value: measure,
       type: 'property',
       isExact: true,
+    });
+  }
+  if (measure?.type === MeasuresTypesEnum.COMPOSITES) {
+    expression.unshift({
+      isExact: true,
+      key: 'originId',
+      originType: 'Composite',
+      type: 'origin',
+      value: measure.originId,
     });
   }
 
@@ -47,8 +71,8 @@ export function makeMetricTimeSeriesParams(
     uiIndex: 0,
   };
 
-  let root = firstMetricChild;
-  const functionsParsed = JSON.parse(functions);
+  let root: any = firstMetricChild;
+  const functionsParsed = JSON.parse(functions) as Record<string, ParsedFunction>;
   const isRatioPairs = !!functionsParsed[FunctionsNamesEnum.RATIO_PAIRS];
   const isPairs = !!functionsParsed[FunctionsNamesEnum.PAIRS];
   const isTimeShift = !!functionsParsed[FunctionsNamesEnum.TIME_SHIFT];
@@ -73,8 +97,7 @@ export function makeMetricTimeSeriesParams(
           children: Array.isArray(acc) ? acc : [acc],
           function: func.functionName,
           id: '882f-d2a8f8cadf29',
-          parameters: Object.keys(func.parameters).map((name) => {
-            const param = func.parameters[name];
+          parameters: Object.entries(func.parameters).map(([name, param]) => {
             return { name, value: isObject(param) ? param.value : param };
           }),
           type: 'function',

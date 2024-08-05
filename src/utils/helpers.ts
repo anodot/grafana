@@ -1,5 +1,5 @@
 import { TimeRange } from '@grafana/data';
-import { TimeFilter } from '../types';
+import { MeasuresTypesEnum, MeasureWithComposites, TimeFilter } from '../types';
 import { isNull } from 'lodash';
 
 export const getPluoral = (n, base, suffix = 's') => base + (n === 1 ? '' : suffix);
@@ -41,10 +41,11 @@ export function readTime(time: TimeRange, startName = 'startDate', endName = 'en
   };
 }
 
-export const arrayToOptions = (arr: any[] = [], key?) => {
+export const arrayToOptions = (arr: any[] = [], key?, withExtension = false) => {
   const options = arr?.map?.((item) => {
     const value = key ? item[key] : item;
-    return { label: value, value };
+    const extension = withExtension ? item : {};
+    return { ...extension, label: value, value };
   });
   if (!options) {
     console.error('arrayToOptions got error', arr);
@@ -82,16 +83,27 @@ export function getQueryParamsUrl(params, url = '') {
   return Object.keys(params).reduce(format, url);
 }
 
-export function getQ(metric, filters = [], stringify, notOperator = false) {
+export function getQ(measures: MeasureWithComposites[], filters = [], stringify, notOperator = false) {
   const expression: any[] = [];
-  if (metric && metric !== '*') {
-    expression.push({
-      type: 'property',
-      key: 'what',
-      value: (notOperator ? '!' : '') + metric,
-      isExact: !notOperator,
-    });
-  }
+  measures.forEach((measure) => {
+    if (measure?.type === MeasuresTypesEnum.MEASURES) {
+      expression.push({
+        type: 'property',
+        key: 'what',
+        value: (notOperator ? '!' : '') + measure.value,
+        isExact: !notOperator,
+      });
+    }
+    if (measure?.type === MeasuresTypesEnum.COMPOSITES) {
+      expression.push({
+        type: 'origin',
+        originType: 'Composite',
+        key: 'originId',
+        value: (notOperator ? '!' : '') + measure.originId,
+        isExact: !notOperator,
+      });
+    }
+  });
   const q = {
     expression: [...expression, ...filters],
   };

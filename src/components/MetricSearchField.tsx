@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { arrayToOptions } from '../utils/helpers';
 import FormSelect, { FormSelectProps, NotOptionsType } from './FormField/FormSelect';
 import { SelectableValue } from '@grafana/data';
+import { MeasureWithComposites } from '../types';
 
 interface SearchProps extends Partial<FormSelectProps> {
   value: string | SelectableValue;
   onChange: (v: any) => void;
-  getMetricsOptions: (str: string) => Promise<Array<{ value: string }>>;
+  getMetricsOptions: (str: string) => Promise<MeasureWithComposites[] | { error: any }>;
   isMulti?: boolean;
   isClearable?: boolean;
   notOptions?: NotOptionsType;
@@ -31,7 +32,9 @@ const MetricSearchField: React.FC<SearchProps> = ({
   useEffect(() => {
     /** Request Metrics Options onMount*/
     getMetricsOptions('').then((metrics) => {
-      setMetricsList(arrayToOptions(metrics, 'value'));
+      if (!('error' in metrics)) {
+        setMetricsList(arrayToOptions(metrics, 'value', true));
+      }
     });
   }, []);
 
@@ -39,7 +42,9 @@ const MetricSearchField: React.FC<SearchProps> = ({
     (searchString: string, { action }) => {
       action === 'input-change' &&
         getMetricsOptions(searchString).then((metrics) => {
-          setMetricsList(arrayToOptions(metrics, 'value'));
+          if (!('error' in metrics)) {
+            setMetricsList(arrayToOptions(metrics, 'value', true));
+          }
         });
     },
     [getMetricsOptions]
@@ -48,7 +53,7 @@ const MetricSearchField: React.FC<SearchProps> = ({
   return (
     <FormSelect
       inputWidth={0}
-      label={label || `Measure${isMulti ? 's' : ''}`}
+      label={label || ` 5Measure${isMulti ? 's' : ''}`}
       tooltip={'Select measures.'}
       value={value}
       options={options}

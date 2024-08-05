@@ -15,35 +15,13 @@ You can get the Anodot Data Source Plugin in these ways:
 
 Once you have the plugin installed, please follow the steps below to configure it for use:
 
-1. You will need to set up an API token. Click here to find out how to get an Anodot Access Key. Click [here](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management-) to learn how to obtain an access key from Anodot.
+1. You will need to set up an API token. Click here to find out how to get an Anodot Access Key. Click [here](https://support.anodot.com/hc/en-us/articles/360002631114-Token-Management) to learn how to obtain an access key from Anodot.
 2. You will need to set up your Anodot URL. For most customers - that URL is 'app.anodot.com'. You can find your URL when you log in to Anodot.
 3. Once you've set these two parameters - simply hit the "Save & Test" and you are good to go.
 
 ## What is Grafana Data Source Plugin?
 
 Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
-
-## Installing/Updating with grafana-cli
-
-```
-grafana-cli plugins install anodot-datasource
-```
-
-or
-
-```
-grafana-cli plugins update anodot-datasource
-```
-
-Restart Grafana after installation:
-
-```
-brew services restart grafana
-```
-
-See more details [here](https://grafana.com/docs/grafana/latest/administration/cli/#plugins-commands).
-
-Once you have the plugin installed, please go through [setting up the Anodot Data Source](https://github.com/anodot/grafana-datasource#setting-up-the-anodot-data-source).
 
 ## Learn more
 

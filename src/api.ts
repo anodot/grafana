@@ -2,7 +2,8 @@
 import { getBackendSrv } from '@grafana/runtime';
 import { getQueryParamsUrl } from './utils/helpers';
 import { makeAnomalyTimeSeriesParams, makeMetricsPayload } from './utils/makeParams';
-import { makeMetricTimeSeriesParams } from './utils/makeMetricTimeSeriesParams';
+import { makeMetricTimeSeriesParams, MetricParams } from './utils/makeMetricTimeSeriesParams';
+import { MeasureWithComposites } from './types';
 
 export async function getEvents(ds) {
   const { timeInterval } = ds;
@@ -30,7 +31,7 @@ export async function getEvents(ds) {
       return result;
     });
 }
-export async function getMetricsData(metricName, filters = [], ds, notOperator) {
+export async function getMetricsData(measure: MeasureWithComposites, filters = [], ds, notOperator) {
   const { timeInterval } = ds;
   const params = {
     fromDate: timeInterval?.startDate,
@@ -40,17 +41,17 @@ export async function getMetricsData(metricName, filters = [], ds, notOperator) 
     size: 500,
   };
   const url = '/metrics/composite/names';
-  const payload = makeMetricsPayload(metricName, filters, notOperator);
+  const payload = makeMetricsPayload(measure, filters, notOperator);
   return await getBackendSrv()
     .datasourceRequest(getOptions(ds, url, payload, params))
     .then(({ data }) => {
       const result = data?.metrics || [];
       result.type = 'metrics';
-      result.metricName = metricName;
+      result.metricName = measure?.value;
       return result;
     });
 }
-export async function loadAnomalyData(url, metricName, ds) {
+export async function loadAnomalyData(url: string, metricName: string, ds) {
   return await getBackendSrv()
     .datasourceRequest(getOptions(ds, url))
     .then(({ data }) => {
@@ -116,7 +117,7 @@ export async function getAlerts(query, ds) {
     .then(({ data }) => data);
 }
 
-export async function getMetricsComposite(metricParams, timeParams, ds) {
+export async function getMetricsComposite(metricParams: MetricParams, timeParams, ds) {
   const url = '/metrics/composite/execute';
   const [urlWithParams, payload] = makeMetricTimeSeriesParams(metricParams, timeParams, url);
   return await getBackendSrv()

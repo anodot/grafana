@@ -3,6 +3,7 @@ import { requestStrategies, scenarios } from '../utils/constants';
 import { makeAnomaliesPromises } from '../Anomalies/query';
 import { MutableDataFrame } from '@grafana/data';
 import { getEvents, getMetricsData } from '../api';
+import { MeasureWithComposites } from '../types';
 
 export function topologyQuery(query, setFrameToDataSource, datasource) {
   const { timeInterval, urlBase, callId, lastTopologyFrame } = datasource;
@@ -24,7 +25,7 @@ export function topologyQuery(query, setFrameToDataSource, datasource) {
   let eventsDataPromise = [];
 
   if (requestAll) {
-    metricDataPromises = metrics.map(({ value }) => getMetricsData(value, [], datasource));
+    metricDataPromises = metrics.map((measure: MeasureWithComposites) => getMetricsData(measure, [], datasource));
   }
   if (requestAll || requestAnomaliesOnly) {
     anomalyDataPromises = makeAnomaliesPromises(query, anomalyDataPromises, datasource);

@@ -1,9 +1,10 @@
 //@ts-nocheck
-import { FieldType, MutableDataFrame } from '@grafana/data';
+import { FieldType } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getQ, getQueryParamsUrl } from '../utils/helpers';
 import { loadAnomalyData, getAnomalyChart } from '../api';
 import { getTemplateSrv } from '@grafana/runtime';
+import { MeasureWithComposites } from '../types';
 
 export async function anomalyQuery(query, datasource) {
   const { timeInterval, callId, urlBase } = datasource;
@@ -11,9 +12,9 @@ export async function anomalyQuery(query, datasource) {
   const anomalyDataPromises = makeAnomaliesPromises(query, [], datasource);
 
   return Promise.all(anomalyDataPromises).then(async (results) => {
-    const anomalyDatasets = metrics.map(({ value }, i) => ({
-      metricName: value,
-      dataSet: results[i]?.map((a) => ({ ...a, metricName: value })) || [],
+    const anomalyDatasets = metrics.map((metric: MeasureWithComposites, i) => ({
+      metricName: metric?.value,
+      dataSet: results[i]?.map((a) => ({ ...a, metricName: metric?.value })) || [],
     }));
 
     let anomaliesCharts = [];
@@ -94,7 +95,6 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     durationUnit,
     applyVariables,
   } = query;
-
   let dimensions = query.dimensions ? JSON.parse(query.dimensions) : [];
   const dashboardVars = applyVariables ? getTemplateSrv().getVariables() : [];
   const dashboardDimensions = dashboardVars
@@ -137,29 +137,28 @@ export function makeAnomaliesPromises(query, defaultPromises, ds) {
     direction.length &&
     timeScales?.length
   ) {
-    return metrics.map(({ value }) => {
-      const anomalyParams = {
-        ...timeInterval,
-        index: 0,
-        size,
-        score: (score[0] ?? score) / 100,
-        durationUnit,
-        durationValue: duration?.[0] ?? duration,
-        resolution: timeScales.map((t) => t.meta[2]),
-        anomalyType: 'all',
-        bookmark: '',
-        correlation: '',
-        delta: deltaValue,
-        deltaType: deltaType,
-        order: 'desc',
-        q: getQ(value, dimensions, true, notOperator),
-        sort: sortBy,
-        startBucketMode: true,
-        state: openedOnly ? 'open' : 'both',
-        valueDirection: direction[1] ? 'both' : direction[0]?.value,
-      };
-      return loadAnomalyData(getQueryParamsUrl(anomalyParams, '/anomalies'), value, ds);
-    });
+    const anomalyParams = {
+      ...timeInterval,
+      index: 0,
+      size,
+      score: (score[0] ?? score) / 100,
+      durationUnit,
+      durationValue: duration?.[0] ?? duration,
+      resolution: timeScales.map((t) => t.meta[2]),
+      anomalyType: 'all',
+      bookmark: '',
+      correlation: '',
+      delta: deltaValue,
+      deltaType: deltaType,
+      order: 'desc',
+      q: getQ(metrics, dimensions, true, notOperator),
+      sort: sortBy,
+      startBucketMode: true,
+      state: openedOnly ? 'open' : 'both',
+      valueDirection: direction[1] ? 'both' : direction[0]?.value,
+    };
+
+    return [loadAnomalyData(getQueryParamsUrl(anomalyParams, '/anomalies'), metrics[0]?.value, ds)];
   } else {
     return defaultPromises;
   }
