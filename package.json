@@ -7,7 +7,8 @@
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
-    "release": "bash release.sh"
+    "release": "bash release.sh",
+    "validate": "npx -y @grafana/plugin-validator@latest anodot-datasource-4.2.0.zip"
   },
   "author": "ua.ulin@gmail.com",
   "license": "Apache-2.0",

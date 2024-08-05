@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { FieldType } from '@grafana/data';
+import { FieldType, MutableDataFrame } from '@grafana/data';
 import { scenarios } from '../utils/constants';
 import { getQ, getQueryParamsUrl } from '../utils/helpers';
 import { loadAnomalyData, getAnomalyChart } from '../api';

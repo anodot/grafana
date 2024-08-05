@@ -7,7 +7,7 @@ import { MetricParams } from '../utils/makeMetricTimeSeriesParams';
 
 export function metricsCompositeQuery(query, datasource) {
   const { timeInterval } = datasource;
-  const { metricName: measure, baseLine, showMultiline, functions, sortBy, size, addQuery } = query;
+  const { measure, baseLine, showMultiline, functions, sortBy, size, addQuery } = query;
   let dimensions = JSON.parse(query.dimensions);
   const dashboardVars = query.applyVariables ? getTemplateSrv().getVariables() : [];
   const dashboardDimensions = dashboardVars

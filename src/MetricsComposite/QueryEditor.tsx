@@ -20,7 +20,7 @@ export const defaultMetricsCompositeQuery: Partial<MetricsQuery> = {
   addQuery: true,
   dimensions: '[]',
   functions: '{}',
-  metricName: undefined,
+  measure: undefined,
   sortBy: 'alphanumeric',
   size: 10,
   applyVariables: false,
@@ -42,17 +42,17 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
   useEffect(() => {
     /** Request available propertyNames by selected metrics */
     /* Reset previous selections: */
-    if (query.metricName) {
+    if (query.measure) {
       !isPristine && onFormChange('dimensions', defaultMetricsCompositeQuery.dimensions, false);
       datasource
-        .getPropertiesDict(query.metricName?.type === 'measures' ? query.metricName?.value : query.metricName?.originId)
+        .getPropertiesDict(query.measure?.type === 'measures' ? query.measure?.value : query.measure?.originId)
         .then(({ properties }) => {
           setPropertiesOptions(properties);
           /* save it in Query to be able to validate dashboardVarsDimensions in datasource */
           onFormChange('dimensionsOptions', properties, false);
         });
     }
-  }, [query.metricName]);
+  }, [query.measure]);
 
   useEffect(() => {
     /** Reduce already selected propertyNames from available properties */
@@ -63,10 +63,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
     }
   }, [propertiesOptions, query.dimensions]);
 
-  const getValues = useCallback(
-    (name) => datasource.getMetricsPropVal(query.metricName?.value, name),
-    [query.metricName]
-  );
+  const getValues = useCallback((name) => datasource.getMetricsPropVal(query.measure?.value, name), [query.measure]);
 
   // TODO: Do ve have availableOptions for empty Measure?
   return (
@@ -77,10 +74,8 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
             placeholder={'Any Measure'}
             isClearable
             getMetricsOptions={getMetricsOptions}
-            value={query.metricName && addLabel(query.metricName)}
-            onChange={(measure) => {
-              onFormChange({ metricName: measure }, measure, true);
-            }}
+            value={query.measure && addLabel(query.measure)}
+            onChange={(measure) => onFormChange({ measure }, measure, true)}
           />
         </div>
         <div className="gf-form gf-form--grow">
@@ -141,7 +136,7 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
       {
         <div style={{ marginBottom: 4 }}>
           <DimensionsRows
-            key={query.metricName?.value || 'unknown'}
+            key={query.measure?.value || 'unknown'}
             dimensionsQuery={JSON.parse(query.dimensions)}
             onChangeDimensions={(value) => onFormChange('dimensions', JSON.stringify(value), true)}
             availableDimensionsNames={availableOptions}
@@ -150,17 +145,17 @@ const MetricsCompositeQueryEditor: React.FC<ScenarioProps<MetricsQuery>> = (prop
           />
         </div>
       }
-      {query.metricName && (
+      {query.measure?.value && (
         <div style={{ marginBottom: 4 }}>
           <FunctionsControl
-            key={`function-${query.metricName}`}
+            key={`function-${query.measure?.value}`}
             selectedFunctions={JSON.parse(query.functions)}
             onChangeFunctions={(newFunctions: FlatObject) =>
               onFormChange('functions', JSON.stringify(newFunctions), !('new' in newFunctions))
             }
             groupByPropertiesList={propertiesOptions}
             getMetricsOptions={getMetricsOptions}
-            selectedMeasure={query.metricName?.originId || query.metricName?.value}
+            selectedMeasure={query.measure?.originId || query.measure?.value}
           />
         </div>
       )}

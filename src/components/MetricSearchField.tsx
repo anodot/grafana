@@ -53,7 +53,7 @@ const MetricSearchField: React.FC<SearchProps> = ({
   return (
     <FormSelect
       inputWidth={0}
-      label={label || ` 5Measure${isMulti ? 's' : ''}`}
+      label={label || `Measure${isMulti ? 's' : ''}`}
       tooltip={'Select measures.'}
       value={value}
       options={options}

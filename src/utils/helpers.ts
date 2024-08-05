@@ -54,7 +54,12 @@ export const arrayToOptions = (arr: any[] = [], key?, withExtension = false) => 
   return options;
 };
 
-export const addLabel = (value) => (value?.label ? value : { label: value, value });
+export const addLabel = (option?: string | { value: string; label?: string }, key = 'value') =>
+  typeof option === 'string' || typeof option === 'number'
+    ? { label: option, value: option }
+    : option?.label
+    ? option
+    : { ...(option || {}), label: option?.[key] || '', value: option?.[key] || '' };
 
 export function getDateRange(days, startFlag) {
   if (isNaN(days)) {

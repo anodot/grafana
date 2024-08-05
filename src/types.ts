@@ -52,7 +52,7 @@ export interface MetricsQuery extends EditorQuery {
   addQuery: boolean;
   showMultiline: boolean;
   dimensions: string;
-  metricName: MeasureWithComposites;
+  measure: MeasureWithComposites;
   functions: string;
   sortBy: string;
   size: number;
