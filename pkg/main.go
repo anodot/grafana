@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/grafana/grafana-plugin-sdk-go/backend"
-//	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
+	// "github.com/grafana/grafana-plugin-sdk-go/backend"
+	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/anodot/grafana-datasource/pkg/plugin"
 )
@@ -19,20 +19,8 @@ func main() {
 	// ID). When datasource configuration changed Dispose method will be called and
 	// new datasource instance created using NewSampleDatasource factory.
 
-	// if err := datasource.Manage("anodot-datasource", plugin.NewDatasource, datasource.ManageOpts{}); err != nil {
-	//	log.DefaultLogger.Error(err.Error())
-	//	os.Exit(1)
-	// }
-
-	opts := backend.ServeOpts{
-    		QueryDataHandler:   &plugin.Datasource{},
-    		CheckHealthHandler: &plugin.Datasource{},
-    		CallResourceHandler: &plugin.Datasource{},
-    	}
-
-    // Start the plugin server
-    if err := backend.Serve(opts); err != nil {
-        log.DefaultLogger.Error(err.Error())
-        os.Exit(1)
-    }
+	if err := datasource.Manage("anodot-datasource", plugin.NewDatasource, datasource.ManageOpts{}); err != nil {
+		log.DefaultLogger.Error(err.Error())
+		os.Exit(1)
+     }
 }
