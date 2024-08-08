@@ -23,7 +23,7 @@ const scenarioOptions = {
   [scenarios.alerts]: { label: 'Alerts', value: scenarios.alerts },
   [scenarios.anomalies]: { label: 'Anomalies', value: scenarios.anomalies },
   [scenarios.metricsComposite]: { label: 'Metrics', value: scenarios.metricsComposite },
-  [scenarios.topology]: { label: 'Topology Map', value: scenarios.topology },
+  // [scenarios.topology]: { label: 'Topology Map', value: scenarios.topology },
 };
 
 const defaultQuery: Partial<EditorQuery> = {
